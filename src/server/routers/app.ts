@@ -4,6 +4,7 @@ import { customersRouter } from "./customers";
 import { inventoryRouter } from "./inventory";
 import { reportsRouter } from "./reports";
 import { dashboardRouter } from "./dashboard";
+import { salesRouter } from "./sales";
 
 export const appRouter = mergeRouters(
 	createRouter({}),
@@ -12,6 +13,7 @@ export const appRouter = mergeRouters(
 	createRouter({ inventory: inventoryRouter }),
 	createRouter({ reports: reportsRouter }),
 	createRouter({ dashboard: dashboardRouter }),
+  createRouter({ sales: salesRouter }),
 );
 
 export type AppRouter = typeof appRouter; 
