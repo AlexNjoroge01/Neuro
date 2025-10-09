@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { createRouter, publicProcedure } from "../createRouter";
+import { createRouter, protectedProcedure } from "../createRouter";
 
 export const salesRouter = createRouter({
-  list: publicProcedure
+  list: protectedProcedure
     .input(
       z
         .object({
@@ -18,7 +18,7 @@ export const salesRouter = createRouter({
         include: { product: true, customer: true },
       });
     }),
-  create: publicProcedure
+  create: protectedProcedure
     .input(
       z.object({
         productId: z.string(),

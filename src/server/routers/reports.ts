@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { createRouter, publicProcedure } from "../createRouter";
+import { createRouter, protectedProcedure } from "../createRouter";
 
 export const reportsRouter = createRouter({
-	stats: publicProcedure
+    stats: protectedProcedure
 		.input(
 			z.object({
 				from: z.string().datetime().optional(),

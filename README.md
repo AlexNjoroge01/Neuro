@@ -18,7 +18,27 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment
+
+Create a `.env.local` with:
+
+```
+DATABASE_URL=postgres://user:pass@host:5432/db
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=dev-secret-change-me
+```
+
+After updating `prisma/schema.prisma`, run:
+
+```
+npx prisma migrate dev
+```
+
+## Auth
+
+- Credentials login via `next-auth` with Prisma Adapter
+- Register at `/auth/register`, sign in at `/auth/login`
+- Sessions integrated into tRPC; most routers are protected
 
 ## Learn More
 

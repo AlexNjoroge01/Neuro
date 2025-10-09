@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/server/auth/options";
 
 let prismaGlobal: PrismaClient | undefined;
 
@@ -11,15 +13,18 @@ function getPrismaClient(): PrismaClient {
 }
 
 export type Context = {
-	prisma: PrismaClient;
-	req: CreateNextContextOptions["req"];
-	res: CreateNextContextOptions["res"];
+    prisma: PrismaClient;
+    req: CreateNextContextOptions["req"];
+    res: CreateNextContextOptions["res"];
+    session: Awaited<ReturnType<typeof getServerSession>>;
 };
 
 export async function createContext(opts: CreateNextContextOptions): Promise<Context> {
-	return {
-		prisma: getPrismaClient(),
-		req: opts.req,
-		res: opts.res,
-	};
-} 
+    const session = await getServerSession(opts.req, opts.res, authOptions);
+    return {
+        prisma: getPrismaClient(),
+        req: opts.req,
+        res: opts.res,
+        session,
+    };
+}

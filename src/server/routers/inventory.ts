@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { createRouter, publicProcedure } from "../createRouter";
+import { createRouter, protectedProcedure } from "../createRouter";
 
 export const inventoryRouter = createRouter({
-	adjust: publicProcedure
+    adjust: protectedProcedure
 		.input(
 			z.object({
 				productId: z.string(),
@@ -18,8 +18,8 @@ export const inventoryRouter = createRouter({
 			});
 			await ctx.prisma.inventoryLog.create({ data: { productId, change, reason } });
 			return updated;
-		}),
-	logs: publicProcedure.input(z.object({ productId: z.string().optional() }).optional()).query(async ({ ctx, input }) => {
+        }),
+    logs: protectedProcedure.input(z.object({ productId: z.string().optional() }).optional()).query(async ({ ctx, input }) => {
 		return ctx.prisma.inventoryLog.findMany({
 			where: input?.productId ? { productId: input.productId } : undefined,
 			orderBy: { createdAt: "desc" },
