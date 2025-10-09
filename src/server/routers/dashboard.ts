@@ -1,7 +1,7 @@
-import { createRouter, publicProcedure } from "../createRouter";
+import { createRouter, protectedProcedure } from "../createRouter";
 
 export const dashboardRouter = createRouter({
-	overview: publicProcedure.query(async ({ ctx }) => {
+    overview: protectedProcedure.query(async ({ ctx }) => {
 		const [totalRevenueAgg, totalSales, totalUsers, totalTransactions] = await Promise.all([
 			ctx.prisma.sale.aggregate({ _sum: { totalPrice: true } }),
 			ctx.prisma.sale.count(),
@@ -15,8 +15,8 @@ export const dashboardRouter = createRouter({
 			totalUsers,
 			totalTransactions,
 		};
-	}),
-	recentSales: publicProcedure.query(async ({ ctx }) => {
+    }),
+    recentSales: protectedProcedure.query(async ({ ctx }) => {
 		return ctx.prisma.sale.findMany({ orderBy: { createdAt: "desc" }, take: 10, include: { product: true, customer: true } });
 	}),
 }); 
