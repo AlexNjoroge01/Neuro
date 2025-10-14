@@ -67,7 +67,7 @@ export default function HRPage() {
               <tr key={e.id} className="border-t">
                 <td className="p-3">{e.name}</td>
                 <td className="p-3">{e.role}</td>
-                <td className="p-3">{formatCurrency(e.salary)}</td>
+                <td className="p-3">{formatKES(e.salary)}</td>
                 <td className="p-3">{e.Payroll.length}</td>
               </tr>
             ))}
@@ -78,8 +78,8 @@ export default function HRPage() {
   );
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(amount);
+function formatKES(amount: number) {
+  return new Intl.NumberFormat(undefined, { style: "currency", currency: "KES" }).format(amount);
 }
 
 

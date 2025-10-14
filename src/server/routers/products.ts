@@ -3,18 +3,20 @@ import { createRouter, publicProcedure, protectedProcedure } from "../createRout
 
 export const productsRouter = createRouter({
     list: protectedProcedure.query(async ({ ctx }) => {
-		return ctx.prisma.product.findMany({ orderBy: { createdAt: "desc" } });
+		return ctx.prisma.product.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
 	}),
     get: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
-		return ctx.prisma.product.findUnique({ where: { id: input } });
+		return ctx.prisma.product.findFirst({ where: { id: input, deletedAt: null } });
 	}),
     create: protectedProcedure
 		.input(
 			z.object({
 				name: z.string().min(1),
+				unit: z.enum(["TRAY", "DOZEN", "PIECE"]),
+				size: z.string().optional(),
 				price: z.number().nonnegative(),
-                stock: z.number().int(),
-				category: z.string().min(1),
+				costPrice: z.number().nonnegative().default(0),
+				stock: z.number().int(),
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -25,9 +27,11 @@ export const productsRouter = createRouter({
 			z.object({
 				id: z.string(),
 				name: z.string().min(1).optional(),
+				unit: z.enum(["TRAY", "DOZEN", "PIECE"]).optional(),
+				size: z.string().optional(),
 				price: z.number().nonnegative().optional(),
-                stock: z.number().int().optional(),
-				category: z.string().min(1).optional(),
+				costPrice: z.number().nonnegative().optional(),
+				stock: z.number().int().optional(),
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -35,6 +39,9 @@ export const productsRouter = createRouter({
 			return ctx.prisma.product.update({ where: { id }, data });
 		}),
     delete: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
-		return ctx.prisma.product.delete({ where: { id: input } });
+		return ctx.prisma.product.update({ where: { id: input }, data: { deletedAt: new Date() } });
+	}),
+    restore: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+		return ctx.prisma.product.update({ where: { id: input }, data: { deletedAt: null } });
 	}),
 }); 

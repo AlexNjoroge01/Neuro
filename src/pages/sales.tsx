@@ -28,7 +28,7 @@ export default function SalesPage() {
           <select className="border rounded px-2 py-1" value={form.productId} onChange={(e) => setForm({ ...form, productId: e.target.value })}>
             <option value="">Select product</option>
             {(products ?? []).map((p) => (
-              <option key={p.id} value={p.id}>{p.name} (${p.price}) - Stock: {p.stock}</option>
+              <option key={p.id} value={p.id}>{p.name} ({p.unit}{p.size ? ` - ${p.size}` : ""}) - {formatKES(p.price)} - Stock: {p.stock}</option>
             ))}
           </select>
           <input className="border rounded px-2 py-1" placeholder="Quantity" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
@@ -36,7 +36,7 @@ export default function SalesPage() {
             <option value="CASH">Cash</option>
             <option value="MPESA">Mpesa</option>
           </select>
-          <div className="text-sm">Total: {formatCurrency(total)}</div>
+          <div className="text-sm">Total: {formatKES(total)}</div>
           <button className="bg-black text-white rounded px-3 py-1">Record Sale</button>
         </form>
 
@@ -58,7 +58,7 @@ export default function SalesPage() {
                     <td className="p-3">{new Date(s.createdAt).toLocaleString()}</td>
                     <td className="p-3">{s.product?.name}</td>
                     <td className="p-3">{s.quantity}</td>
-                    <td className="p-3">{formatCurrency(s.totalPrice)}</td>
+                    <td className="p-3">{formatKES(s.totalPrice)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -70,8 +70,8 @@ export default function SalesPage() {
   );
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(amount);
+function formatKES(amount: number) {
+  return new Intl.NumberFormat(undefined, { style: "currency", currency: "KES" }).format(amount);
 }
 
 

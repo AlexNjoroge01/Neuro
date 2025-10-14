@@ -33,7 +33,13 @@ export const fleetRouter = createRouter({
     }),
 
   getVehicles: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.vehicle.findMany({ orderBy: { createdAt: "desc" }, include: { Trip: true } });
+    return ctx.prisma.vehicle.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" }, include: { Trip: { where: { deletedAt: null } } } });
+  }),
+  deleteVehicle: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    return ctx.prisma.vehicle.update({ where: { id: input }, data: { deletedAt: new Date() } });
+  }),
+  restoreVehicle: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    return ctx.prisma.vehicle.update({ where: { id: input }, data: { deletedAt: null } });
   }),
 });
 
