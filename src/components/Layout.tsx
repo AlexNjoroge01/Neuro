@@ -3,10 +3,12 @@ import { useRouter } from "next/router";
 import {
   LayoutDashboard,
   Package,
-  Users,
   Boxes,
   BarChart3,
   Settings,
+  Truck,
+  Wallet,
+  UsersRound,
 } from "lucide-react";
 import { PropsWithChildren } from "react";
 import { signOut, useSession } from "next-auth/react";
@@ -20,8 +22,11 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { href: "/products", label: "Products", Icon: Package },
-  { href: "/customers", label: "Customers", Icon: Users },
   { href: "/inventory", label: "Inventory", Icon: Boxes },
+  { href: "/sales", label: "POS", Icon: BarChart3 },
+  { href: "/accounting", label: "Accounting", Icon: Wallet },
+  { href: "/fleet", label: "Fleet", Icon: Truck },
+  { href: "/hr", label: "HR & Payroll", Icon: UsersRound },
   { href: "/reports", label: "Reports", Icon: BarChart3 },
   { href: "/settings", label: "Settings", Icon: Settings },
 ];
@@ -33,7 +38,7 @@ export default function SidebarLayout({ children }: PropsWithChildren<{}>) {
   return (
     <div className="min-h-screen flex bg-background text-foreground">
       <aside className="w-64 border-r border-gray-200/20 p-4 hidden md:block">
-        <div className="px-2 py-3 text-xl font-semibold">Neuro POS</div>
+        <div className="px-2 py-3 text-xl font-semibold ">Neuro POS</div>
         <div className="px-2 py-2 text-sm text-muted-foreground">
           {status === "authenticated" ? (
             <div className="space-y-1">

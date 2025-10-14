@@ -46,14 +46,14 @@ export default function DashboardPage() {
     <SidebarLayout>
       <div className="grid gap-4 md:grid-cols-4">
         <StatCard title="Total Income" value={formatCurrency(overview?.totalIncome ?? 0)} />
-        <StatCard title="Total Sales" value={(overview?.totalSales ?? 0).toString()} />
-        <StatCard title="Total Users" value={(overview?.totalUsers ?? 0).toString()} />
-        <StatCard title="Transactions" value={(overview?.totalTransactions ?? 0).toString()} />
+        <StatCard title="Total Expenses" value={formatCurrency(overview?.totalExpenses ?? 0)} />
+        <StatCard title="Net Profit" value={formatCurrency(overview?.netProfit ?? 0)} />
+        <StatCard title="Stock Count" value={(overview?.stockCount ?? 0).toString()} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 mt-6">
         <div className="border rounded-lg p-4">
-          <div className="mb-2 font-medium">Revenue Trend</div>
+          <div className="mb-2 font-medium">Daily Sales</div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={lineData}>
@@ -66,7 +66,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="border rounded-lg p-4">
-          <div className="mb-2 font-medium">Sales Distribution</div>
+          <div className="mb-2 font-medium">Income by Product</div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -90,7 +90,6 @@ export default function DashboardPage() {
               <tr className="border-t">
                 <th className="text-left p-3">Date</th>
                 <th className="text-left p-3">Product</th>
-                <th className="text-left p-3">Customer</th>
                 <th className="text-left p-3">Qty</th>
                 <th className="text-left p-3">Total</th>
               </tr>
@@ -100,13 +99,25 @@ export default function DashboardPage() {
                 <tr key={s.id} className="border-t">
                   <td className="p-3">{new Date(s.createdAt).toLocaleString()}</td>
                   <td className="p-3">{s.product?.name}</td>
-                  <td className="p-3">{s.customer?.name ?? "-"}</td>
                   <td className="p-3">{s.quantity}</td>
                   <td className="p-3">{formatCurrency(s.totalPrice)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="border rounded-lg p-4">
+          <div className="mb-2 font-medium">Fleet Summary</div>
+          <div className="text-sm text-gray-500">Trips: {overview?.vehicleStats.trips ?? 0}</div>
+          <div className="text-sm text-gray-500">Fuel Used: {overview?.vehicleStats.fuelUsed ?? 0} L</div>
+        </div>
+        <div className="border rounded-lg p-4">
+          <div className="mb-2 font-medium">Income vs Expenses</div>
+          <div className="text-sm">Income: {formatCurrency(overview?.totalIncome ?? 0)}</div>
+          <div className="text-sm">Expenses: {formatCurrency(overview?.totalExpenses ?? 0)}</div>
         </div>
       </div>
     </SidebarLayout>

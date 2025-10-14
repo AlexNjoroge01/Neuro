@@ -3,7 +3,6 @@ import type { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { ensureCustomerForUser } from "./customer-link";
 
 const prisma = new PrismaClient();
 
@@ -48,10 +47,7 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async signIn({ user }) {
-      if (user?.id) {
-        await ensureCustomerForUser(user.id as string);
-      }
+    async signIn() {
       return true;
     },
   },

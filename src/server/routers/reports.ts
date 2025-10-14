@@ -18,17 +18,15 @@ export const reportsRouter = createRouter({
 				},
 			} : undefined;
 
-			const [totalRevenue, totalSales, customersCount, topProducts] = await Promise.all([
+            const [totalRevenue, totalSales, topProducts] = await Promise.all([
 				ctx.prisma.sale.aggregate({ _sum: { totalPrice: true }, where }),
 				ctx.prisma.sale.count({ where }),
-				ctx.prisma.customer.count(),
 				ctx.prisma.sale.groupBy({ by: ["productId"], _sum: { quantity: true, totalPrice: true }, orderBy: { _sum: { totalPrice: "desc" } }, take: 5 }),
 			]);
 
 			return {
 				totalRevenue: totalRevenue._sum.totalPrice ?? 0,
 				totalSales,
-				customersCount,
 				topProducts,
 			};
 		}),

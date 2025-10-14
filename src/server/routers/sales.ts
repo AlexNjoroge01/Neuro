@@ -15,15 +15,15 @@ export const salesRouter = createRouter({
       return ctx.prisma.sale.findMany({
         orderBy: { createdAt: "desc" },
         take,
-        include: { product: true, customer: true },
+        include: { product: true },
       });
     }),
   create: protectedProcedure
     .input(
       z.object({
         productId: z.string(),
-        customerId: z.string().optional(),
         quantity: z.number().int().positive(),
+        paymentMethod: z.enum(["CASH", "MPESA"]),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -36,6 +36,7 @@ export const salesRouter = createRouter({
       }
 
       const totalPrice = product.price * input.quantity;
+      const profit = (product.price - (product.costPrice ?? 0)) * input.quantity;
 
       const result = await ctx.prisma.$transaction(async (tx) => {
         const updated = await tx.product.update({
@@ -54,9 +55,10 @@ export const salesRouter = createRouter({
         const sale = await tx.sale.create({
           data: {
             productId: product.id,
-            customerId: input.customerId,
             quantity: input.quantity,
             totalPrice,
+            profit,
+            paymentMethod: input.paymentMethod,
           },
         });
 
