@@ -17,6 +17,7 @@ model Product {
   id          String   @id @default(cuid())
   name        String
   price       Float
+  costPrice   Float    @default(0)
   stock       Int
   category    String
   createdAt   DateTime @default(now())
@@ -25,28 +26,15 @@ model Product {
   InventoryLog InventoryLog[]
 }
 
-model Customer {
-  id          String   @id @default(cuid())
-  name        String
-  email       String   @unique
-  phone       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  sales       Sale[]
-  // Link to the authenticated user when available
-  userId      String?  @unique
-  user        User?    @relation(fields: [userId], references: [id])
-}
-
 model Sale {
   id          String   @id @default(cuid())
   productId   String
-  customerId  String?
   quantity    Int
   totalPrice  Float
+  profit      Float    @default(0)
+  paymentMethod PaymentMethod
   createdAt   DateTime @default(now())
   product     Product  @relation(fields: [productId], references: [id])
-  customer    Customer? @relation(fields: [customerId], references: [id])
 }
 
 model InventoryLog {
@@ -70,7 +58,6 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
-  customer      Customer?
 }
 
 model Account {
@@ -92,6 +79,63 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+}
+
+enum PaymentMethod {
+  CASH
+  MPESA
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  category    String
+  amount      Float
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model Vehicle {
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  plateNumber String
+  mileage     Float?
+  fuelCost    Float?
+  maintenance Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Trip        Trip[]
+}
+
+model Trip {
+  id          String   @id @default(cuid())
+  vehicleId   String
+  route       String
+  date        DateTime @default(now())
+  purpose     String
+  fuelUsed    Float?
+  driverName  String?
+  cost        Float?
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model Employee {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  salary    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Payroll   Payroll[]
+}
+
+model Payroll {
+  id          String   @id @default(cuid())
+  employeeId  String
+  month       String
+  amountPaid  Float
+  paidAt      DateTime @default(now())
+  employee    Employee @relation(fields: [employeeId], references: [id])
 }
 
 model Session {

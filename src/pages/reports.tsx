@@ -23,7 +23,6 @@ export default function ReportsPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Stat title="Revenue" value={formatCurrency(data?.totalRevenue ?? 0)} />
         <Stat title="Sales" value={(data?.totalSales ?? 0).toString()} />
-        <Stat title="Customers" value={(data?.customersCount ?? 0).toString()} />
       </div>
 
       <div className="mt-6 border rounded-lg overflow-x-auto">
