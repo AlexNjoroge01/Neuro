@@ -29,7 +29,13 @@ export const hrRouter = createRouter({
     }),
 
   getEmployees: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.employee.findMany({ orderBy: { createdAt: "desc" }, include: { Payroll: true } });
+    return ctx.prisma.employee.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" }, include: { Payroll: { where: { deletedAt: null } } } });
+  }),
+  deleteEmployee: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    return ctx.prisma.employee.update({ where: { id: input }, data: { deletedAt: new Date() } });
+  }),
+  restoreEmployee: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    return ctx.prisma.employee.update({ where: { id: input }, data: { deletedAt: null } });
   }),
 });
 

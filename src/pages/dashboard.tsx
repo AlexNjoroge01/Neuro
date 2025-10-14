@@ -45,9 +45,9 @@ export default function DashboardPage() {
   return (
     <SidebarLayout>
       <div className="grid gap-4 md:grid-cols-4">
-        <StatCard title="Total Income" value={formatCurrency(overview?.totalIncome ?? 0)} />
-        <StatCard title="Total Expenses" value={formatCurrency(overview?.totalExpenses ?? 0)} />
-        <StatCard title="Net Profit" value={formatCurrency(overview?.netProfit ?? 0)} />
+        <StatCard title="Total Income" value={formatKES(overview?.totalIncome ?? 0)} />
+        <StatCard title="Total Expenses" value={formatKES(overview?.totalExpenses ?? 0)} />
+        <StatCard title="Net Profit" value={formatKES(overview?.netProfit ?? 0)} />
         <StatCard title="Stock Count" value={(overview?.stockCount ?? 0).toString()} />
       </div>
 
@@ -100,7 +100,7 @@ export default function DashboardPage() {
                   <td className="p-3">{new Date(s.createdAt).toLocaleString()}</td>
                   <td className="p-3">{s.product?.name}</td>
                   <td className="p-3">{s.quantity}</td>
-                  <td className="p-3">{formatCurrency(s.totalPrice)}</td>
+                  <td className="p-3">{formatKES(s.totalPrice)}</td>
                 </tr>
               ))}
             </tbody>
@@ -116,8 +116,8 @@ export default function DashboardPage() {
         </div>
         <div className="border rounded-lg p-4">
           <div className="mb-2 font-medium">Income vs Expenses</div>
-          <div className="text-sm">Income: {formatCurrency(overview?.totalIncome ?? 0)}</div>
-          <div className="text-sm">Expenses: {formatCurrency(overview?.totalExpenses ?? 0)}</div>
+          <div className="text-sm">Income: {formatKES(overview?.totalIncome ?? 0)}</div>
+          <div className="text-sm">Expenses: {formatKES(overview?.totalExpenses ?? 0)}</div>
         </div>
       </div>
     </SidebarLayout>
@@ -133,8 +133,8 @@ function StatCard({ title, value }: { title: string; value: string }) {
   );
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(amount);
+function formatKES(amount: number) {
+  return new Intl.NumberFormat(undefined, { style: "currency", currency: "KES" }).format(amount);
 }
 
 

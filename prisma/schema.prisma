@@ -19,9 +19,11 @@ model Product {
   price       Float
   costPrice   Float    @default(0)
   stock       Int
-  category    String
+  unit        ProductUnit @default(TRAY)
+  size        String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
   sales       Sale[]
   InventoryLog InventoryLog[]
 }
@@ -34,6 +36,7 @@ model Sale {
   profit      Float    @default(0)
   paymentMethod PaymentMethod
   createdAt   DateTime @default(now())
+  deletedAt   DateTime?
   product     Product  @relation(fields: [productId], references: [id])
 }
 
@@ -43,6 +46,7 @@ model InventoryLog {
   change      Int
   reason      String
   createdAt   DateTime @default(now())
+  deletedAt   DateTime?
   product     Product  @relation(fields: [productId], references: [id])
 }
 
@@ -86,12 +90,19 @@ enum PaymentMethod {
   MPESA
 }
 
+enum ProductUnit {
+  TRAY
+  DOZEN
+  PIECE
+}
+
 model Expense {
   id          String   @id @default(cuid())
   category    String
   amount      Float
   description String?
   createdAt   DateTime @default(now())
+  deletedAt   DateTime?
 }
 
 model Vehicle {
@@ -104,6 +115,7 @@ model Vehicle {
   maintenance Float?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
   Trip        Trip[]
 }
 
@@ -116,6 +128,7 @@ model Trip {
   fuelUsed    Float?
   driverName  String?
   cost        Float?
+  deletedAt   DateTime?
   vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
 }
 
@@ -126,6 +139,7 @@ model Employee {
   salary    Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
   Payroll   Payroll[]
 }
 
@@ -135,6 +149,7 @@ model Payroll {
   month       String
   amountPaid  Float
   paidAt      DateTime @default(now())
+  deletedAt   DateTime?
   employee    Employee @relation(fields: [employeeId], references: [id])
 }
 

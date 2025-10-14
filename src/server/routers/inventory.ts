@@ -12,6 +12,10 @@ export const inventoryRouter = createRouter({
 		)
 		.mutation(async ({ ctx, input }) => {
 			const { productId, change, reason } = input;
+			const product = await ctx.prisma.product.findFirst({ where: { id: productId, deletedAt: null } });
+			if (!product) {
+				throw new Error("Product not found or archived");
+			}
 			const updated = await ctx.prisma.product.update({
 				where: { id: productId },
 				data: { stock: { increment: change } },
@@ -21,7 +25,7 @@ export const inventoryRouter = createRouter({
         }),
     logs: protectedProcedure.input(z.object({ productId: z.string().optional() }).optional()).query(async ({ ctx, input }) => {
 		return ctx.prisma.inventoryLog.findMany({
-			where: input?.productId ? { productId: input.productId } : undefined,
+			where: input?.productId ? { productId: input.productId, deletedAt: null } : { deletedAt: null },
 			orderBy: { createdAt: "desc" },
 		});
 	}),

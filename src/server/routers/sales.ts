@@ -16,6 +16,7 @@ export const salesRouter = createRouter({
         orderBy: { createdAt: "desc" },
         take,
         include: { product: true },
+        where: { deletedAt: null },
       });
     }),
   create: protectedProcedure
@@ -27,9 +28,9 @@ export const salesRouter = createRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const product = await ctx.prisma.product.findUnique({ where: { id: input.productId } });
+      const product = await ctx.prisma.product.findFirst({ where: { id: input.productId, deletedAt: null } });
       if (!product) {
-        throw new Error("Product not found");
+        throw new Error("Product not found or archived");
       }
       if (product.stock < input.quantity) {
         throw new Error("Insufficient stock");
@@ -67,6 +68,12 @@ export const salesRouter = createRouter({
 
       return result;
     }),
+  delete: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    return ctx.prisma.sale.update({ where: { id: input }, data: { deletedAt: new Date() } });
+  }),
+  restore: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+    return ctx.prisma.sale.update({ where: { id: input }, data: { deletedAt: null } });
+  }),
 });
 
 

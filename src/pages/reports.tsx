@@ -21,7 +21,7 @@ export default function ReportsPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Stat title="Revenue" value={formatCurrency(data?.totalRevenue ?? 0)} />
+        <Stat title="Revenue" value={formatKES(data?.totalRevenue ?? 0)} />
         <Stat title="Sales" value={(data?.totalSales ?? 0).toString()} />
       </div>
 
@@ -40,7 +40,7 @@ export default function ReportsPage() {
               <tr key={p.productId} className="border-t">
                 <td className="p-3">{p.productId}</td>
                 <td className="p-3">{p._sum.quantity ?? 0}</td>
-                <td className="p-3">{formatCurrency(p._sum.totalPrice ?? 0)}</td>
+                <td className="p-3">{formatKES(p._sum.totalPrice ?? 0)}</td>
               </tr>
             ))}
           </tbody>
@@ -59,8 +59,8 @@ function Stat({ title, value }: { title: string; value: string }) {
   );
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(amount);
+function formatKES(amount: number) {
+  return new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES" }).format(amount);
 }
 
 

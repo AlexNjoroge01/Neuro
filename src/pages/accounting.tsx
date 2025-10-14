@@ -25,9 +25,9 @@ export default function AccountingPage() {
   return (
     <SidebarLayout>
       <div className="grid gap-4 md:grid-cols-3">
-        <Stat title="Income" value={formatCurrency(summary?.totalIncome ?? 0)} />
-        <Stat title="Expenses" value={formatCurrency(summary?.totalExpenses ?? 0)} />
-        <Stat title="Net Income" value={formatCurrency(summary?.netIncome ?? 0)} />
+        <Stat title="Income" value={formatKES(summary?.totalIncome ?? 0)} />
+        <Stat title="Expenses" value={formatKES(summary?.totalExpenses ?? 0)} />
+        <Stat title="Net Income" value={formatKES(summary?.netIncome ?? 0)} />
       </div>
 
       <form onSubmit={submit} className="mt-6 grid gap-2 md:grid-cols-5 border rounded-lg p-3">
@@ -53,7 +53,7 @@ export default function AccountingPage() {
               <tr key={e.id} className="border-t">
                 <td className="p-3">{new Date(e.createdAt).toLocaleString()}</td>
                 <td className="p-3">{e.category}</td>
-                <td className="p-3">{formatCurrency(e.amount)}</td>
+                <td className="p-3">{formatKES(e.amount)}</td>
                 <td className="p-3">{e.description ?? "-"}</td>
               </tr>
             ))}
@@ -73,8 +73,8 @@ function Stat({ title, value }: { title: string; value: string }) {
   );
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(amount);
+function formatKES(amount: number) {
+  return new Intl.NumberFormat(undefined, { style: "currency", currency: "KES" }).format(amount);
 }
 
 
