@@ -45,14 +45,14 @@ export default function DashboardPage() {
   return (
     <SidebarLayout>
       <div className="grid gap-4 md:grid-cols-4">
-        <StatCard title="Total Income" value={formatKES(overview?.totalIncome ?? 0)} />
-        <StatCard title="Total Expenses" value={formatKES(overview?.totalExpenses ?? 0)} />
-        <StatCard title="Net Profit" value={formatKES(overview?.netProfit ?? 0)} />
-        <StatCard title="Stock Count" value={(overview?.stockCount ?? 0).toString()} />
+        <StatCard title="Total Income" value={formatKES(overview?.totalIncome ?? 0)} index={0} />
+        <StatCard title="Total Expenses" value={formatKES(overview?.totalExpenses ?? 0)} index={1} />
+        <StatCard title="Net Profit" value={formatKES(overview?.netProfit ?? 0)} index={2} />
+        <StatCard title="Stock Count" value={(overview?.stockCount ?? 0).toString()} index={3} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 mt-6">
-        <div className="border rounded-lg p-4">
+        <div className="border rounded-lg p-4 bg-white">
           <div className="mb-2 font-medium">Daily Sales</div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="border rounded-lg p-4">
+        <div className="border rounded-lg p-4 bg-white">
           <div className="mb-2 font-medium">Income by Product</div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -82,7 +82,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="mt-6 border rounded-lg">
+      <div className="mt-6 border rounded-lg bg-white" >
         <div className="p-4 font-medium">Top Recent Sales</div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
@@ -109,12 +109,12 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <div className="border rounded-lg p-4">
+        <div className="border rounded-lg p-4 bg-white">
           <div className="mb-2 font-medium">Fleet Summary</div>
           <div className="text-sm text-gray-500">Trips: {overview?.vehicleStats.trips ?? 0}</div>
           <div className="text-sm text-gray-500">Fuel Used: {overview?.vehicleStats.fuelUsed ?? 0} L</div>
         </div>
-        <div className="border rounded-lg p-4">
+        <div className="border rounded-lg p-4 bg-white">
           <div className="mb-2 font-medium">Income vs Expenses</div>
           <div className="text-sm">Income: {formatKES(overview?.totalIncome ?? 0)}</div>
           <div className="text-sm">Expenses: {formatKES(overview?.totalExpenses ?? 0)}</div>
@@ -124,10 +124,11 @@ export default function DashboardPage() {
   );
 }
 
-function StatCard({ title, value }: { title: string; value: string }) {
+function StatCard({ title, value, index }: { title: string; value: string; index: number }) {
+  const bgColor = index % 2 === 0 ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground';
   return (
-    <div className="border rounded-lg p-4">
-      <div className="text-sm text-gray-500">{title}</div>
+    <div className={`border rounded-lg px-8 py-10 ${bgColor}`}>
+      <div className="text-xl">{title}</div>
       <div className="text-2xl font-semibold">{value}</div>
     </div>
   );
@@ -136,5 +137,3 @@ function StatCard({ title, value }: { title: string; value: string }) {
 function formatKES(amount: number) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency: "KES" }).format(amount);
 }
-
-

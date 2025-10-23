@@ -15,17 +15,27 @@ export default function ReportsPage() {
         <h1 className="text-xl font-semibold">Reports</h1>
       </div>
 
-      <div className="grid gap-2 md:grid-cols-5 border rounded-lg p-3 mb-6">
-        <input type="datetime-local" className="border rounded px-2 py-1" value={from} onChange={(e) => setFrom(e.target.value)} />
-        <input type="datetime-local" className="border rounded px-2 py-1" value={to} onChange={(e) => setTo(e.target.value)} />
+      <div className="grid gap-2 md:grid-cols-5 border rounded-lg p-3 mb-6 bg-background">
+        <input 
+          type="datetime-local" 
+          className="border rounded px-2 py-1 bg-gray-100/10" 
+          value={from} 
+          onChange={(e) => setFrom(e.target.value)} 
+        />
+        <input 
+          type="datetime-local" 
+          className="border rounded px-2 py-1 bg-gray-100/10" 
+          value={to} 
+          onChange={(e) => setTo(e.target.value)} 
+        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Stat title="Revenue" value={formatKES(data?.totalRevenue ?? 0)} />
-        <Stat title="Sales" value={(data?.totalSales ?? 0).toString()} />
+        <Stat title="Revenue" value={formatKES(data?.totalRevenue ?? 0)} index={0} />
+        <Stat title="Sales" value={(data?.totalSales ?? 0).toString()} index={1} />
       </div>
 
-      <div className="mt-6 border rounded-lg overflow-x-auto">
+      <div className="mt-6 border rounded-lg overflow-x-auto bg-background">
         <div className="p-3 font-medium">Top Products</div>
         <table className="min-w-full text-sm">
           <thead>
@@ -50,10 +60,11 @@ export default function ReportsPage() {
   );
 }
 
-function Stat({ title, value }: { title: string; value: string }) {
+function Stat({ title, value, index }: { title: string; value: string; index: number }) {
+  const bgColor = index % 2 === 0 ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground';
   return (
-    <div className="border rounded-lg p-4">
-      <div className="text-sm text-gray-500">{title}</div>
+    <div className={`border rounded-lg p-4 ${bgColor}`}>
+      <div className="text-sm">{title}</div>
       <div className="text-2xl font-semibold">{value}</div>
     </div>
   );
@@ -62,5 +73,3 @@ function Stat({ title, value }: { title: string; value: string }) {
 function formatKES(amount: number) {
   return new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES" }).format(amount);
 }
-
-
