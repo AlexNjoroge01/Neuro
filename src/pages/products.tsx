@@ -18,21 +18,51 @@ export default function ProductsPage() {
     onSuccess: () => utils.products.list.invalidate(),
   });
 
-  const [form, setForm] = useState({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "" });
+  const [form, setForm] = useState({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "", image: "", category: "", brand: "" });
+  const [file, setFile] = useState<File|null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const productStats = useMemo(() => {
     return { totalProducts: products?.length ?? 0 };
   }, [products]);
 
-  function submit(e: FormEvent) {
+  async function handleFileUpload(): Promise<string|undefined> {
+    if (!file) return undefined;
+    const fd = new FormData();
+    fd.append("file", file);
+    setUploading(true);
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    setUploading(false);
+    if (!res.ok) return undefined;
+    const json = await res.json();
+    return json.filename;
+  }
+
+  async function submit(e: FormEvent) {
     e.preventDefault();
     const price = parseFloat(form.price);
     const costPrice = form.costPrice ? parseFloat(form.costPrice) : 0;
     const stock = parseInt(form.stock, 10);
     if (!form.name || isNaN(price) || isNaN(stock) || !form.unit) return;
-    createProduct.mutate({ name: form.name, unit: form.unit as any, size: form.size || undefined, price, costPrice, stock });
-    setForm({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "" });
+
+    let image = form.image;
+    if (file) {
+      image = await handleFileUpload() || "";
+    }
+    createProduct.mutate({
+      name: form.name,
+      unit: form.unit as any,
+      size: form.size || undefined,
+      price,
+      costPrice,
+      stock,
+      image: image || undefined,
+      category: form.category || undefined,
+      brand: form.brand || undefined,
+    });
+    setForm({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "", image: "", category: "", brand: "" });
+    setFile(null);
     setIsModalOpen(false);
   }
 
@@ -96,6 +126,26 @@ export default function ProductsPage() {
                 value={form.stock}
                 onChange={(e) => setForm({ ...form, stock: e.target.value })}
               />
+              {/* Product file/image upload */}
+              <input
+                type="file"
+                accept="image/*"
+                className="border rounded px-2 py-1 bg-gray-100/10"
+                onChange={e => setFile(e.target.files ? e.target.files[0] : null)}
+              />
+
+              <input
+                className="border rounded px-2 py-1 bg-gray-100/10"
+                placeholder="Category"
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              />
+              <input
+                className="border rounded px-2 py-1 bg-gray-100/10"
+                placeholder="Brand"
+                value={form.brand}
+                onChange={(e) => setForm({ ...form, brand: e.target.value })}
+              />
               <div className="flex gap-2 justify-end">
                 <button
                   type="button"
@@ -107,8 +157,9 @@ export default function ProductsPage() {
                 <button
                   type="submit"
                   className="bg-primary text-primary-foreground rounded px-3 py-1"
+                  disabled={uploading}
                 >
-                  Add Product
+                  {uploading ? "Uploading..." : "Add Product"}
                 </button>
               </div>
             </form>
@@ -125,6 +176,9 @@ export default function ProductsPage() {
               <th className="text-left p-3">Size</th>
               <th className="text-left p-3">Price</th>
               <th className="text-left p-3">Stock</th>
+              <th className="text-left p-3">Category</th>
+              <th className="text-left p-3">Brand</th>
+              <th className="text-left p-3">Image</th>
               <th className="text-left p-3">Actions</th>
             </tr>
           </thead>
@@ -136,6 +190,9 @@ export default function ProductsPage() {
                 <td className="p-3">{p.size ?? "-"}</td>
                 <td className="p-3">{formatKES(p.price)}</td>
                 <td className="p-3">{p.stock}</td>
+                <td className="p-3">{p.category ?? "-"}</td>
+                <td className="p-3">{p.brand ?? "-"}</td>
+                <td className="p-3">{p.image ? (<img src={"/uploads/" + p.image} alt={p.name} className="h-10 w-10 object-cover rounded" />) : "-"}</td>
                 <td className="p-3 space-x-2">
                   <button
                     className="underline"

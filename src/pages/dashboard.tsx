@@ -1,4 +1,5 @@
 import SidebarLayout from "@/components/Layout";
+import { useEffect, useState } from "react";
 import { trpc } from "@/utils/trpc";
 import { useMemo } from "react";
 import {
@@ -108,7 +109,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
+      {/* <div className="mt-6 grid gap-4 md:grid-cols-2">
         <div className="border rounded-lg p-4 bg-white">
           <div className="mb-2 font-medium">Fleet Summary</div>
           <div className="text-sm text-gray-500">Trips: {overview?.vehicleStats.trips ?? 0}</div>
@@ -119,21 +120,35 @@ export default function DashboardPage() {
           <div className="text-sm">Income: {formatKES(overview?.totalIncome ?? 0)}</div>
           <div className="text-sm">Expenses: {formatKES(overview?.totalExpenses ?? 0)}</div>
         </div>
-      </div>
+      </div> */}
     </SidebarLayout>
   );
 }
 
 function StatCard({ title, value, index }: { title: string; value: string; index: number }) {
-  const bgColor = index % 2 === 0 ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground';
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const bgColor =
+    index % 2 === 0
+      ? "bg-primary text-primary-foreground"
+      : "bg-secondary text-secondary-foreground";
+
   return (
     <div className={`border rounded-lg px-8 py-10 ${bgColor}`}>
       <div className="text-xl">{title}</div>
-      <div className="text-2xl font-semibold">{value}</div>
+      <div className="text-2xl font-semibold">
+        {mounted ? value : "KES 0.00"}
+      </div>
     </div>
   );
 }
 
+// ✅ Hydration-safe formatter
 function formatKES(amount: number) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: "KES" }).format(amount);
+  return new Intl.NumberFormat("en-KE", { 
+    style: "currency", 
+    currency: "KES", 
+    minimumFractionDigits: 2 
+  }).format(amount);
 }
