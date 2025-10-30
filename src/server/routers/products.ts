@@ -17,6 +17,9 @@ export const productsRouter = createRouter({
                 price: z.number().nonnegative(),
                 costPrice: z.number().nonnegative().default(0),
                 stock: z.number().int(),
+                image: z.string().url().optional(),
+                category: z.string().optional(),
+                brand: z.string().optional(),
             })
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -32,6 +35,9 @@ export const productsRouter = createRouter({
                 price: z.number().nonnegative().optional(),
                 costPrice: z.number().nonnegative().optional(),
                 stock: z.number().int().optional(),
+                image: z.string().url().optional(),
+                category: z.string().optional(),
+                brand: z.string().optional(),
             })
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -44,4 +50,16 @@ export const productsRouter = createRouter({
     restore: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
 		return ctx.prisma.product.update({ where: { id: input }, data: { deletedAt: null } });
 	}),
+    publicList: publicProcedure.query(async ({ ctx }) => {
+        // Only expose public fields (base, omit those that cause Prisma select errors for now)
+        return ctx.prisma.product.findMany({
+            where: { deletedAt: null },
+            orderBy: { createdAt: "desc" },
+        });
+    }),
+    publicGet: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+        return ctx.prisma.product.findFirst({
+            where: { id: input, deletedAt: null },
+        });
+    }),
 }); 

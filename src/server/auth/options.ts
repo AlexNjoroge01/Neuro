@@ -33,23 +33,27 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // On first sign in, persist the user id to the token
+      // On first sign in, persist the user id and role to the token
       if (user) {
-        // @ts-expect-error add id to token
         token.id = (user as any).id ?? token.sub;
+        // Fetch user from DB if role not present
+        if (!(user as any).role) {
+          const u = await prisma.user.findUnique({ where: { id: token.id as string } });
+          token.role = u?.role ?? "CUSTOMER";
+        } else {
+          token.role = (user as any).role;
+        }
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token) {
-        // @ts-expect-error id from token
         session.user.id = (token as any).id ?? token.sub ?? session.user.id;
+        session.user.role = token.role ?? "CUSTOMER";
       }
       return session;
     },
-    async signIn() {
-      return true;
-    },
+    async signIn() { return true; },
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
