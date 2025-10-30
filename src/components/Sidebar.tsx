@@ -36,7 +36,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 border-r border-gray-200/20 p-4 hidden md:block">
-      <div className="px-2 py-3 text-xl font-semibold ">Smart ERP & POS System</div>
+      <div className="px-2 py-3 text-xl font-semibold ">Aggies World</div>
       <nav className="mt-4 space-y-1">
         {NAV_ITEMS.map(({ href, label, Icon }) => {
           const active = router.pathname === href;

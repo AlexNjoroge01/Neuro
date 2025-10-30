@@ -1,6 +1,7 @@
 import SidebarLayout from "@/components/Layout";
 import { trpc } from "@/utils/trpc";
 import { useState, FormEvent, useMemo } from "react";
+import ClientOnly from "@/components/ClientOnly";
 
 export default function HRPage() {
   const utils = trpc.useUtils();
@@ -37,8 +38,19 @@ export default function HRPage() {
     setPayForm({ employeeId: "", month: "2025-10", amountPaid: "" });
   }
 
+  const payrollRows = useMemo(() => {
+    const rows: { id: string; employee: string; month: string; amountPaid: number; paidAt: string }[] = [];
+    (employees ?? []).forEach((e) => {
+      (e.Payroll ?? []).forEach((p) => {
+        rows.push({ id: p.id, employee: e.name, month: p.month, amountPaid: p.amountPaid, paidAt: new Date(p.paidAt).toLocaleString() });
+      });
+    });
+    return rows.sort((a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime());
+  }, [employees]);
+
   return (
     <SidebarLayout>
+      <ClientOnly>
       <div className="grid gap-6 md:grid-cols-2">
         <form onSubmit={addEmployeeSubmit} className="border rounded-lg p-3 grid gap-2 bg-background">
           <div className="font-medium">Add Employee</div>
@@ -120,6 +132,31 @@ export default function HRPage() {
           </tbody>
         </table>
       </div>
+
+      <div className="mt-6 overflow-x-auto border rounded-lg bg-white">
+        <div className="p-3 font-medium">Payroll Details</div>
+        <table className="min-w-full text-sm">
+          <thead>
+            <tr className="border-t">
+              <th className="text-left p-3">Employee</th>
+              <th className="text-left p-3">Month</th>
+              <th className="text-left p-3">Amount Paid</th>
+              <th className="text-left p-3">Paid At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {payrollRows.map((r) => (
+              <tr key={r.id} className="border-t">
+                <td className="p-3">{r.employee}</td>
+                <td className="p-3">{r.month}</td>
+                <td className="p-3">{formatKES(r.amountPaid)}</td>
+                <td className="p-3">{r.paidAt}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      </ClientOnly>
     </SidebarLayout>
   );
 }

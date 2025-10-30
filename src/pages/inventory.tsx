@@ -14,29 +14,26 @@ export default function InventoryPage() {
   });
 
   const [productId, setProductId] = useState("");
-  const [change, setChange] = useState("");
-  const [reason, setReason] = useState("Manual Adjustment");
+  const [type, setType] = useState<"ADD" | "REMOVE">("ADD");
+  const [amount, setAmount] = useState("");
+  const [reason, setReason] = useState("Manual adjustment");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const productMap = useMemo(() => Object.fromEntries((products ?? []).map((p) => [p.id, p.name])), [products]);
 
   const inventoryStats = useMemo(() => {
-    const stats = {
+    return {
       totalProducts: products?.length ?? 0,
       totalStock: products?.reduce((sum, p) => sum + p.stock, 0) ?? 0,
-      trayCount: products?.filter(p => p.unit === "TRAY").length ?? 0,
-      dozenCount: products?.filter(p => p.unit === "DOZEN").length ?? 0,
-      pieceCount: products?.filter(p => p.unit === "PIECE").length ?? 0,
     };
-    return stats;
   }, [products]);
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    const delta = parseInt(change, 10);
-    if (!productId || isNaN(delta) || !reason) return;
-    adjust.mutate({ productId, change: delta, reason });
-    setChange("");
+    const qty = parseInt(amount, 10);
+    if (!productId || isNaN(qty) || qty <= 0 || !reason) return;
+    adjust.mutate({ productId, type, amount: qty, reason });
+    setAmount("");
     setIsModalOpen(false);
   }
 
@@ -46,12 +43,9 @@ export default function InventoryPage() {
         <h1 className="text-xl font-semibold">Inventory</h1>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-5 mb-6">
+      <div className="grid gap-4 md:grid-cols-2 mb-6">
         <Stat title="Total Products" value={inventoryStats.totalProducts.toString()} index={0} />
         <Stat title="Total Stock" value={inventoryStats.totalStock.toString()} index={1} />
-        <Stat title="Tray Units" value={inventoryStats.trayCount.toString()} index={2} />
-        <Stat title="Dozen Units" value={inventoryStats.dozenCount.toString()} index={3} />
-        <Stat title="Piece Units" value={inventoryStats.pieceCount.toString()} index={4} />
       </div>
 
       <div className="mb-6">
@@ -78,12 +72,22 @@ export default function InventoryPage() {
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
-              <input
-                className="border rounded px-2 py-1 bg-gray-100/10"
-                placeholder="Change (+/-)"
-                value={change}
-                onChange={(e) => setChange(e.target.value)}
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <select
+                  className="border rounded px-2 py-1 bg-gray-100/10"
+                  value={type}
+                  onChange={(e) => setType(e.target.value as any)}
+                >
+                  <option value="ADD">Addition</option>
+                  <option value="REMOVE">Reduction</option>
+                </select>
+                <input
+                  className="border rounded px-2 py-1 bg-gray-100/10"
+                  placeholder="Amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </div>
               <input
                 className="border rounded px-2 py-1 bg-gray-100/10"
                 placeholder="Reason"
@@ -125,7 +129,7 @@ export default function InventoryPage() {
               <tr key={l.id} className="border-t">
                 <td className="p-3">{new Date(l.createdAt).toLocaleString()}</td>
                 <td className="p-3">{productMap[l.productId] ?? l.productId}</td>
-                <td className="p-3">{l.change}</td>
+                <td className="p-3">{l.type === "ADD" ? `+${l.change}` : `-${l.change}`}</td>
                 <td className="p-3">{l.reason}</td>
               </tr>
             ))}

@@ -1,4 +1,5 @@
 import SidebarLayout from "@/components/Layout";
+import ClientOnly from "@/components/ClientOnly";
 import { trpc } from "@/utils/trpc";
 import { useState, FormEvent, useMemo } from "react";
 import {
@@ -78,6 +79,7 @@ export default function SalesPage() {
 
   return (
     <SidebarLayout>
+      <ClientOnly>
       <div className="grid gap-6 md:grid-cols-2">
         <form onSubmit={submit} className="border rounded-lg p-3 grid gap-2 bg-background">
           <div className="font-medium">New Sale</div>
@@ -157,6 +159,7 @@ export default function SalesPage() {
           <Stat title="Mpesa Sales" value={formatKES(salesStats.mpesaSales)} index={3} />
         </div>
       </div>
+      </ClientOnly>
     </SidebarLayout>
   );
 }

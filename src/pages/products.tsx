@@ -18,17 +18,11 @@ export default function ProductsPage() {
     onSuccess: () => utils.products.list.invalidate(),
   });
 
-  const [form, setForm] = useState({ name: "", unit: "TRAY", size: "", price: "", costPrice: "", stock: "" });
+  const [form, setForm] = useState({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "" });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const productStats = useMemo(() => {
-    const stats = {
-      totalProducts: products?.length ?? 0,
-      trayCount: products?.filter(p => p.unit === "TRAY").length ?? 0,
-      dozenCount: products?.filter(p => p.unit === "DOZEN").length ?? 0,
-      pieceCount: products?.filter(p => p.unit === "PIECE").length ?? 0,
-    };
-    return stats;
+    return { totalProducts: products?.length ?? 0 };
   }, [products]);
 
   function submit(e: FormEvent) {
@@ -38,7 +32,7 @@ export default function ProductsPage() {
     const stock = parseInt(form.stock, 10);
     if (!form.name || isNaN(price) || isNaN(stock) || !form.unit) return;
     createProduct.mutate({ name: form.name, unit: form.unit as any, size: form.size || undefined, price, costPrice, stock });
-    setForm({ name: "", unit: "TRAY", size: "", price: "", costPrice: "", stock: "" });
+    setForm({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "" });
     setIsModalOpen(false);
   }
 
@@ -50,9 +44,6 @@ export default function ProductsPage() {
 
       <div className="grid gap-4 md:grid-cols-4 mb-6">
         <Stat title="Total Products" value={productStats.totalProducts.toString()} index={0} />
-        <Stat title="Tray Units" value={productStats.trayCount.toString()} index={1} />
-        <Stat title="Dozen Units" value={productStats.dozenCount.toString()} index={2} />
-        <Stat title="Piece Units" value={productStats.pieceCount.toString()} index={3} />
       </div>
 
       <div className="mb-6">
@@ -75,15 +66,12 @@ export default function ProductsPage() {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
-              <select
+              <input
                 className="border rounded px-2 py-1 bg-gray-100/10"
+                placeholder="Unit (e.g., kg, piece, tray)"
                 value={form.unit}
                 onChange={(e) => setForm({ ...form, unit: e.target.value })}
-              >
-                <option value="TRAY">Tray</option>
-                <option value="DOZEN">Dozen</option>
-                <option value="PIECE">Piece</option>
-              </select>
+              />
               <input
                 className="border rounded px-2 py-1 bg-gray-100/10"
                 placeholder="Size (optional)"
