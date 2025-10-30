@@ -2,13 +2,17 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 export async function middleware(req) {
+  const requestUrl = req.nextUrl;          // ✅ renamed from 'url' to avoid collision
+  const pathname = requestUrl.pathname;
   // Allow static assets, _next, uploads, favicon, images, etc.
   if (
     req.nextUrl.pathname.startsWith("/_next") ||
     req.nextUrl.pathname.startsWith("/static") ||
     req.nextUrl.pathname.startsWith("/uploads") ||
     req.nextUrl.pathname.startsWith("/favicon.ico") ||
-    req.nextUrl.pathname.startsWith("/images")
+    req.nextUrl.pathname.startsWith("/images")||
+    req.nextUrl.pathname.startsWith("/api/auth") ||
+    pathname.match(/\.(jpg|jpeg|png|gif|svg|ico|webp|avif|mp4|woff2?)$/)
   ) {
     return NextResponse.next();
   }
