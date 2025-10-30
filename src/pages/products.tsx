@@ -1,6 +1,6 @@
 import SidebarLayout from "@/components/Layout";
 import { trpc } from "@/utils/trpc";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useMemo } from "react";
 
 export default function ProductsPage() {
   const utils = trpc.useUtils();
@@ -18,7 +18,12 @@ export default function ProductsPage() {
     onSuccess: () => utils.products.list.invalidate(),
   });
 
-  const [form, setForm] = useState({ name: "", unit: "TRAY", size: "", price: "", costPrice: "", stock: "" });
+  const [form, setForm] = useState({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "" });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const productStats = useMemo(() => {
+    return { totalProducts: products?.length ?? 0 };
+  }, [products]);
 
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -27,7 +32,8 @@ export default function ProductsPage() {
     const stock = parseInt(form.stock, 10);
     if (!form.name || isNaN(price) || isNaN(stock) || !form.unit) return;
     createProduct.mutate({ name: form.name, unit: form.unit as any, size: form.size || undefined, price, costPrice, stock });
-    setForm({ name: "", unit: "TRAY", size: "", price: "", costPrice: "", stock: "" });
+    setForm({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "" });
+    setIsModalOpen(false);
   }
 
   return (
@@ -36,24 +42,81 @@ export default function ProductsPage() {
         <h1 className="text-xl font-semibold">Products</h1>
       </div>
 
-      {/* Trigger modal instead of inline form (basic inline placeholder for now) */}
-      <form onSubmit={submit} className="hidden grid gap-2 md:grid-cols-6 border rounded-lg p-3 mb-6">
-        <input className="border rounded px-2 py-1" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-        <select className="border rounded px-2 py-1" value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })}>
-          <option value="TRAY">Tray</option>
-          <option value="DOZEN">Dozen</option>
-          <option value="PIECE">Piece</option>
-        </select>
-        <input className="border rounded px-2 py-1" placeholder="Size (optional)" value={form.size} onChange={(e) => setForm({ ...form, size: e.target.value })} />
-        <input className="border rounded px-2 py-1" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-        <input className="border rounded px-2 py-1" placeholder="Cost Price" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: e.target.value })} />
-        <div className="flex gap-2">
-          <input className="border rounded px-2 py-1 flex-1" placeholder="Stock" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} />
-          <button className="bg-black text-white rounded px-3 py-1">Add</button>
-        </div>
-      </form>
+      <div className="grid gap-4 md:grid-cols-4 mb-6">
+        <Stat title="Total Products" value={productStats.totalProducts.toString()} index={0} />
+      </div>
 
-      <div className="overflow-x-auto border rounded-lg">
+      <div className="mb-6">
+        <button
+          className="bg-primary text-primary-foreground rounded px-3 py-1"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Add Product
+        </button>
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50  flex items-center justify-center z-50">
+          <div className="bg-background border border-gray-200/20 rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Add New Product</h2>
+            <form onSubmit={submit} className="grid gap-4">
+              <input
+                className="border rounded px-2 py-1 bg-gray-100/10"
+                placeholder="Name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+              <input
+                className="border rounded px-2 py-1 bg-gray-100/10"
+                placeholder="Unit (e.g., kg, piece, tray)"
+                value={form.unit}
+                onChange={(e) => setForm({ ...form, unit: e.target.value })}
+              />
+              <input
+                className="border rounded px-2 py-1 bg-gray-100/10"
+                placeholder="Size (optional)"
+                value={form.size}
+                onChange={(e) => setForm({ ...form, size: e.target.value })}
+              />
+              <input
+                className="border rounded px-2 py-1 bg-gray-100/10"
+                placeholder="Price"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+              />
+              <input
+                className="border rounded px-2 py-1 bg-gray-100/10"
+                placeholder="Cost Price"
+                value={form.costPrice}
+                onChange={(e) => setForm({ ...form, costPrice: e.target.value })}
+              />
+              <input
+                className="border rounded px-2 py-1 bg-gray-100/10"
+                placeholder="Stock"
+                value={form.stock}
+                onChange={(e) => setForm({ ...form, stock: e.target.value })}
+              />
+              <div className="flex gap-2 justify-end">
+                <button
+                  type="button"
+                  className="bg-secondary text-secondary-foreground rounded px-3 py-1"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-primary text-primary-foreground rounded px-3 py-1"
+                >
+                  Add Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <div className="overflow-x-auto border rounded-lg bg-white">
         <table className="min-w-full text-sm">
           <thead>
             <tr className="border-t">
@@ -96,7 +159,16 @@ export default function ProductsPage() {
   );
 }
 
+function Stat({ title, value, index }: { title: string; value: string; index: number }) {
+  const bgColor = index % 2 === 0 ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground';
+  return (
+    <div className={`border rounded-lg px-8 py-10 ${bgColor}`}>
+      <div className="text-sm">{title}</div>
+      <div className="text-2xl font-semibold">{value}</div>
+    </div>
+  );
+}
+
 function formatKES(amount: number) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency: "KES" }).format(amount);
 }
-

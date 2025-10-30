@@ -48,7 +48,8 @@ export const salesRouter = createRouter({
         await tx.inventoryLog.create({
           data: {
             productId: product.id,
-            change: -input.quantity,
+            change: input.quantity,
+            type: "REMOVE",
             reason: "Sale",
           },
         });

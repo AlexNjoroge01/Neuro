@@ -10,29 +10,29 @@ export const productsRouter = createRouter({
 	}),
     create: protectedProcedure
 		.input(
-			z.object({
-				name: z.string().min(1),
-				unit: z.enum(["TRAY", "DOZEN", "PIECE"]),
-				size: z.string().optional(),
-				price: z.number().nonnegative(),
-				costPrice: z.number().nonnegative().default(0),
-				stock: z.number().int(),
-			})
+            z.object({
+                name: z.string().min(1),
+                unit: z.string().min(1),
+                size: z.string().optional(),
+                price: z.number().nonnegative(),
+                costPrice: z.number().nonnegative().default(0),
+                stock: z.number().int(),
+            })
 		)
 		.mutation(async ({ ctx, input }) => {
 			return ctx.prisma.product.create({ data: input });
 		}),
     update: protectedProcedure
 		.input(
-			z.object({
-				id: z.string(),
-				name: z.string().min(1).optional(),
-				unit: z.enum(["TRAY", "DOZEN", "PIECE"]).optional(),
-				size: z.string().optional(),
-				price: z.number().nonnegative().optional(),
-				costPrice: z.number().nonnegative().optional(),
-				stock: z.number().int().optional(),
-			})
+            z.object({
+                id: z.string(),
+                name: z.string().min(1).optional(),
+                unit: z.string().min(1).optional(),
+                size: z.string().optional(),
+                price: z.number().nonnegative().optional(),
+                costPrice: z.number().nonnegative().optional(),
+                stock: z.number().int().optional(),
+            })
 		)
 		.mutation(async ({ ctx, input }) => {
 			const { id, ...data } = input;
