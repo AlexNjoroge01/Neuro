@@ -9,23 +9,41 @@ export const config = {
   },
 };
 
+function parseForm(req: NextApiRequest): Promise<{ files: any } > {
+  return new Promise((resolve, reject) => {
+    const form = formidable({ multiples: false, maxFileSize: 5 * 1024 * 1024 });
+    form.parse(req, (err: any, _fields: any, files: any) => {
+      if (err) return reject(err);
+      resolve({ files });
+    });
+  });
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
-  const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+  try {
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-  const form = formidable({ multiples: false, maxFileSize: 5 * 1024 * 1024 });
-
-  form.parse(req, (err, fields, files) => {
-    if (err) return res.status(500).json({ error: 'Upload error' });
-    const file = files.file as formidable.File;
+    const { files } = await parseForm(req);
+    const raw: any = (files as any).file;
+    const file = Array.isArray(raw) ? raw[0] : raw;
     if (!file) return res.status(400).json({ error: 'No file uploaded' });
-    if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.mimetype ?? '')) {
+
+    const mimetype: string = file.mimetype ?? '';
+    if (!['image/png', 'image/jpeg', 'image/jpg'].includes(mimetype)) {
       return res.status(400).json({ error: 'Invalid file type' });
     }
-    const filename = Date.now() + '_' + file.originalFilename?.replace(/[^a-zA-Z0-9.]/g, "");
+
+    const safeName = String(file.originalFilename || 'image').replace(/[^a-zA-Z0-9._-]/g, '');
+    const filename = `${Date.now()}_${safeName}`;
     const dest = path.join(uploadsDir, filename);
+
     fs.copyFileSync(file.filepath, dest);
-    res.status(200).json({ filename });
-  });
+
+    return res.status(200).json({ filename });
+  } catch (e) {
+    console.error('Upload error:', e);
+    return res.status(500).json({ error: 'Upload failed' });
+  }
 }
