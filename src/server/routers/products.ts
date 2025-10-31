@@ -17,7 +17,7 @@ export const productsRouter = createRouter({
                 price: z.number().nonnegative(),
                 costPrice: z.number().nonnegative().default(0),
                 stock: z.number().int(),
-                image: z.string().url().optional(),
+                image: z.string().optional(),
                 category: z.string().optional(),
                 brand: z.string().optional(),
             })
@@ -35,7 +35,7 @@ export const productsRouter = createRouter({
                 price: z.number().nonnegative().optional(),
                 costPrice: z.number().nonnegative().optional(),
                 stock: z.number().int().optional(),
-                image: z.string().url().optional(),
+                image: z.string().optional(),
                 category: z.string().optional(),
                 brand: z.string().optional(),
             })

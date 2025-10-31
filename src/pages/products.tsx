@@ -20,6 +20,7 @@ export default function ProductsPage() {
 
   const [form, setForm] = useState({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "", image: "", category: "", brand: "" });
   const [file, setFile] = useState<File|null>(null);
+  const [filePreview, setFilePreview] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -63,6 +64,7 @@ export default function ProductsPage() {
     });
     setForm({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "", image: "", category: "", brand: "" });
     setFile(null);
+    setFilePreview("");
     setIsModalOpen(false);
   }
 
@@ -131,8 +133,17 @@ export default function ProductsPage() {
                 type="file"
                 accept="image/*"
                 className="border rounded px-2 py-1 bg-gray-100/10"
-                onChange={e => setFile(e.target.files ? e.target.files[0] : null)}
+                onChange={e => {
+                  const f = e.target.files ? e.target.files[0] : null;
+                  setFile(f);
+                  setFilePreview(f ? URL.createObjectURL(f) : "");
+                }}
               />
+              {filePreview ? (
+                <img src={filePreview} alt="Preview" className="h-24 w-24 object-cover rounded" />
+              ) : form.image ? (
+                <img src={"/uploads/" + form.image} alt="Preview" className="h-24 w-24 object-cover rounded" />
+              ) : null}
 
               <input
                 className="border rounded px-2 py-1 bg-gray-100/10"
