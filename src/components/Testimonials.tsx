@@ -4,23 +4,23 @@ import Image from "next/image";
 
 const testimonials = [
   {
-    name: "Brian Otieno",
+    name: "Brian Mwangi",
     role: "Software Engineer, Nairobi",
-    image: "/avatars/avatar1.jpg",
+    image: "/t1.png",
     quote:
       "I ordered from this store and the experience was smooth from checkout to delivery. The quality blew me away!",
   },
   {
-    name: "Faith Mwende",
+    name: "Faith Mwikali",
     role: "Digital Marketer, Mombasa",
-    image: "/avatars/avatar2.jpg",
+    image: "/t2.png",
     quote:
       "Amazing customer support! They responded quickly and made sure I got exactly what I wanted. 10/10 service.",
   },
   {
-    name: "Kevin Kiptoo",
+    name: "Kevin Munene",
     role: "Entrepreneur, Eldoret",
-    image: "/avatars/avatar3.jpg",
+    image: "/t3.png",
     quote:
       "Honestly one of the best online stores in Kenya. Fast delivery, genuine products, and great prices.",
   },

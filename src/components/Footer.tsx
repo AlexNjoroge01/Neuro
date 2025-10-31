@@ -61,6 +61,10 @@ export default function Footer() {
 
       <div className="py-4 text-center text-sm">
          <span className="text-primary font-semibold">Developed by BrightLine Labs</span>.
+         <br/>
+         <span className="text-white/70 font-semibold">Contact us at clientcare.global@gmail.com</span>.
+         <br/>
+          <span className="text-white/70 font-semibold">Or call our Office Number: 0716090099</span>.
       </div>
     </footer>
   );
