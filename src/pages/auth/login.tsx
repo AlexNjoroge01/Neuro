@@ -2,7 +2,7 @@ import { FormEvent, useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, Lock, Eye, EyeOff, Phone, Facebook } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -26,27 +26,29 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Background Image */}
-      <div className="w-1/2 relative">
+      {/* Left Side - Background Image + Translucent Card */}
+      <div className="relative flex-1 hidden md:block">
         <Image
-          src="/b1.jpg"
+          src="/d2.jpg"
           alt="Login Background"
           fill
           className="object-cover"
         />
+        <div className="absolute bottom-8 left-0 right-0 mx-4 bg-white/60 backdrop-blur-sm text-black p-6 rounded-lg border border-white/20 shadow-lg">
+          <h2 className="text-2xl font-bold">Business Management Made Simple</h2>
+          <p className="text-sm mt-2">
+            Streamlining operations across departments with one integrated platform that handles everything from products, finance, and inventory management
+          </p>
+        </div>
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="w-1/2 bg-background flex items-center justify-center p-8">
+      <div className="flex-1 bg-background flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8">
-         
-
-          {/* Title */}
           <h1 className="text-2xl font-bold text-center text-foreground">
             Sign In to Your Account
           </h1>
 
-          {/* Form */}
           <form onSubmit={onSubmit} className="space-y-5">
             {error && (
               <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md text-center">
@@ -54,7 +56,6 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Email/Username/ID Field */}
             <div className="space-y-1">
               <label className="text-sm text-muted-foreground">
                 Email <span className="text-red-500">*</span>
@@ -72,7 +73,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Password Field */}
             <div className="space-y-1">
               <label className="text-sm text-muted-foreground">
                 Password <span className="text-red-500">*</span>
@@ -101,7 +101,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Keep Logged In & Forgot Password */}
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -117,13 +116,11 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {/* Login Button */}
             <button className="w-full bg-primary text-primary-foreground py-3 rounded-md font-medium hover:bg-primary/90 transition">
               Log In
             </button>
           </form>
 
-          {/* Sign Up Link */}
           <p className="text-center text-sm text-muted-foreground">
             Dont Have an Account?{" "}
             <Link href="/auth/register" className="text-primary font-medium hover:underline">
@@ -131,33 +128,6 @@ export default function LoginPage() {
             </Link>
           </p>
 
-          {/* Divider
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-muted" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-background px-2 text-muted-foreground">Or Login with</span>
-            </div>
-          </div> */}
-
-          {/* Social Login
-          <div className="flex justify-center gap-4">
-            <button className="p-3 rounded-full border border-input hover:bg-accent transition">
-              <Phone className="h-5 w-5 text-foreground" />
-            </button>
-            <button className="p-3 rounded-full border border-input hover:bg-accent transition">
-              <Image src="/google.svg" alt="Google" width={20} height={20} />
-            </button>
-            <button className="p-3 rounded-full border border-input hover:bg-accent transition">
-              <Image src="/apple.svg" alt="Apple" width={20} height={20} />
-            </button>
-            <button className="p-3 rounded-full border border-input hover:bg-accent transition">
-              <Facebook className="h-5 w-5 text-[#1877F2]" />
-            </button>
-          </div> */}
-
-          {/* Footer */}
           <p className="text-center text-xs text-muted-foreground">
             By Continuing you Agree to our{" "}
             <Link href="/terms" className="underline hover:text-foreground">
@@ -170,14 +140,6 @@ export default function LoginPage() {
             , and{" "}
             <Link href="/cookies" className="underline hover:text-foreground">
               Cookies Policy
-            </Link>
-            
-            <Link href="/terms" className="underline hover:text-foreground">
-              Terms & Conditions
-            </Link>{" "}
-            |{" "}
-            <Link href="/privacy" className="underline hover:text-foreground">
-              Privacy Policy
             </Link>
           </p>
         </div>

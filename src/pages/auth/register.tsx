@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, Lock, User, Eye, EyeOff, Phone, Facebook } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -33,26 +33,29 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* LEFT SIDE: Business Management Preview (Same as Login) */}
-      <div className="w-1/2 relative">
-             <Image
-               src="/b1.jpg"
-               alt="Login Background"
-               fill
-               className="object-cover"
-             />
-           </div>
+      {/* LEFT SIDE: Background + Translucent Card */}
+      <div className="relative flex-1 hidden md:block">
+        <Image
+          src="/d2.jpg"
+          alt="Register Background"
+          fill
+          className="object-cover"
+        />
+        <div className="absolute bottom-8 left-0 right-0 mx-4 bg-white/60 backdrop-blur-sm text-black p-6 rounded-lg border border-white/20 shadow-lg">
+          <h2 className="text-2xl font-bold">Business Management Made Simple</h2>
+          <p className="text-sm mt-2">
+            streamlining operations across departments with one integrated platform that handles everything from products, finance, and inventory management
+          </p>
+        </div>
+      </div>
 
-      {/* RIGHT SIDE: Register Form (Matches Login Design 100%) */}
-      <div className="w-1/2 bg-background flex items-center justify-center p-8">
+      {/* RIGHT SIDE: Register Form */}
+      <div className="flex-1 bg-background flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8">
-      
-          {/* Title */}
           <h1 className="text-2xl font-bold text-center text-foreground">
             Create Your Account
           </h1>
 
-          {/* Form */}
           <form onSubmit={onSubmit} className="space-y-5">
             {error && (
               <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md text-center">
@@ -69,7 +72,6 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* Name Field */}
             <div className="space-y-1">
               <label className="text-sm text-muted-foreground">
                 Full Name <span className="text-red-500">*</span>
@@ -87,7 +89,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Email Field */}
             <div className="space-y-1">
               <label className="text-sm text-muted-foreground">
                 Email Address <span className="text-red-500">*</span>
@@ -105,7 +106,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Password Field */}
             <div className="space-y-1">
               <label className="text-sm text-muted-foreground">
                 Password <span className="text-red-500">*</span>
@@ -134,13 +134,11 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Create Account Button */}
             <button className="w-full bg-primary text-primary-foreground py-3 rounded-md font-medium hover:bg-primary/90 transition">
               Create Account
             </button>
           </form>
 
-          {/* Sign In Link */}
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link href="/auth/login" className="text-primary font-medium hover:underline">
@@ -148,33 +146,6 @@ export default function RegisterPage() {
             </Link>
           </p>
 
-          {/* Divider
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-muted" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-background px-2 text-muted-foreground">Or Register with</span>
-            </div>
-          </div> */}
-
-          {/* Social Login
-          <div className="flex justify-center gap-4">
-            <button className="p-3 rounded-full border border-input hover:bg-accent transition">
-              <Phone className="h-5 w-5 text-foreground" />
-            </button>
-            <button className="p-3 rounded-full border border-input hover:bg-accent transition">
-              <Image src="/google.svg" alt="Google" width={20} height={20} />
-            </button>
-            <button className="p-3 rounded-full border border-input hover:bg-accent transition">
-              <Image src="/apple.svg" alt="Apple" width={20} height={20} />
-            </button>
-            <button className="p-3 rounded-full border border-input hover:bg-accent transition">
-              <Facebook className="h-5 w-5 text-[#1877F2]" />
-            </button>
-          </div> */}
-
-          {/* Footer */}
           <p className="text-center text-xs text-muted-foreground">
             By Continuing you Agree to our{" "}
             <Link href="/terms" className="underline hover:text-foreground">
@@ -187,14 +158,6 @@ export default function RegisterPage() {
             , and{" "}
             <Link href="/cookies" className="underline hover:text-foreground">
               Cookies Policy
-            </Link>
-           
-            <Link href="/terms" className="underline hover:text-foreground">
-              Terms & Conditions
-            </Link>{" "}
-            |{" "}
-            <Link href="/privacy" className="underline hover:text-foreground">
-              Privacy Policy
             </Link>
           </p>
         </div>
