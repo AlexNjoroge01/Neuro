@@ -80,7 +80,7 @@ export default function CartPage() {
                   className="flex items-center justify-between gap-4 bg-card border border-border rounded-lg p-4 shadow-sm hover:shadow-md transition"
                 >
                   {/* Product Image */}
-                  <div className="w-20 h-20 relative rounded-md overflow-hidden bg-secondary/20">
+                  <div className="w-20 h-20 relative rounded-md overflow-hidden">
                     <Image
                       src={
                         item.product?.image
