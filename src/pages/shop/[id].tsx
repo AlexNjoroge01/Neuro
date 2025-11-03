@@ -1,27 +1,24 @@
 import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import type { CartItem } from "../cart";
+import { useSession } from "next-auth/react";
 
 export default function ProductDetail() {
   const router = useRouter();
   const { id } = router.query;
+  const { status } = useSession();
+  const utils = trpc.useUtils();
+  const add = trpc.cart.add.useMutation({ onSuccess: () => utils.cart.get.invalidate() });
   const { data: product, isLoading } = trpc.products.publicGet.useQuery(typeof id === "string" ? id : "", { enabled: !!id });
   const [added, setAdded] = useState(false);
 
-  function addToCart() {
+  async function addToCart() {
     if (!product) return;
-    let cart: CartItem[] = [];
-    try {
-      cart = JSON.parse(localStorage.getItem("cart") ?? "[]");
-    } catch {}
-    const idx = cart.findIndex(ci => ci.productId === product.id);
-    if (idx >= 0) {
-      cart[idx].quantity += 1;
-    } else {
-      cart.push({ productId: product.id, name: product.name, price: product.price, quantity: 1, stock: product.stock });
+    if (status !== "authenticated") {
+      router.push("/auth/login");
+      return;
     }
-    localStorage.setItem("cart", JSON.stringify(cart));
+    await add.mutateAsync({ productId: product.id, delta: 1 });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
   }
