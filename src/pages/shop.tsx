@@ -72,7 +72,7 @@ export default function ShopPage() {
               Grab Upto 50% Off On <br />Selected Items
             </h2>
             <p className="mb-10 text-white">
-              Shop from premium quality audio brands. Limited time only.
+              Shop from premium quality brands. Limited time only.
             </p>
             <Link
               href="/shop"

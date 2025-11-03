@@ -62,4 +62,20 @@ export const productsRouter = createRouter({
             where: { id: input, deletedAt: null },
         });
     }),
+    search: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+        const q = input.trim();
+        if (!q) return [] as any[];
+        return ctx.prisma.product.findMany({
+            where: {
+                deletedAt: null,
+                OR: [
+                    { name: { contains: q, mode: "insensitive" } },
+                    { category: { contains: q, mode: "insensitive" } },
+                    { brand: { contains: q, mode: "insensitive" } },
+                ],
+            },
+            orderBy: { createdAt: "desc" },
+            take: 10,
+        });
+    }),
 }); 

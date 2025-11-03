@@ -13,6 +13,9 @@ export default function ClientNavbar() {
   const [localCount, setLocalCount] = useState(0);
   const [openMenu, setOpenMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const [search, setSearch] = useState("");
+  const [showResults, setShowResults] = useState(false);
+  const { data: results } = trpc.products.search.useQuery(search, { enabled: search.trim().length >= 2 });
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -64,13 +67,25 @@ export default function ClientNavbar() {
         <Link href="/">
           <p className="text-xl font-bold mb-3 text-primary ">BuySmart Kenya</p>
         </Link>
-        <div className="flex items-center gap-2 flex-1">
+        <div className="flex items-center gap-2 flex-1 relative">
           <Search className="h-5 w-5 text-muted-foreground" />
           <input
             type="text"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setShowResults(true); }}
+            onBlur={() => setTimeout(() => setShowResults(false), 150)}
             placeholder="What are you shopping for today?"
             className="w-xl bg-gray-100/10 border border-gray-200/20 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 text-white placeholder-gray-400"
           />
+          {showResults && (results?.length ?? 0) > 0 && (
+            <div className="absolute top-8 left-0 w-full bg-background border border-gray-200/30 rounded-md shadow z-40 max-h-80 overflow-auto">
+              {(results ?? []).map((p) => (
+                <Link key={p.id} href={`/shop/${p.id}`} className="block px-3 py-2 text-sm hover:bg-gray-100/10">
+                  {p.name} {p.brand ? <span className="text-xs text-muted-foreground">· {p.brand}</span> : null}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
