@@ -9,6 +9,7 @@ import {
   Truck,
   Wallet,
   UsersRound,
+  Power,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useMemo } from "react";
@@ -32,6 +33,7 @@ const ADMIN_ITEMS = [
   { href: "/reports", label: "Reports", Icon: BarChart3 },
   { href: "/settings", label: "Settings", Icon: Settings },
 ];
+
 const CUSTOMER_ITEMS = [
   { href: "/shop", label: "Shop", Icon: Package },
   { href: "/cart", label: "Cart", Icon: Boxes },
@@ -43,27 +45,30 @@ export default function Sidebar() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const role = (session?.user as any)?.role;
+
   const navItems = useMemo(() => {
     if (!status || status === "loading" || status !== "authenticated") {
       // Not logged in, show public shop/cart only
       return CUSTOMER_ITEMS.filter(item => ["/shop", "/cart"].includes(item.href));
     }
     if (role === "SUPERUSER" || role === "ADMIN") return ADMIN_ITEMS;
-    // else (customer)
     return CUSTOMER_ITEMS;
   }, [role, status]);
 
   return (
-    <aside className="w-64 border-r border-gray-200/20 p-4 hidden md:block">
-      <div className="px-2 py-3 text-xl font-semibold ">Aggies World</div>
-      <nav className="mt-4 space-y-1">
+    <aside className="w-64 h-screen flex flex-col border-r border-gray-200/20 p-4 hidden md:flex bg-white">
+      {/* Logo / Title */}
+      <div className="px-2 py-3 text-xl font-semibold">Aggies World</div>
+
+      {/* Navigation */}
+      <nav className="mt-4 space-y-1 flex-1 overflow-y-auto">
         {navItems.map(({ href, label, Icon }) => {
           const active = router.pathname === href;
           return (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#D6FF00] hover:text-[#0F172A] ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-[#D6FF00] hover:text-[#0F172A] ${
                 active ? "bg-[#0F172A] text-[#D6FF00] font-medium" : ""
               }`}
             >
@@ -73,20 +78,25 @@ export default function Sidebar() {
           );
         })}
       </nav>
-      <div className="mt-8"></div> {/* Space between menu items and sign-out */}
+
+      {/* Bottom Sign out */}
       {status === "authenticated" && (
-        <div className="flex justify-center">
+        <div className="mt-2">
           <button
-            className="w-full bg-secondary text-secondary-foreground py-2 mt-16 rounded hover:bg-secondary/80"
+            className="w-full flex items-center justify-center px-4 rounded-md gap-2 bg-secondary text-primary py-2  font-semibold"
             onClick={() => signOut({ callbackUrl: "/auth/login" })}
           >
-            Sign out
+            <Power className="h-4 w-4" />
+            <span>Sign out</span>
           </button>
         </div>
       )}
+
       {status !== "authenticated" && (
         <div className="mt-auto px-2 py-2 text-sm text-muted-foreground">
-          <Link className="underline" href="/auth/login">Sign in</Link>
+          <Link className="underline" href="/auth/login">
+            Sign in
+          </Link>
         </div>
       )}
     </aside>

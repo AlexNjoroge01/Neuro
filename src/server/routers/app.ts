@@ -25,6 +25,22 @@ export const cartRouter = createRouter({
       },
     });
   }),
+  add: protectedProcedure.input(z.object({
+    productId: z.string(),
+    delta: z.number().int().default(1),
+  })).mutation(async ({ ctx, input }) => {
+    const cart = await ctx.prisma.cart.upsert({
+      where: { userId: ctx.session.user.id },
+      update: {},
+      create: { userId: ctx.session.user.id },
+    });
+    const existing = await ctx.prisma.cartItem.findFirst({ where: { cartId: cart.id, productId: input.productId }});
+    if (existing) {
+      const newQty = Math.max(1, existing.quantity + input.delta);
+      return ctx.prisma.cartItem.update({ where: { id: existing.id }, data: { quantity: newQty } });
+    }
+    return ctx.prisma.cartItem.create({ data: { cartId: cart.id, productId: input.productId, quantity: Math.max(1, input.delta) } });
+  }),
   addOrUpdate: protectedProcedure.input(z.object({
     productId: z.string(),
     quantity: z.number().int().min(1),
@@ -54,30 +70,28 @@ export const cartRouter = createRouter({
 });
 export const orderRouter = createRouter({
   create: protectedProcedure.mutation(async ({ ctx }) => {
-    // 1. Fetch cart/items
     const cart = await ctx.prisma.cart.findUnique({
       where: { userId: ctx.session.user.id },
-      include: { items: true },
+      include: { items: { include: { product: true } } },
     });
     if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
-    // 2. Create order & order items
+    const itemsData = cart.items.map(ci => ({
+      productId: ci.productId,
+      quantity: ci.quantity,
+      price: ci.product?.price ?? 0,
+    }));
+    const total = itemsData.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
     const order = await ctx.prisma.order.create({
       data: {
         userId: ctx.session.user.id,
-        total: cart.items.reduce((sum, ci) => sum + ci.quantity, 0),
-        items: {
-          create: cart.items.map(ci => ({
-            productId: ci.productId,
-            quantity: ci.quantity,
-            price: 0, // TODO! Get price from Product
-          }))
-        }
+        total,
+        items: { create: itemsData },
       },
-      include: { items: true }
+      include: { items: true },
     });
 
-    // 3. Clear cart
     await ctx.prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
     return order;
   }),
