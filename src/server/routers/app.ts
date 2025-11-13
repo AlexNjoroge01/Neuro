@@ -10,6 +10,7 @@ import { hrRouter } from "./hr";
 import { z } from "zod";
 import { protectedProcedure } from "../createRouter";
 import { Role } from "@prisma/client";
+import { mpesaRouter } from "../api/routers/mpesa";
 
 export const cartRouter = createRouter({
   get: protectedProcedure.query(async ({ ctx }) => {
@@ -129,6 +130,7 @@ export const appRouter = mergeRouters(
   createRouter({ accounting: accountingRouter }),
   createRouter({ fleet: fleetRouter }),
   createRouter({ hr: hrRouter }),
+  createRouter({ mpesa: mpesaRouter }),
   createRouter({ cart: cartRouter }),
   createRouter({ orders: orderRouter }),
 );

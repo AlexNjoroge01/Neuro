@@ -1,10 +1,12 @@
 "use client";
 import Link from "next/link";
+import { FormEvent, useState } from "react";
 import { useSession } from "next-auth/react";
-import { trpc } from "@/utils/trpc";
-import ClientNavbar from "@/components/ClientNavbar";
+import { toast } from "react-toastify";
 import Image from "next/image";
+import ClientNavbar from "@/components/ClientNavbar";
 import Footer from "@/components/Footer";
+import { trpc } from "@/utils/trpc";
 
 export default function CartPage() {
   const { status } = useSession();
@@ -12,6 +14,9 @@ export default function CartPage() {
   const { data: cart } = trpc.cart.get.useQuery(undefined, {
     enabled: status === "authenticated",
   });
+  const [isMpesaModalOpen, setIsMpesaModalOpen] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+
   const update = trpc.cart.addOrUpdate.useMutation({
     onSuccess: () => utils.cart.get.invalidate(),
   });
@@ -21,14 +26,22 @@ export default function CartPage() {
   const clear = trpc.cart.clear.useMutation({
     onSuccess: () => utils.cart.get.invalidate(),
   });
+  const mpesaPayment = trpc.mpesa.initiatePayment.useMutation({
+    onSuccess: () => {
+      utils.cart.get.invalidate();
+      setIsMpesaModalOpen(false);
+      setPhoneNumber("");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   if (status !== "authenticated") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background text-foreground">
         <div className="bg-card border border-border shadow-md rounded-xl p-8 text-center max-w-md">
-          <h1 className="text-2xl font-bold mb-3 text-primary">
-            Shopping Cart
-          </h1>
+          <h1 className="text-2xl font-bold mb-3 text-primary">Shopping Cart</h1>
           <p className="text-muted-foreground">
             Please{" "}
             <Link href="/auth/login" className="underline text-primary">
@@ -43,14 +56,45 @@ export default function CartPage() {
 
   const items = cart?.items ?? [];
   const subtotal = items.reduce(
-    (sum, i) => sum + (i.product?.price ?? 0) * i.quantity,
-    0
+    (sum, item) => sum + (item.product?.price ?? 0) * item.quantity,
+    0,
   );
 
   function onQtyChange(productId: string, qty: number) {
     if (qty <= 0) return;
     update.mutate({ productId, quantity: qty });
   }
+
+  const openMpesaModal = () => {
+    if (subtotal <= 0) {
+      toast.error("Add at least one item to proceed with checkout.");
+      return;
+    }
+    setIsMpesaModalOpen(true);
+  };
+
+  const handleMpesaPayment = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (subtotal <= 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
+    if (!phoneNumber.trim()) {
+      toast.error("Enter the phone number registered with M-PESA.");
+      return;
+    }
+    toast.info("Processing payment…");
+    try {
+      const response = await mpesaPayment.mutateAsync({
+        amount: subtotal,
+        phoneNumber,
+      });
+      toast.info("Check your phone for M-PESA prompt.");
+      toast.success(response.CustomerMessage ?? "Payment initiated successfully.");
+    } catch {
+      // Error toast handled in onError above.
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -62,9 +106,7 @@ export default function CartPage() {
 
         {items.length === 0 ? (
           <div className="text-center bg-secondary/20 p-10 rounded-lg border border-border shadow-sm">
-            <p className="text-muted-foreground mb-4">
-              Your cart is empty 😢
-            </p>
+            <p className="text-muted-foreground mb-4">Your cart is empty 😢</p>
             <Link
               href="/shop"
               className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition"
@@ -100,10 +142,7 @@ export default function CartPage() {
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">
                       {item.product ? (
-                        <Link
-                          href={`/shop/${item.productId}`}
-                          className="hover:underline"
-                        >
+                        <Link href={`/shop/${item.productId}`} className="hover:underline">
                           {item.product.name}
                         </Link>
                       ) : (
@@ -118,9 +157,7 @@ export default function CartPage() {
                   {/* Quantity Controls */}
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() =>
-                        onQtyChange(item.productId, item.quantity - 1)
-                      }
+                      onClick={() => onQtyChange(item.productId, item.quantity - 1)}
                       className="px-3 py-1  rounded  transition"
                     >
                       -
@@ -129,18 +166,13 @@ export default function CartPage() {
                       type="number"
                       min={1}
                       value={item.quantity}
-                      onChange={(e) =>
-                        onQtyChange(
-                          item.productId,
-                          parseInt(e.target.value) || 1
-                        )
+                      onChange={(event) =>
+                        onQtyChange(item.productId, Number.parseInt(event.target.value, 10) || 1)
                       }
                       className="w-14 text-center border border-border rounded bg-background"
                     />
                     <button
-                      onClick={() =>
-                        onQtyChange(item.productId, item.quantity + 1)
-                      }
+                      onClick={() => onQtyChange(item.productId, item.quantity + 1)}
                       className="px-3 py-1  rounded transition"
                     >
                       +
@@ -149,10 +181,7 @@ export default function CartPage() {
 
                   {/* Subtotal */}
                   <div className="font-semibold text-sm">
-                    KES{" "}
-                    {(
-                      (item.product?.price ?? 0) * item.quantity
-                    ).toLocaleString()}
+                    KES {((item.product?.price ?? 0) * item.quantity).toLocaleString()}
                   </div>
 
                   {/* Remove */}
@@ -170,9 +199,7 @@ export default function CartPage() {
             <div className="bg-secondary border border-border p-6 rounded-lg shadow-sm space-y-4 max-w-md ml-auto">
               <div className="flex justify-between text-white text-lg font-semibold">
                 <span>Subtotal</span>
-                <span className="text-primary">
-                  KES {subtotal.toLocaleString()}
-                </span>
+                <span className="text-primary">KES {subtotal.toLocaleString()}</span>
               </div>
 
               <div className="flex justify-between items-center mt-4">
@@ -182,18 +209,71 @@ export default function CartPage() {
                 >
                   Clear Cart
                 </button>
-                <Link
-                  href="/orders"
-                  className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition"
+                <button
+                  onClick={openMpesaModal}
+                  className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition disabled:opacity-60"
+                  disabled={mpesaPayment.isPending}
                 >
                   Proceed to Checkout
-                </Link>
+                </button>
               </div>
             </div>
           </>
         )}
       </div>
-      <Footer/>
+
+      {isMpesaModalOpen && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
+          <div className="bg-background border border-border rounded-lg p-6 w-full max-w-md shadow-xl space-y-4">
+            <h2 className="text-lg font-semibold text-primary">Complete Payment</h2>
+            <p className="text-sm text-muted-foreground">
+              Enter the M-PESA number that should receive the STK prompt. Ensure the phone is on and
+              has network.
+            </p>
+            <form className="space-y-4" onSubmit={handleMpesaPayment}>
+              <div>
+                <label htmlFor="mpesa-phone" className="block text-sm font-medium mb-1">
+                  Phone Number
+                </label>
+                <input
+                  id="mpesa-phone"
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="e.g. 2547XXXXXXXX"
+                  className="w-full border border-border rounded px-3 py-2 bg-background"
+                  value={phoneNumber}
+                  onChange={(event) => setPhoneNumber(event.target.value)}
+                  disabled={mpesaPayment.isPending}
+                  required
+                />
+              </div>
+              <div className="text-sm flex justify-between">
+                <span className="font-medium">Amount</span>
+                <span>KES {subtotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded border border-border"
+                  onClick={() => setIsMpesaModalOpen(false)}
+                  disabled={mpesaPayment.isPending}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition disabled:opacity-60"
+                  disabled={mpesaPayment.isPending}
+                >
+                  {mpesaPayment.isPending ? "Sending..." : "Confirm Payment"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <Footer />
     </div>
   );
 }
