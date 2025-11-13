@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import ClientNavbar from "@/components/ClientNavbar";
+import Footer from "@/components/Footer";
 
 export default function ProductDetail() {
   const router = useRouter();
@@ -147,6 +148,7 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -45,7 +45,7 @@ export default function ShopPage() {
   }, [products]);
 
   return (
-    <div className="min-h-screen bg-background pb-10">
+    <div className="min-h-screen bg-background">
       <ClientNavbar />
 
       {/* Header Banner */}

@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { trpc } from "@/utils/trpc";
 import ClientNavbar from "@/components/ClientNavbar";
 import Image from "next/image";
+import Footer from "@/components/Footer";
 
 export default function CartPage() {
   const { status } = useSession();
@@ -192,6 +193,7 @@ export default function CartPage() {
           </>
         )}
       </div>
+      <Footer/>
     </div>
   );
 }

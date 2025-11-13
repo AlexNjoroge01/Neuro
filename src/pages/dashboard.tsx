@@ -1,11 +1,10 @@
 // DashboardPage.tsx
 import SidebarLayout from "@/components/Layout";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { trpc } from "@/utils/trpc";
-import { useMemo } from "react";
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -19,7 +18,7 @@ export default function DashboardPage() {
   const { data: overview } = trpc.dashboard.overview.useQuery();
   const { data: recentSales } = trpc.dashboard.recentSales.useQuery();
 
-  const lineData = useMemo(() => {
+  const barData = useMemo(() => {
     const buckets: Record<string, number> = {};
     (recentSales ?? []).forEach((s) => {
       const d = new Date(s.createdAt);
@@ -31,7 +30,7 @@ export default function DashboardPage() {
       .map(([date, revenue]) => ({ date, revenue }));
   }, [recentSales]);
 
-  const pieData = useMemo(() => {
+  const donutData = useMemo(() => {
     const byProduct: Record<string, number> = {};
     (recentSales ?? []).forEach((s) => {
       const key = s.product?.name ?? "Unknown";
@@ -40,7 +39,14 @@ export default function DashboardPage() {
     return Object.entries(byProduct).map(([name, value]) => ({ name, value }));
   }, [recentSales]);
 
-  const COLORS = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#06b6d4"];
+  // Updated to match your system palette (brand-consistent)
+  const SYSTEM_COLORS = [
+    "#0F172A", // deep navy (secondary)
+    "#D6FF00", // primary highlight
+    "#94A300", // muted olive
+    "#4C5250", // soft gray
+    "#BFD600", // lighter lime accent
+  ];
 
   return (
     <SidebarLayout>
@@ -53,32 +59,58 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 mt-6">
+          {/* Bar Chart – Daily Sales */}
           <div className="border rounded-lg p-4 bg-white">
             <div className="mb-2 font-medium">Daily Sales</div>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={lineData}>
+                <BarChart data={barData}>
                   <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip />
-                  <Line type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2} />
-                </LineChart>
+                  <Bar dataKey="revenue" fill="#D6FF00" radius={[4, 4, 0, 0]} /> {/* primary color */}
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
+
+          {/* Donut Chart – Income by Product */}
           <div className="border rounded-lg p-4 bg-white">
             <div className="mb-2 font-medium">Income by Product</div>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={100}>
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Pie
+                    data={donutData}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={3}
+                  >
+                    {donutData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={SYSTEM_COLORS[index % SYSTEM_COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
+            </div>
+
+            {/* Legends below donut */}
+            <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm">
+              {donutData.map((entry, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <span
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: SYSTEM_COLORS[index % SYSTEM_COLORS.length] }}
+                  />
+                  <span className="text-gray-700">{entry.name}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -133,9 +165,9 @@ function StatCard({ title, value, index }: { title: string; value: string; index
 }
 
 function formatKES(amount: number) {
-  return new Intl.NumberFormat("en-KE", { 
-    style: "currency", 
-    currency: "KES", 
-    minimumFractionDigits: 2 
+  return new Intl.NumberFormat("en-KE", {
+    style: "currency",
+    currency: "KES",
+    minimumFractionDigits: 2,
   }).format(amount);
 }
