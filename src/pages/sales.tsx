@@ -77,6 +77,15 @@ export default function SalesPage() {
     setForm({ productId: "", quantity: "", paymentMethod: "CASH" });
   }
 
+  // same palette as dashboard donut chart
+  const SYSTEM_COLORS = [
+    "#0F172A", // deep navy (secondary)
+    "#D6FF00", // primary highlight
+    "#94A300", // muted olive
+    "#4C5250", // soft gray
+    "#BFD600", // lighter lime accent
+  ];
+
   return (
     <SidebarLayout>
       <ClientOnly>
@@ -147,7 +156,7 @@ export default function SalesPage() {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="revenue" fill="#6366f1" />
+                <Bar dataKey="revenue" fill={SYSTEM_COLORS[1]} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
