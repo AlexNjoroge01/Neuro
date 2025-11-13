@@ -1,14 +1,21 @@
 "use client";
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import Image from "next/image";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
-import Image from "next/image";
 import ClientNavbar from "@/components/ClientNavbar";
 import Footer from "@/components/Footer";
 import { trpc } from "@/utils/trpc";
 
+const toastStyles = {
+  className: "bg-card text-foreground border border-border shadow-md",
+  progressClassName: "bg-primary",
+};
+
 export default function CartPage() {
+  const router = useRouter();
   const { status } = useSession();
   const utils = trpc.useUtils();
   const { data: cart } = trpc.cart.get.useQuery(undefined, {
@@ -16,6 +23,8 @@ export default function CartPage() {
   });
   const [isMpesaModalOpen, setIsMpesaModalOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [checkoutRequestId, setCheckoutRequestId] = useState<string | null>(null);
+  const hasRedirectedRef = useRef(false);
 
   const update = trpc.cart.addOrUpdate.useMutation({
     onSuccess: () => utils.cart.get.invalidate(),
@@ -27,15 +36,67 @@ export default function CartPage() {
     onSuccess: () => utils.cart.get.invalidate(),
   });
   const mpesaPayment = trpc.mpesa.initiatePayment.useMutation({
-    onSuccess: () => {
+    onSuccess: (response) => {
       utils.cart.get.invalidate();
+      setCheckoutRequestId(response.CheckoutRequestID);
       setIsMpesaModalOpen(false);
-      setPhoneNumber("");
+      hasRedirectedRef.current = false;
+      toast.info("Check your phone for the M-PESA prompt.", toastStyles);
     },
     onError: (error) => {
-      toast.error(error.message);
+      toast.error(error.message, toastStyles);
     },
   });
+
+  const transactionStatus = trpc.mpesa.getTransactionStatus.useQuery(
+    { checkoutRequestId: checkoutRequestId ?? "" },
+    {
+      enabled: Boolean(checkoutRequestId),
+      refetchInterval: 4000,
+      refetchOnWindowFocus: false,
+    },
+  );
+
+  useEffect(() => {
+    if (!transactionStatus.data || !checkoutRequestId) {
+      return;
+    }
+
+    const { resultCode, resultDesc, orderStatus } = transactionStatus.data;
+    if (resultCode === 0 && orderStatus === "PAID" && !hasRedirectedRef.current) {
+      toast.success("Payment confirmed! Redirecting to orders…", toastStyles);
+      hasRedirectedRef.current = true;
+      router.push("/orders");
+      return;
+    }
+
+    if (resultCode && resultCode !== 0) {
+      toast.error(resultDesc ?? "Payment failed. Please try again.", toastStyles);
+      hasRedirectedRef.current = true;
+      setCheckoutRequestId(null);
+    }
+  }, [transactionStatus.data, checkoutRequestId, router]);
+
+  // Stop polling after ~2 minutes if still pending
+  useEffect(() => {
+    if (!checkoutRequestId) return;
+    const timeout = setTimeout(() => {
+      if (!hasRedirectedRef.current) {
+        toast.info(
+          "Still waiting for M-PESA confirmation. You can refresh orders to check status.",
+          toastStyles,
+        );
+        setCheckoutRequestId(null);
+      }
+    }, 120000);
+    return () => clearTimeout(timeout);
+  }, [checkoutRequestId]);
+
+  const items = useMemo(() => cart?.items ?? [], [cart]);
+  const subtotal = useMemo(
+    () => items.reduce((sum, item) => sum + (item.product?.price ?? 0) * item.quantity, 0),
+    [items],
+  );
 
   if (status !== "authenticated") {
     return (
@@ -54,12 +115,6 @@ export default function CartPage() {
     );
   }
 
-  const items = cart?.items ?? [];
-  const subtotal = items.reduce(
-    (sum, item) => sum + (item.product?.price ?? 0) * item.quantity,
-    0,
-  );
-
   function onQtyChange(productId: string, qty: number) {
     if (qty <= 0) return;
     update.mutate({ productId, quantity: qty });
@@ -67,7 +122,7 @@ export default function CartPage() {
 
   const openMpesaModal = () => {
     if (subtotal <= 0) {
-      toast.error("Add at least one item to proceed with checkout.");
+      toast.error("Add at least one item to proceed with checkout.", toastStyles);
       return;
     }
     setIsMpesaModalOpen(true);
@@ -76,21 +131,21 @@ export default function CartPage() {
   const handleMpesaPayment = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (subtotal <= 0) {
-      toast.error("Your cart is empty.");
+      toast.error("Your cart is empty.", toastStyles);
       return;
     }
     if (!phoneNumber.trim()) {
-      toast.error("Enter the phone number registered with M-PESA.");
+      toast.error("Enter the phone number registered with M-PESA.", toastStyles);
       return;
     }
-    toast.info("Processing payment…");
+
+    toast.info("Processing payment…", toastStyles);
     try {
-      const response = await mpesaPayment.mutateAsync({
-        amount: subtotal,
+      await mpesaPayment.mutateAsync({
+        amount: Number(subtotal.toFixed(2)),
         phoneNumber,
       });
-      toast.info("Check your phone for M-PESA prompt.");
-      toast.success(response.CustomerMessage ?? "Payment initiated successfully.");
+      setPhoneNumber("");
     } catch {
       // Error toast handled in onError above.
     }

@@ -14,7 +14,16 @@ function MyApp({ Component, pageProps }: AppPropsWithSession) {
     <SessionProvider session={session}>
       <>
         <Component {...rest} />
-        <ToastContainer position="top-right" newestOnTop draggable={false} />
+        <ToastContainer
+          position="top-right"
+          newestOnTop
+          draggable={false}
+          toastClassName={() =>
+            "relative flex min-h-12 rounded-md bg-card text-foreground border border-border shadow-lg"
+          }
+          bodyClassName={() => "flex w-full py-2 text-sm font-medium"}
+          progressClassName="bg-primary"
+        />
       </>
     </SessionProvider>
   );

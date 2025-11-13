@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const callbackSchema = z.object({
   Body: z.object({
     stkCallback: z.object({
@@ -73,16 +76,18 @@ const parseAmount = (value: string | undefined): number | undefined => {
 };
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  console.log(`[${new Date().toISOString()}] CALLBACK RECEIVED: ${request.method} ${request.url}`);
   try {
-    const body = (await request.json()) as unknown;
-    const parsed = callbackSchema.safeParse(body);
+    const payload = (await request.json()) as unknown;
+    console.log("Raw payload:", payload);
+    const parsed = callbackSchema.safeParse(payload);
 
     if (!parsed.success) {
       console.error(
         `[${new Date().toISOString()}] Invalid M-PESA callback payload`,
         parsed.error.flatten(),
       );
-      return NextResponse.json({ message: "Invalid payload" }, { status: 400 });
+      return NextResponse.json("OK", { status: 200 });
     }
 
     const {
@@ -96,30 +101,55 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const transactionDate = findCallbackValue(metadataItems, "TransactionDate");
     const amount = parseAmount(amountRaw);
 
-    await prisma.transaction.create({
-      data: {
+    const transaction = await prisma.transaction.upsert({
+      where: { checkoutRequestId: stkCallback.CheckoutRequestID },
+      update: {
+        merchantRequestId: stkCallback.MerchantRequestID,
+        resultCode: stkCallback.ResultCode,
+        resultDesc: stkCallback.ResultDesc,
+        amount: amount ?? undefined,
+        mpesaReceiptNumber: mpesaReceiptNumber ?? undefined,
+        phoneNumber: phoneNumber ?? undefined,
+        transactionDate: transactionDate ?? undefined,
+      },
+      create: {
         merchantRequestId: stkCallback.MerchantRequestID,
         checkoutRequestId: stkCallback.CheckoutRequestID,
         resultCode: stkCallback.ResultCode,
         resultDesc: stkCallback.ResultDesc,
-        amount,
-        mpesaReceiptNumber,
-        phoneNumber,
-        transactionDate,
+        amount: amount ?? undefined,
+        mpesaReceiptNumber: mpesaReceiptNumber ?? undefined,
+        phoneNumber: phoneNumber ?? undefined,
+        transactionDate: transactionDate ?? undefined,
       },
+      include: { order: true },
     });
 
+    if (transaction.orderId) {
+      if (stkCallback.ResultCode === 0) {
+        await prisma.order.update({
+          where: { id: transaction.orderId },
+          data: { status: "PAID" },
+        });
+      } else {
+        await prisma.order.update({
+          where: { id: transaction.orderId },
+          data: { status: "CANCELLED" },
+        });
+      }
+    }
+
     console.info(
-      `[${new Date().toISOString()}] Stored M-PESA callback for CheckoutRequestID ${stkCallback.CheckoutRequestID}`,
+      `[${new Date().toISOString()}] Callback processed for CheckoutRequestID ${stkCallback.CheckoutRequestID} with ResultCode ${stkCallback.ResultCode}`,
     );
 
-    return NextResponse.json({ message: "Callback received successfully" });
+    return NextResponse.json("OK", { status: 200 });
   } catch (error: unknown) {
     console.error(
       `[${new Date().toISOString()}] Failed to process M-PESA callback`,
       error,
     );
-    return NextResponse.json({ message: "Failed to process callback" }, { status: 500 });
+    return NextResponse.json("OK", { status: 200 });
   }
 }
 
