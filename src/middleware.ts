@@ -6,6 +6,7 @@ export async function middleware(req) {
   const pathname = requestUrl.pathname;
   // Allow static assets, _next, uploads, favicon, images, etc.
   if (
+    pathname.startsWith("/api/mpesa/callback") ||
     req.nextUrl.pathname.startsWith("/_next") ||
     req.nextUrl.pathname.startsWith("/static") ||
     req.nextUrl.pathname.startsWith("/uploads") ||

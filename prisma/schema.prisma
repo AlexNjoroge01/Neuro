@@ -200,6 +200,7 @@ model Order {
 
   user       User       @relation(fields: [userId], references: [id])
   items      OrderItem[]
+  transactions Transaction[]
 }
 
 model OrderItem {
@@ -242,13 +243,16 @@ model CartItem {
 
 model Transaction {
   id                 String   @id @default(cuid())
-  merchantRequestId  String
-  checkoutRequestId  String
-  resultCode         Int
-  resultDesc         String
+  merchantRequestId  String?
+  checkoutRequestId  String  @unique
+  resultCode         Int?
+  resultDesc         String?
   amount             Float?
   mpesaReceiptNumber String?
   phoneNumber        String?
   transactionDate    String?
   createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  orderId            String?
+  order              Order?   @relation(fields: [orderId], references: [id])
 }
