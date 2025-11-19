@@ -1,12 +1,12 @@
 import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function middleware(req) {
-  const requestUrl = req.nextUrl;          // ✅ renamed from 'url' to avoid collision
+export async function middleware(req:NextRequest) {
+  const requestUrl = req.nextUrl;          
   const pathname = requestUrl.pathname;
-  // Allow static assets, _next, uploads, favicon, images, etc.
+
   if (
-    pathname.startsWith("/api/mpesa/callback") ||
+    pathname.includes("/api/mpesa/callback") ||
     req.nextUrl.pathname.startsWith("/_next") ||
     req.nextUrl.pathname.startsWith("/static") ||
     req.nextUrl.pathname.startsWith("/uploads") ||

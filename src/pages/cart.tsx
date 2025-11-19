@@ -58,9 +58,7 @@ export default function CartPage() {
   );
 
   useEffect(() => {
-    if (!transactionStatus.data || !checkoutRequestId) {
-      return;
-    }
+    if (!transactionStatus.data || !checkoutRequestId) return;
 
     const { resultCode, resultDesc, orderStatus } = transactionStatus.data;
     if (resultCode === 0 && orderStatus === "PAID" && !hasRedirectedRef.current) {
@@ -77,7 +75,6 @@ export default function CartPage() {
     }
   }, [transactionStatus.data, checkoutRequestId, router]);
 
-  // Stop polling after ~2 minutes if still pending
   useEffect(() => {
     if (!checkoutRequestId) return;
     const timeout = setTimeout(() => {
@@ -104,11 +101,7 @@ export default function CartPage() {
         <div className="bg-card border border-border shadow-md rounded-xl p-8 text-center max-w-md">
           <h1 className="text-2xl font-bold mb-3 text-primary">Shopping Cart</h1>
           <p className="text-muted-foreground">
-            Please{" "}
-            <Link href="/auth/login" className="underline text-primary">
-              sign in
-            </Link>{" "}
-            to use the cart.
+            Please <Link href="/auth/login" className="underline text-primary">sign in</Link> to use the cart.
           </p>
         </div>
       </div>
@@ -147,38 +140,40 @@ export default function CartPage() {
       });
       setPhoneNumber("");
     } catch {
-      // Error toast handled in onError above.
+      // Handled in onError
     }
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <ClientNavbar />
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-extrabold mb-8 py-8 text-primary">
+
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <h1 className="text-4xl font-extrabold mb-10 text-primary text-center lg:text-left">
           Your Shopping Cart 🛒
         </h1>
 
         {items.length === 0 ? (
-          <div className="text-center bg-secondary/20 p-10 rounded-lg border border-border shadow-sm">
-            <p className="text-muted-foreground mb-4">Your cart is empty 😢</p>
+          <div className="text-center bg-secondary/20 p-16 rounded-xl border border-border">
+            <p className="text-xl text-muted-foreground mb-6">Your cart is empty 😢</p>
             <Link
               href="/shop"
-              className="inline-block bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition"
+              className="inline-block bg-primary text-primary-foreground px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary/90 transition"
             >
-              Shop Now
+              Continue Shopping
             </Link>
           </div>
         ) : (
-          <>
-            <div className="space-y-4 mb-10">
+          /* ==== FINAL RESPONSIVE LAYOUT ==== */
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Cart Items – appears first on mobile, left column on desktop */}
+            <div className="lg:col-span-2 order-1 space-y-6">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between gap-4 bg-card border border-border rounded-lg p-4 shadow-sm hover:shadow-md transition"
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 bg-card border  border-secondary/20 rounded-xl p-6 shadow-lg hover:shadow-lg transition"
                 >
-                  {/* Product Image */}
-                  <div className="w-20 h-20 relative rounded-md overflow-hidden">
+                  <div className="w-24 h-24 relative rounded-lg overflow-hidden flex-shrink-0">
                     <Image
                       src={
                         item.product?.image
@@ -189,101 +184,112 @@ export default function CartPage() {
                       }
                       alt={item.product?.name ?? "Product"}
                       fill
-                      className="object-contain"
+                      className="object-cover"
                     />
                   </div>
 
-                  {/* Product Details */}
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">
                       {item.product ? (
-                        <Link href={`/shop/${item.productId}`} className="hover:underline">
+                        <Link href={`/shop/${item.productId}`} className="hover:text-primary transition">
                           {item.product.name}
                         </Link>
                       ) : (
                         item.productId
                       )}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
-                      KES {(item.product?.price ?? 0).toLocaleString()}
+                    <p className="text-muted-foreground">
+                      KES {(item.product?.price ?? 0).toLocaleString()} each
                     </p>
                   </div>
 
-                  {/* Quantity Controls */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
                     <button
                       onClick={() => onQtyChange(item.productId, item.quantity - 1)}
-                      className="px-3 py-1  rounded  transition"
+                      className="w-10 h-10 rounded-full border border-border hover:bg-primary hover:text-primary-foreground transition"
                     >
-                      -
+                      −
                     </button>
                     <input
                       type="number"
                       min={1}
                       value={item.quantity}
-                      onChange={(event) =>
-                        onQtyChange(item.productId, Number.parseInt(event.target.value, 10) || 1)
-                      }
-                      className="w-14 text-center border border-border rounded bg-background"
+                      onChange={(e) => onQtyChange(item.productId, Number.parseInt(e.target.value, 10) || 1)}
+                      className="w-16 text-center border border-border rounded bg-background py-2"
                     />
                     <button
                       onClick={() => onQtyChange(item.productId, item.quantity + 1)}
-                      className="px-3 py-1  rounded transition"
+                      className="w-10 h-10 rounded-full border border-border hover:bg-primary hover:text-primary-foreground transition"
                     >
                       +
                     </button>
                   </div>
 
-                  {/* Subtotal */}
-                  <div className="font-semibold text-sm">
-                    KES {((item.product?.price ?? 0) * item.quantity).toLocaleString()}
+                  <div className="text-right w-full sm:w-auto">
+                    <p className="font-bold text-lg">
+                      KES {((item.product?.price ?? 0) * item.quantity).toLocaleString()}
+                    </p>
+                    <button
+                      onClick={() => remove.mutate(item.productId)}
+                      className="text-red-600 text-sm hover:underline mt-2 block"
+                    >
+                      Remove
+                    </button>
                   </div>
-
-                  {/* Remove */}
-                  <button
-                    onClick={() => remove.mutate(item.productId)}
-                    className="text-red-500 text-xs hover:underline"
-                  >
-                    Remove
-                  </button>
                 </div>
               ))}
             </div>
 
-            {/* Summary Section */}
-            <div className="bg-secondary border border-border p-6 rounded-lg shadow-sm space-y-4 max-w-md ml-auto">
-              <div className="flex justify-between text-white text-lg font-semibold">
-                <span>Subtotal</span>
-                <span className="text-primary">KES {subtotal.toLocaleString()}</span>
-              </div>
+            {/* Order Summary – appears at the bottom on mobile, sticky sidebar on desktop */}
+            <div className="lg:col-span-1 order-2">
+              <div className="bg-secondary rounded-2xl p-8 text-white sticky top-6 border border-white/10">
+                <h2 className="text-2xl font-bold mb-8">Order Summary</h2>
 
-              <div className="flex justify-between items-center mt-4">
-                <button
-                  onClick={() => clear.mutate()}
-                  className="text-red-600 underline text-sm hover:text-red-700"
-                >
-                  Clear Cart
-                </button>
-                <button
-                  onClick={openMpesaModal}
-                  className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition disabled:opacity-60"
-                  disabled={mpesaPayment.isPending}
-                >
-                  Proceed to Checkout
-                </button>
+                <div className="space-y-6">
+                  <div className="flex justify-between text-lg">
+                    <span className="text-white/80">Subtotal</span>
+                    <span className="font-bold text-primary text-xl">
+                      KES {subtotal.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="border-t border-white/20 pt-6">
+                    <div className="flex justify-between text-xl font-bold">
+                      <span>Total</span>
+                      <span className="text-primary">KES {subtotal.toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-4 mt-8">
+                    <button
+                      onClick={() => clear.mutate()}
+                      className="pl-60 text-red-500 underline transition text-lg"
+                    >
+                      Clear Cart
+                    </button>
+
+                    <button
+                      onClick={openMpesaModal}
+                      disabled={mpesaPayment.isPending}
+                      className="bg-primary text-primary-foreground py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition disabled:opacity-70 shadow-lg"
+                    >
+                      {mpesaPayment.isPending ? "Processing..." : "Pay with M-Pesa"}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
 
+      {/* M-Pesa Modal – unchanged */}
       {isMpesaModalOpen && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
           <div className="bg-background border border-border rounded-lg p-6 w-full max-w-md shadow-xl space-y-4">
             <h2 className="text-lg font-semibold text-primary">Complete Payment</h2>
             <p className="text-sm text-muted-foreground">
-              Enter the M-PESA number that should receive the STK prompt. Ensure the phone is on and
-              has network.
+              Enter the M-PESA number that should receive the STK prompt. Ensure the phone is on and has network.
             </p>
             <form className="space-y-4" onSubmit={handleMpesaPayment}>
               <div>
@@ -293,11 +299,10 @@ export default function CartPage() {
                 <input
                   id="mpesa-phone"
                   type="tel"
-                  inputMode="tel"
                   placeholder="e.g. 2547XXXXXXXX"
                   className="w-full border border-border rounded px-3 py-2 bg-background"
                   value={phoneNumber}
-                  onChange={(event) => setPhoneNumber(event.target.value)}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                   disabled={mpesaPayment.isPending}
                   required
                 />

@@ -1,49 +1,64 @@
-import { Bell, Search, LogIn, LogOut, ShoppingCart, ChevronDown } from "lucide-react";
+"use client";
+
+import { Search, LogIn, ShoppingCart, ChevronDown, Menu, X } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { trpc } from "@/utils/trpc";
-import { useRouter } from "next/router";
+import { toast } from "react-toastify";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function ClientNavbar() {
   const { data: session, status } = useSession();
-  const router = useRouter();
   const { data: serverCart } = trpc.cart.get.useQuery(undefined, { enabled: status === "authenticated" });
   const [localCount, setLocalCount] = useState(0);
-  const [openMenu, setOpenMenu] = useState(false);
-  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [showResults, setShowResults] = useState(false);
-  const { data: results } = trpc.products.search.useQuery(search, { enabled: search.trim().length >= 2 });
+  const { data: results, isFetching } = trpc.products.search.useQuery(search, { 
+    enabled: search.trim().length >= 2 
+  });
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    function onDocClick(e: MouseEvent) {
-      if (!menuRef.current) return;
-      if (!menuRef.current.contains(e.target as Node)) setOpenMenu(false);
-    }
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, []);
+  // Ref for mobile menu (bottom sheet)
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  // Ref for hamburger button (to exclude it from outside clicks)
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
-  // Guest/local fallback
+  // Close mobile menu only when clicking outside of it or the hamburger button
   useEffect(() => {
-    if (status === "authenticated") return; // serverCart will drive count
-    const updateCartCount = () => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        mobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(e.target as Node) &&
+        hamburgerRef.current &&
+        !hamburgerRef.current.contains(e.target as Node)
+      ) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [mobileMenuOpen]);
+
+  // Guest cart fallback
+  useEffect(() => {
+    if (status === "authenticated") return;
+    const updateCount = () => {
       try {
-        const storedCart = JSON.parse(localStorage.getItem("cart") ?? "[]");
-        const count = Array.isArray(storedCart)
-          ? storedCart.reduce((sum: number, i: any) => sum + (i.quantity ?? 1), 0)
+        const cart = JSON.parse(localStorage.getItem("cart") ?? "[]");
+        const count = Array.isArray(cart)
+          ? cart.reduce((sum: number, i: any) => sum + (i.quantity ?? 1), 0)
           : 0;
         setLocalCount(count);
       } catch {
         setLocalCount(0);
       }
     };
-    updateCartCount();
-    window.addEventListener("storage", updateCartCount);
-    return () => window.removeEventListener("storage", updateCartCount);
+    updateCount();
+    window.addEventListener("storage", updateCount);
+    return () => window.removeEventListener("storage", updateCount);
   }, [status]);
 
   const cartCount = useMemo(() => {
@@ -58,95 +73,256 @@ export default function ClientNavbar() {
     return n.split(" ")[0] || "";
   }, [session?.user?.name]);
 
-  const avatarSrc = session?.user?.image || "/user.png.jpg";
+  const handleSignOut = async () => {
+    try {
+      await signOut({ callbackUrl: "/auth/login" });
+      toast.success("Signed out successfully");
+    } catch (error) {
+      toast.error("Sign out failed. Please try again.");
+    }
+  };
 
   return (
-    <nav className="w-full bg-secondary border-b border-gray-200/20 p-4 flex justify-between items-center shadow-md">
-      {/* Left: Logo + Search */}
-      <div className="flex items-center gap-3 flex-1">
-        <Link href="/">
-          <p className="text-xl font-bold mb-3 text-primary ">BuySmart Kenya</p>
-        </Link>
-        <div className="flex items-center gap-2 flex-1 relative">
-          <Search className="h-5 w-5 text-muted-foreground" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setShowResults(true); }}
-            onBlur={() => setTimeout(() => setShowResults(false), 150)}
-            placeholder="What are you shopping for today?"
-            className="w-xl bg-gray-100/10 border border-gray-200/20 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 text-white placeholder-gray-400"
-          />
-          {showResults && (results?.length ?? 0) > 0 && (
-            <div className="absolute top-8 left-0 w-full bg-background border border-gray-200/30 rounded-md shadow z-40 max-h-80 overflow-auto">
-              {(results ?? []).map((p) => (
-                <Link key={p.id} href={`/shop/${p.id}`} className="block px-3 py-2 text-sm hover:bg-gray-100/10">
-                  {p.name} {p.brand ? <span className="text-xs text-muted-foreground">· {p.brand}</span> : null}
-                </Link>
-              ))}
+    <nav className="w-full bg-secondary border-b border-border sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link href="/">
+              <p className="text-2xl font-bold text-primary">BuySmart Kenya</p>
+            </Link>
+          </div>
+
+          {/* Desktop Search Bar */}
+          <div className="hidden md:flex flex-1 max-w-md mx-8 relative">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setShowResults(true); }}
+                onBlur={() => setTimeout(() => setShowResults(false), 150)}
+                placeholder="What are you shopping for today?"
+                className="w-full pl-10 pr-3 py-2 bg-white border border-border rounded-lg text-sm focus:outline-none focus:ring-2  placeholder-muted-foreground"
+              />
+              <AnimatePresence>
+                {showResults && search.trim().length >= 2 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full mt-1 w-full bg-background border border-border rounded-lg shadow-lg z-50 max-h-96 overflow-auto"
+                  >
+                    {isFetching ? (
+                      <div className="px-4 py-8 text-center text-muted-foreground">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent" />
+                          <span className="text-sm">Searching...</span>
+                        </div>
+                      </div>
+                    ) : results && results.length > 0 ? (
+                      results.map((p) => (
+                        <Link
+                          key={p.id}
+                          href={`/shop/${p.id}`}
+                          onClick={() => setMobileMenuOpen(false)} // Optional: close menu on selection
+                          className="block px-4 py-3 text-sm hover:bg-accent transition"
+                        >
+                          {p.name}{" "}
+                          {p.brand && <span className="text-xs text-muted-foreground">· {p.brand}</span>}
+                        </Link>
+                      ))
+                    ) : (
+                      <div className="px-4 py-6 text-center text-muted-foreground text-sm">
+                        No products found
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          )}
+          </div>
+
+          {/* Desktop Right Icons */}
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/cart" className="relative">
+              <ShoppingCart className="h-6 w-6 text-primary hover:text-primary transition" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+
+            {status === "authenticated" ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="flex bg-primary/50 border-sm px-4 py-2 rounded-sm items-center gap-3 hover:bg-secondary/70 transition"
+                  aria-haspopup="true"
+                  aria-expanded={mobileMenuOpen}
+                >
+                  <span className="flex text-sm text-primary font-medium">
+                    Hi, {firstName || session.user?.email}                    
+                  </span>
+                  <ChevronDown className={`h-4 w-4 text-primary transition ${mobileMenuOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                <AnimatePresence>
+                  {mobileMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-56 bg-secondary border border-border rounded-lg shadow-xl"
+                    >
+                      <Link href="/account" className="block px-4 py-3 text-sm text-primary hover:bg-secondary/70 transition">Account</Link>
+                      <Link href="/orders" className="block px-4 py-3 text-sm text-primary hover:bg-secondary/70 transition">My Orders</Link>
+                      <Link href="/cart" className="block px-4 py-3 text-sm text-primary hover:bg-secondary/70 transition">Cart</Link>
+                      <Link href="/shop" className="block px-4 py-3 text-sm text-primary hover:bg-secondary/70 transition">Shop</Link>
+                      <hr className="border-border" />
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-secondary/70 transition"
+                      >
+                        Sign out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <Link href="/auth/login" className="flex items-center gap-2 text-foreground hover:text-primary transition">
+                <LogIn className="h-5 w-5" />
+                <span>Login</span>
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex md:hidden items-center gap-4">
+            <Link href="/cart" className="relative">
+              <ShoppingCart className="h-6 w-6 text-primary" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+
+            <button
+              ref={hamburgerRef}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-primary"
+            >
+              {mobileMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Right: User info / auth controls */}
-      <div className="flex items-center gap-4">
-        {/* Cart Icon with count */}
-        <Link href="/cart" className="relative">
-          <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-primary transition" />
-          {cartCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center">
-              {cartCount}
-            </span>
-          )}
-        </Link>
-
-        {status === "authenticated" ? (
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setOpenMenu(v => !v)}
-              className="flex items-center gap-2"
-            >
-              <span className="text-sm truncate max-w-[160px] text-primary" >
-                {firstName ? `Hi, ${firstName}` : session.user?.email}
-              </span>
-              <Image
-                src={avatarSrc}
-                alt="User profile"
-                width={32}
-                height={32}
-                className="rounded-full object-cover h-8 w-8 border border-gray-200/30"
-              />
-              <ChevronDown className="h-4 w-4  text-primary" />
-            </button>
-            {openMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-background border border-gray-200/30 rounded-md shadow-lg z-50">
-                <Link href="/account" className="block px-3 py-2 text-sm hover:bg-gray-100/10">Account</Link>
-                <Link href="/orders" className="block px-3 py-2 text-sm hover:bg-gray-100/10">My Orders</Link>
-                <Link href="/cart" className="block px-3 py-2 text-sm hover:bg-gray-100/10">Cart</Link>
-                <Link href="/shop" className="block px-3 py-2 text-sm hover:bg-gray-100/10">Shop</Link>
-                <button
-                  onClick={() => signOut({ callbackUrl: "/auth/login" })}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100/10 text-red-600"
-                >
-                  Sign out
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <Link
-            href="/auth/login"
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition"
-            title="Sign in"
+      {/* Mobile Bottom Sheet Menu + Search */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            ref={mobileMenuRef}
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="md:hidden fixed inset-x-0 top-16 bg-secondary border-t border-border z-40"
           >
-            <LogIn className="h-5 w-5" />
-            <span className="hidden sm:inline">Login</span>
-          </Link>
-        )}
+            <div className="px-4 py-4 space-y-4">
+              {/* Mobile Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => { 
+                    setSearch(e.target.value); 
+                    setShowResults(true); 
+                  }}
+                  onBlur={() => setTimeout(() => setShowResults(false), 200)}
+                  placeholder="Search products..."
+                  className="w-full pl-10 pr-3 py-2 bg-white border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
 
-        <Bell className="h-5 w-5 text-muted-foreground cursor-pointer" />
-      </div>
+                {/* ← THIS IS THE MISSING PART → Mobile Search Results Dropdown */}
+                <AnimatePresence>
+                  {showResults && search.trim().length >= 2 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-50 max-h-96 overflow-auto"
+                    >
+                      {isFetching ? (
+                        <div className="px-4 py-8 text-center text-muted-foreground">
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent" />
+                            <span className="text-sm">Searching...</span>
+                          </div>
+                        </div>
+                      ) : results && results.length > 0 ? (
+                        results.map((p) => (
+                          <Link
+                            key={p.id}
+                            href={`/shop/${p.id}`}
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setShowResults(false);
+                            }}
+                            className="block px-4 py-3 text-sm hover:bg-accent transition"
+                          >
+                            {p.name}{" "}
+                            {p.brand && <span className="text-xs text-muted-foreground">· {p.brand}</span>}
+                          </Link>
+                        ))
+                      ) : (
+                        <div className="px-4 py-6 text-center text-muted-foreground text-sm">
+                          No products found
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Mobile Links */}
+              {status === "authenticated" ? (
+                <>
+                  <div className="flex items-center gap-3 pb-3 border-b border-border">
+                    <div>
+                      <p className="font-medium text-primary">Hi, {firstName}</p>
+                      <p className="text-xs text-primary">{session.user?.email}</p>
+                    </div>
+                  </div>
+                  <Link href="/account" className="block py-2 text-primary">Account</Link>
+                  <Link href="/orders" className="block py-2 text-primary">My Orders</Link>
+                  <Link href="/cart" className="block py-2 text-primary">Cart ({cartCount})</Link>
+                  <Link href="/shop" className="block py-2 text-primary">Shop</Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full text-left py-2 text-red-600"
+                  >
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <Link href="/auth/login" className="flex items-center gap-2 py-2 text-primary">
+                  <LogIn className="h-5 w-5" />
+                  Login
+                </Link>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
