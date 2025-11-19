@@ -10,6 +10,9 @@ import {
   Wallet,
   UsersRound,
   Power,
+  ShoppingBag,
+  ClipboardList,
+  User,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useMemo } from "react";
@@ -31,6 +34,9 @@ const ADMIN_ITEMS = [
   { href: "/fleet", label: "Fleet", Icon: Truck },
   { href: "/hr", label: "HR & Payroll", Icon: UsersRound },
   { href: "/reports", label: "Reports", Icon: BarChart3 },
+  { href: "/shop", label: "Shop", Icon: ShoppingBag },
+  { href: "/orders", label: "All Orders", Icon: ClipboardList },
+  { href: "/account", label: "Account", Icon: User },
   { href: "/settings", label: "Settings", Icon: Settings },
 ];
 

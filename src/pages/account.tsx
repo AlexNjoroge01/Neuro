@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import ClientNavbar from "@/components/ClientNavbar";
+import SidebarLayout from "@/components/Layout";
 import { useSession } from "next-auth/react";
 import { Globe, Clock, Languages, User, Mail, Phone, MapPin, Package, Shield } from "lucide-react";
 
 export default function AccountPage() {
   const { data: session, status } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER";
 
   const [detectedTimezone, setDetectedTimezone] = useState<string>("");
   const [detectedCountry, setDetectedCountry] = useState<string>("");
@@ -62,59 +64,72 @@ export default function AccountPage() {
 
   const { name, email, role, phone, address, shippingInfo } = session.user;
 
-  return (
-    <div className="min-h-screen bg-white"> {/* Dark/rich secondary background */}
-      <ClientNavbar />
+  const accountContent = (
+    <div className="max-w-4xl mx-auto px-6 bg-secondary rounded-lg mt-4 mb-4 py-12">
+      <h1 className="text-4xl font-bold text-white mb-10 text-center md:text-left">
+        Account Settings
+      </h1>
 
-      <div className="max-w-4xl mx-auto px-6 bg-secondary rounded-lg mt-4 mb-4 py-12">
-        <h1 className="text-4xl font-bold text-white mb-10 text-center md:text-left">
-          Account Settings
-        </h1>
-
-        <div className="space-y-8">
-          {/* Role Highlight */}
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <p className="text-white/80 text-lg font-medium">Your Role</p>
-              <span className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-primary text-white font-bold text-lg shadow-lg">
-                <Shield className="h-6 w-6" />
-                {role || "User"}
-              </span>
-            </div>
-          </div>
-
-          {/* Profile Information */}
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
-            <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
-              <User className="h-7 w-7 text-primary" />
-              Profile Information
-            </h2>
-            <div className="space-y-7">
-              <InfoRow icon={<User className="h-6 w-6 text-primary" />} label="Full Name" value={name ?? "—"} />
-              <InfoRow icon={<Mail className="h-6 w-6 text-primary" />} label="Email Address" value={email ?? "—"} />
-              <InfoRow icon={<Phone className="h-6 w-6 text-primary" />} label="Phone" value={phone ?? "Not provided"} />
-              <InfoRow icon={<MapPin className="h-6 w-6 text-primary" />} label="Address" value={address ?? "Not provided"} />
-              <InfoRow icon={<Package className="h-6 w-6 text-primary" />} label="Shipping Info" value={shippingInfo ?? "Not provided"} />
-            </div>
-          </div>
-
-          {/* Detected Information */}
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
-            <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
-              <Globe className="h-7 w-7 text-primary" />
-              Detected Information
-            </h2>
-            <div className="space-y-7">
-              <InfoRow icon={<Clock className="h-6 w-6 text-primary" />} label="Timezone" value={detectedTimezone || "Detecting..."} />
-              <InfoRow icon={<Globe className="h-6 w-6 text-primary" />} label="Country" value={detectedCountry || "Detecting..."} />
-              <InfoRow icon={<Languages className="h-6 w-6 text-primary" />} label="Browser Language" value={detectedLanguage || "Detecting..."} />
-            </div>
-            <p className="mt-8 text-sm text-white/70 italic">
-              This data is auto-detected from your device and browser.
-            </p>
+      <div className="space-y-8">
+        {/* Role Highlight */}
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <p className="text-white/80 text-lg font-medium">Your Role</p>
+            <span className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-primary text-white font-bold text-lg shadow-lg">
+              <Shield className="h-6 w-6" />
+              {role || "User"}
+            </span>
           </div>
         </div>
+
+        {/* Profile Information */}
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+          <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+            <User className="h-7 w-7 text-primary" />
+            Profile Information
+          </h2>
+          <div className="space-y-7">
+            <InfoRow icon={<User className="h-6 w-6 text-primary" />} label="Full Name" value={name ?? "—"} />
+            <InfoRow icon={<Mail className="h-6 w-6 text-primary" />} label="Email Address" value={email ?? "—"} />
+            <InfoRow icon={<Phone className="h-6 w-6 text-primary" />} label="Phone" value={phone ?? "Not provided"} />
+            <InfoRow icon={<MapPin className="h-6 w-6 text-primary" />} label="Address" value={address ?? "Not provided"} />
+            <InfoRow icon={<Package className="h-6 w-6 text-primary" />} label="Shipping Info" value={shippingInfo ?? "Not provided"} />
+          </div>
+        </div>
+
+        {/* Detected Information */}
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+          <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+            <Globe className="h-7 w-7 text-primary" />
+            Detected Information
+          </h2>
+          <div className="space-y-7">
+            <InfoRow icon={<Clock className="h-6 w-6 text-primary" />} label="Timezone" value={detectedTimezone || "Detecting..."} />
+            <InfoRow icon={<Globe className="h-6 w-6 text-primary" />} label="Country" value={detectedCountry || "Detecting..."} />
+            <InfoRow icon={<Languages className="h-6 w-6 text-primary" />} label="Browser Language" value={detectedLanguage || "Detecting..."} />
+          </div>
+          <p className="mt-8 text-sm text-white/70 italic">
+            This data is auto-detected from your device and browser.
+          </p>
+        </div>
       </div>
+    </div>
+  );
+
+  if (isAdmin) {
+    return (
+      <SidebarLayout>
+        <div className="overflow-y-auto h-screen bg-white">
+          {accountContent}
+        </div>
+      </SidebarLayout>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-white">
+      <ClientNavbar />
+      {accountContent}
     </div>
   );
 }

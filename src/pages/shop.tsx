@@ -7,8 +7,12 @@ import Image from "next/image";
 import Footer from "@/components/Footer";
 import FAQs from "@/components/FAQs";
 import Testimonials from "@/components/Testimonials";
+import SidebarLayout from "@/components/Layout";
+import { useSession } from "next-auth/react";
 
 export default function ShopPage() {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER";
   const { data: products, isLoading } = trpc.products.publicList.useQuery();
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -44,10 +48,8 @@ export default function ShopPage() {
     return groups;
   }, [products]);
 
-  return (
-    <div className="min-h-screen bg-background">
-      <ClientNavbar />
-
+  const shopContent = (
+    <>
       {/* Header Banner - Now Full Width & Fully Responsive */}
       <div className="relative w-full mt-10 mb-10 overflow-hidden shadow-sm">
         {images.map((img, index) => (
@@ -57,9 +59,8 @@ export default function ShopPage() {
             alt="Banner background"
             fill
             quality={95}
-            className={`object-cover object-center absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              index === currentImage ? "opacity-100" : "opacity-0"
-            }`}
+            className={`object-cover object-center absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentImage ? "opacity-100" : "opacity-0"
+              }`}
             priority={index === 0}
           />
         ))}
@@ -91,9 +92,9 @@ export default function ShopPage() {
       {/* Filter Bar - Full Width Container Alignment */}
       <div className="max-w-7xl mx-auto pl-8 mt- 10 mb-10 font-bold text-secondary text-2xl">
         <h2>Filter By Categories</h2>
-        </div>
-    <div className="max-w-7xl mx-auto flex gap-3 px-6 mb-10 overflow-x-auto scrollbar-hide">
-      
+      </div>
+      <div className="max-w-7xl mx-auto flex gap-3 px-6 mb-10 overflow-x-auto scrollbar-hide">
+
         {categories.map((cat, index) => {
           const isSelected = selectedCategory === cat;
           const isAlt = index % 2 === 0;
@@ -103,10 +104,9 @@ export default function ShopPage() {
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={`whitespace-nowrap px-5 py-2 rounded-lg font-medium text-sm transition-all border border-border shadow-sm 
-                ${
-                  isSelected
-                    ? "bg-primary text-primary-foreground"
-                    : isAlt
+                ${isSelected
+                  ? "bg-primary text-primary-foreground"
+                  : isAlt
                     ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     : "bg-muted text-foreground hover:bg-muted/80"
                 }`}
@@ -188,6 +188,23 @@ export default function ShopPage() {
 
       <Testimonials />
       <FAQs />
+    </>
+  );
+
+  if (isAdmin) {
+    return (
+      <SidebarLayout>
+        <div className="overflow-y-auto h-screen">
+          {shopContent}
+        </div>
+      </SidebarLayout>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <ClientNavbar />
+      {shopContent}
       <Footer />
     </div>
   );
