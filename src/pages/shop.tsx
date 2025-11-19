@@ -48,8 +48,8 @@ export default function ShopPage() {
     <div className="min-h-screen bg-background">
       <ClientNavbar />
 
-      {/* Header Banner */}
-      <div className="relative rounded-lg max-w-6xl mx-auto mt-10 mb-10 p-24 border border-border shadow-sm overflow-hidden">
+      {/* Header Banner - Now Full Width & Fully Responsive */}
+      <div className="relative w-full mt-10 mb-10 overflow-hidden shadow-sm">
         {images.map((img, index) => (
           <Image
             key={img}
@@ -66,26 +66,34 @@ export default function ShopPage() {
 
         <div className="absolute inset-0 bg-secondary/40" />
 
-        <div className="relative flex flex-col md:flex-row items-center gap-8 px-8 py-10 z-10">
-          <div className="flex-1">
-            <h2 className="text-5xl font-bold mb-4 text-primary drop-shadow">
-              Grab Upto 50% Off On <br />Selected Items
-            </h2>
-            <p className="mb-10 text-white">
-              Shop from premium quality brands. Limited time only.
-            </p>
-            <Link
-              href="/shop"
-              className="bg-primary text-primary-foreground px-7 py-3 rounded-lg font-semibold hover:bg-primary/90 transition"
-            >
-              Buy Now
-            </Link>
+        <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+          <div className="flex flex-col items-start gap-8 text-left">
+            <div className="max-w-2xl">
+              <h2 className="text-4xl font-bold tracking-tight text-primary drop-shadow-lg sm:text-5xl lg:text-6xl">
+                Grab Upto 50% Off On <br />Selected Items
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-white drop-shadow">
+                Shop from premium quality brands. Limited time only.
+              </p>
+              <div className="mt-10">
+                <Link
+                  href="/shop"
+                  className="bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold text-lg hover:bg-primary/90 transition shadow-lg"
+                >
+                  Buy Now
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className="max-w-6xl mx-auto flex gap-3 px-2 mb-10 overflow-x-auto scrollbar-hide">
+      {/* Filter Bar - Full Width Container Alignment */}
+      <div className="max-w-7xl mx-auto pl-8 mt- 10 mb-10 font-bold text-secondary text-2xl">
+        <h2>Filter By Categories</h2>
+        </div>
+    <div className="max-w-7xl mx-auto flex gap-3 px-6 mb-10 overflow-x-auto scrollbar-hide">
+      
         {categories.map((cat, index) => {
           const isSelected = selectedCategory === cat;
           const isAlt = index % 2 === 0;
@@ -109,62 +117,64 @@ export default function ShopPage() {
         })}
       </div>
 
-      {/* Products by Category — Row Layout */}
-      <div className="max-w-6xl mx-auto space-y-12 px-2">
+      {/* Products by Category — Full Width Responsive Grid */}
+      <div className="max-w-7xl mx-auto space-y-16 px-6">
         {isLoading ? (
-          <div className="text-center py-10">Loading...</div>
+          <div className="text-center py-20 text-muted-foreground">Loading products...</div>
         ) : (
           Object.entries(groupedProducts).map(([category, items]) => {
-            // Show all if "All" selected, otherwise only selected
             if (selectedCategory !== "All" && selectedCategory !== category)
               return null;
 
             return (
-              <section key={category} className="space-y-4">
-                {/* Category Title */}
-                <h2 className="text-2xl font-bold text-foreground border-b border-border pb-2">
+              <section key={category} className="space-y-6">
+                <h2 className="text-3xl font-bold text-foreground border-b border-border pb-3">
                   {category}
                 </h2>
 
-                {/* Products Grid */}
-                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {items.map((prod) => (
                     <div
                       key={prod.id}
-                      className="group bg-card rounded-lg p-4 shadow-sm hover:shadow-lg transition border border-border flex flex-col cursor-pointer"
+                      className="group bg-secondary rounded-lg p-5 shadow-lg hover:shadow-xl transition-all border border-border flex flex-col cursor-pointer"
                     >
                       <Link href={`/shop/${prod.id}`} className="flex flex-col h-full">
-                        <div className="aspect-square bg-gray-100/10 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                        {/* ← PROPER NEXT/IMAGE IMPLEMENTATION */}
+                        <div className="aspect-square rounded-lg mb-4 flex items-center justify-center overflow-hidden bg-transparent relative">
                           {prod.image ? (
-                            <img
+                            <Image
                               src={
                                 prod.image.startsWith("/uploads")
                                   ? prod.image
                                   : `/uploads/${prod.image}`
                               }
                               alt={prod.name}
-                              className="w-full h-full object-contain group-hover:scale-105 transition"
+                              fill
+                              className="object-contain group-hover:scale-105 transition"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                              quality={85}
                             />
                           ) : (
-                            <span className="text-gray-300 text-6xl">Headphones</span>
+                            <span className="text-gray-400 text-6xl">Headphones</span>
                           )}
                         </div>
+
                         <div className="flex-1">
-                          <div className="text-xs mb-1 text-primary font-semibold">
+                          <div className="text-xs mb-1 text-primary font-semibold uppercase tracking-wider">
                             {prod.brand || "Brand"}
                           </div>
-                          <div className="font-semibold text-lg mb-1 text-foreground truncate">
+                          <div className="font-bold text-lg mb-1 text-foreground line-clamp-2">
                             {prod.name}
                           </div>
-                          <div className="text-xs text-muted-foreground mb-1">
+                          <div className="text-xs text-white mb-1">
                             {prod.category || "Category"}
                           </div>
                         </div>
-                        <div className="mt-1 mb-2 font-bold text-xl text-primary">
+                        <div className="mt-2 mb-2 font-bold text-2xl text-primary">
                           {formatKES(prod.price ?? 0)}
                         </div>
-                        <div className="text-[11px] text-muted-foreground">
-                          In Stock: <b>{prod.stock}</b>
+                        <div className="text-sm text-white">
+                          In Stock: <b className="text-white">{prod.stock}</b>
                         </div>
                       </Link>
                     </div>

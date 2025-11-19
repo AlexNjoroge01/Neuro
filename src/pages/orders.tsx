@@ -1,6 +1,7 @@
 import ClientNavbar from "@/components/ClientNavbar";
 import { trpc } from "@/utils/trpc";
 import { useSession } from "next-auth/react";
+import Image from "next/image";   // ← added
 import Link from "next/link";
 import { useState } from "react";
 
@@ -34,8 +35,8 @@ export default function OrdersPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <ClientNavbar />
-      <div className="max-w-5xl mx-auto px-6 py-10">
-        <h1 className="text-3xl font-bold mb-6 text-gray-900">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-900">
           {isAdmin ? "All Orders" : "My Orders"}
         </h1>
 
@@ -58,22 +59,25 @@ export default function OrdersPage() {
           {(orders ?? []).map((order) => (
             <div
               key={order.id}
-              className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 transition hover:shadow-md"
+              className="bg-secondary text-white border border-white/10 shadow-sm rounded-xl p-5 transition hover:shadow-md"
             >
-              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 text-sm text-gray-600 border-b border-gray-100 pb-3">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 text-sm border-b border-white/20 pb-3">
                 <div>
-                  <span className="font-medium text-gray-800">Order ID:</span> {order.id}
+                  <span className="font-medium text-white/90">Order ID:</span>{" "}
+                  {order.id}
                 </div>
-                <div>{new Date(order.createdAt).toLocaleString()}</div>
-                <div>
+                <div className="text-white/80 text-sm">
+                  {new Date(order.createdAt).toLocaleString()}
+                </div>
+                <div className="text-sm">
                   Status:{" "}
                   <span className="font-semibold text-primary">{order.status}</span>
                 </div>
-                <div className="font-semibold text-gray-900">
+                <div className="font-semibold text-white">
                   Total: KES {order.total.toLocaleString()}
                 </div>
                 {isAdmin && (
-                  <div className="italic text-xs text-gray-500">
+                  <div className="italic text-xs text-white/70">
                     User: {order.user?.email || order.userId}
                   </div>
                 )}
@@ -112,8 +116,8 @@ export default function OrdersPage() {
               )}
 
               <div className="overflow-x-auto mt-4">
-                <table className="w-full text-xs border border-gray-100 rounded-lg">
-                  <thead className="bg-gray-50 text-gray-700 font-medium">
+                <table className="w-full text-xs border border-white/10 rounded-lg">
+                  <thead className="bg-white/5 text-white/80 font-medium">
                     <tr>
                       <th className="text-left py-2 px-3">Item</th>
                       <th className="text-left py-2 px-3">Price</th>
@@ -124,15 +128,30 @@ export default function OrdersPage() {
                     {order.items.map((item) => (
                       <tr
                         key={item.id}
-                        className="border-t border-gray-100 text-gray-700"
+                        className="border-t border-white/10 text-white/90"
                       >
                         <td className="px-3 py-2">
-                          {item.product?.name ?? item.productId}
+                          <div className="flex items-center gap-2">
+                            {item.product?.image ? (
+                              <Image
+                                src={"/uploads/" + item.product.image}
+                                alt={item.product?.name ?? "Product"}
+                                width={32}
+                                height={32}
+                                className="h-8 w-8 rounded object-cover flex-shrink-0 ring-1 ring-white/20"
+                              />
+                            ) : (
+                              <div className="h-8 w-8 bg-white/10 rounded flex-shrink-0" />
+                            )}
+                            <span>{item.product?.name ?? item.productId}</span>
+                          </div>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 text-white/90">
                           KES {item.price.toLocaleString()}
                         </td>
-                        <td className="px-3 py-2">{item.quantity}</td>
+                        <td className="px-3 py-2 text-white/90">
+                          {item.quantity}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
