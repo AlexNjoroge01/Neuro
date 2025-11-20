@@ -47,9 +47,10 @@ export default function ClientNavbar() {
     if (status === "authenticated") return;
     const updateCount = () => {
       try {
-        const cart = JSON.parse(localStorage.getItem("cart") ?? "[]");
+        const cart = JSON.parse(JSON.parse(localStorage.getItem("cart") ?? "[]"));
+
         const count = Array.isArray(cart)
-          ? cart.reduce((sum: number, i: any) => sum + (i.quantity ?? 1), 0)
+          ? cart.reduce((sum: number, i) => sum + (i.quantity ?? 1), 0)
           : 0;
         setLocalCount(count);
       } catch {

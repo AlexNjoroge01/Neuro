@@ -90,31 +90,42 @@ export default function ShopPage() {
       </div>
 
       {/* Filter Bar - Full Width Container Alignment */}
-      <div className="max-w-7xl mx-auto pl-8 mt- 10 mb-10 font-bold text-secondary text-2xl">
-        <h2>Filter By Categories</h2>
-      </div>
-      <div className="max-w-7xl mx-auto flex gap-3 px-6 mb-10 overflow-x-auto scrollbar-hide">
+    <div className="bg-muted/30 py-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-foreground mb-8">
+            Category name
+          </h2>
 
-        {categories.map((cat, index) => {
-          const isSelected = selectedCategory === cat;
-          const isAlt = index % 2 === 0;
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+            {categories.map((cat) => {
+              const isSelected = selectedCategory === cat;
 
-          return (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`whitespace-nowrap px-5 py-2 rounded-lg font-medium text-sm transition-all border border-border shadow-sm 
-                ${isSelected
-                  ? "bg-primary text-primary-foreground"
-                  : isAlt
-                    ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                    : "bg-muted text-foreground hover:bg-muted/80"
-                }`}
-            >
-              {cat}
-            </button>
-          );
-        })}
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`
+                    flex items-center justify-center
+                    h-20 sm:h-24
+                    rounded-xl
+                    bg-card
+                    border border-border
+                    shadow-sm
+                    hover:shadow-lg
+                    transition-all duration-200
+                    text-sm sm:text-base font-medium
+                    ${isSelected
+                      ? "bg-primary text-primary-foreground shadow-md ring-2 ring-primary/50"
+                      : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                    }
+                  `}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Products by Category — Full Width Responsive Grid */}
