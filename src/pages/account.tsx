@@ -4,15 +4,38 @@ import { useEffect, useState } from "react";
 import ClientNavbar from "@/components/ClientNavbar";
 import SidebarLayout from "@/components/Layout";
 import { useSession } from "next-auth/react";
-import { Globe, Clock, Languages, User, Mail, Phone, MapPin, Package, Shield } from "lucide-react";
+import { Globe, Clock, Languages, User, Mail, Phone, MapPin, Package, Shield, Edit, Save, X } from "lucide-react";
+import { trpc } from "@/utils/trpc";
 
 export default function AccountPage() {
   const { data: session, status } = useSession();
+  const utils = trpc.useUtils();
   const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER";
 
   const [detectedTimezone, setDetectedTimezone] = useState<string>("");
   const [detectedCountry, setDetectedCountry] = useState<string>("");
   const [detectedLanguage, setDetectedLanguage] = useState<string>("");
+
+  // Edit mode state
+  const [isEditing, setIsEditing] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [shippingInfo, setShippingInfo] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
+
+  const updateProfile = trpc.user.updateProfile.useMutation({
+    onSuccess: () => {
+      setSaveMessage("Profile updated successfully!");
+      setIsEditing(false);
+      // Refresh session data
+      utils.invalidate();
+      setTimeout(() => setSaveMessage(""), 3000);
+    },
+    onError: (error) => {
+      setSaveMessage(`Error: ${error.message}`);
+      setTimeout(() => setSaveMessage(""), 3000);
+    },
+  });
 
   useEffect(() => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -51,6 +74,15 @@ export default function AccountPage() {
       });
   }, []);
 
+  // Initialize form fields when session loads
+  useEffect(() => {
+    if (session?.user) {
+      setPhone(session.user.phone || "");
+      setAddress(session.user.address || "");
+      setShippingInfo(session.user.shippingInfo || "");
+    }
+  }, [session]);
+
   if (status !== "authenticated" || !session?.user) {
     return (
       <div className="flex h-screen items-center justify-center px-6">
@@ -62,13 +94,65 @@ export default function AccountPage() {
     );
   }
 
-  const { name, email, role, phone, address, shippingInfo } = session.user;
+  const { name, email, role } = session.user;
+
+  const handleSave = () => {
+    updateProfile.mutate({
+      phone: phone || undefined,
+      address: address || undefined,
+      shippingInfo: shippingInfo || undefined,
+    });
+  };
+
+  const handleCancel = () => {
+    // Reset to original values
+    setPhone(session.user.phone || "");
+    setAddress(session.user.address || "");
+    setShippingInfo(session.user.shippingInfo || "");
+    setIsEditing(false);
+  };
 
   const accountContent = (
     <div className="max-w-4xl mx-auto px-6 bg-secondary rounded-lg mt-4 mb-4 py-12">
-      <h1 className="text-4xl font-bold text-white mb-10 text-center md:text-left">
-        Account Settings
-      </h1>
+      <div className="flex justify-between items-center mb-10">
+        <h1 className="text-4xl font-bold text-white text-center md:text-left">
+          Account Settings
+        </h1>
+        {!isEditing ? (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition"
+          >
+            <Edit className="h-4 w-4" />
+            Edit Profile
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <button
+              onClick={handleSave}
+              disabled={updateProfile.isLoading}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+            >
+              <Save className="h-4 w-4" />
+              {updateProfile.isLoading ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={handleCancel}
+              disabled={updateProfile.isLoading}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition disabled:opacity-50"
+            >
+              <X className="h-4 w-4" />
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+
+      {saveMessage && (
+        <div className={`mb-6 p-4 rounded-lg ${saveMessage.includes("Error") ? "bg-red-500/20 text-red-200" : "bg-green-500/20 text-green-200"}`}>
+          {saveMessage}
+        </div>
+      )}
 
       <div className="space-y-8">
         {/* Role Highlight */}
@@ -91,9 +175,45 @@ export default function AccountPage() {
           <div className="space-y-7">
             <InfoRow icon={<User className="h-6 w-6 text-primary" />} label="Full Name" value={name ?? "—"} />
             <InfoRow icon={<Mail className="h-6 w-6 text-primary" />} label="Email Address" value={email ?? "—"} />
-            <InfoRow icon={<Phone className="h-6 w-6 text-primary" />} label="Phone" value={phone ?? "Not provided"} />
-            <InfoRow icon={<MapPin className="h-6 w-6 text-primary" />} label="Address" value={address ?? "Not provided"} />
-            <InfoRow icon={<Package className="h-6 w-6 text-primary" />} label="Shipping Info" value={shippingInfo ?? "Not provided"} />
+
+            {/* Editable Phone */}
+            {!isEditing ? (
+              <InfoRow icon={<Phone className="h-6 w-6 text-primary" />} label="Phone" value={phone || "Not provided"} />
+            ) : (
+              <EditableRow
+                icon={<Phone className="h-6 w-6 text-primary" />}
+                label="Phone"
+                value={phone}
+                onChange={setPhone}
+                placeholder="Enter phone number"
+              />
+            )}
+
+            {/* Editable Address */}
+            {!isEditing ? (
+              <InfoRow icon={<MapPin className="h-6 w-6 text-primary" />} label="Address" value={address || "Not provided"} />
+            ) : (
+              <EditableRow
+                icon={<MapPin className="h-6 w-6 text-primary" />}
+                label="Address"
+                value={address}
+                onChange={setAddress}
+                placeholder="Enter your address"
+              />
+            )}
+
+            {/* Editable Shipping Info */}
+            {!isEditing ? (
+              <InfoRow icon={<Package className="h-6 w-6 text-primary" />} label="Shipping Info" value={shippingInfo || "Not provided"} />
+            ) : (
+              <EditableRow
+                icon={<Package className="h-6 w-6 text-primary" />}
+                label="Shipping Info"
+                value={shippingInfo}
+                onChange={setShippingInfo}
+                placeholder="Enter shipping preferences"
+              />
+            )}
           </div>
         </div>
 
@@ -134,7 +254,7 @@ export default function AccountPage() {
   );
 }
 
-// Beautiful, consistent row with primary icon pop
+// Read-only row component
 function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="flex items-center gap-6 py-4 border-b border-white/10 last:border-0">
@@ -142,6 +262,37 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
       <div className="flex-1 min-w-0">
         <p className="text-white/70 text-sm font-medium">{label}</p>
         <p className="text-white text-lg font-semibold mt-1 truncate">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+// Editable row component
+function EditableRow({
+  icon,
+  label,
+  value,
+  onChange,
+  placeholder
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+}) {
+  return (
+    <div className="flex items-center gap-6 py-4 border-b border-white/10 last:border-0">
+      <div className="flex-shrink-0">{icon}</div>
+      <div className="flex-1 min-w-0">
+        <p className="text-white/70 text-sm font-medium mb-2">{label}</p>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary"
+        />
       </div>
     </div>
   );

@@ -75,12 +75,37 @@ export default function OrdersPage() {
               <div className="font-semibold text-white">
                 Total: KES {order.total.toLocaleString()}
               </div>
-              {isAdmin && (
-                <div className="italic text-xs text-white/70">
-                  User: {order.user?.email || order.userId}
-                </div>
-              )}
             </div>
+
+            {isAdmin && (
+              <div className="mt-3 pt-3 border-t border-white/20">
+                <div className="text-xs text-white/70 font-medium mb-2">Customer Details:</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+                  <div>
+                    <span className="text-white/70">Name:</span>{" "}
+                    <span className="text-white">{order.user?.name || "N/A"}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/70">Email:</span>{" "}
+                    <span className="text-white">{order.user?.email || "N/A"}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/70">Phone:</span>{" "}
+                    <span className="text-white">
+                      {order.user?.phone || order.transactions?.[0]?.phoneNumber || "N/A"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-white/70">Address:</span>{" "}
+                    <span className="text-white">{order.user?.address || order.address || "N/A"}</span>
+                  </div>
+                  <div className="md:col-span-2">
+                    <span className="text-white/70">Shipping Info:</span>{" "}
+                    <span className="text-white">{order.user?.shippingInfo || "N/A"}</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {isAdmin && order.status !== "COMPLETED" && (
               <div className="flex flex-wrap gap-2 mt-4">
