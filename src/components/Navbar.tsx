@@ -1,8 +1,22 @@
-import { Bell, Search, LogIn, LogOut} from "lucide-react";
+import { Bell, Search, LogIn, LogOut } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import NotificationBell from "./NotificationBell";
+import "next-auth";
+
+// Add type patch for session.user (role)
+declare module "next-auth" {
+  interface User {
+    role?: string;
+  }
+  interface Session {
+    user: User & {
+      role?: string;
+    };
+  }
+}
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -27,9 +41,9 @@ export default function Navbar() {
 
   return (
     <nav className="w-full bg-background border-b border-gray-200/20 p-4 flex justify-between items-center shadow-md">
-      
+
       <div className="flex items-center gap-3 flex-1">
-       
+
         {/* 🔍 Search bar (takes remaining space) */}
         <div className="flex items-center gap-2 flex-1">
           <Search className="h-5 w-5 text-muted-foreground" />
@@ -48,8 +62,10 @@ export default function Navbar() {
             <span className="text-sm text-muted-foreground truncate max-w-[160px]">
               {session.user?.email}
             </span>
-            <Bell className="h-5 w-5 text-muted-foreground cursor-pointer" />
-                        <Image
+            {(session.user?.role === "ADMIN" || session.user?.role === "SUPERUSER") && (
+              <NotificationBell />
+            )}
+            <Image
               src="/user.png.jpg"
               alt="User profile"
               width={32}
@@ -57,7 +73,7 @@ export default function Navbar() {
               className="rounded-full object-cover"
             />
             {/* 🔴 Logout icon */}
-                      <button
+            <button
               onClick={() => signOut({ callbackUrl: "/auth/login" })}
               className="bg-secondary text-primary px-4 py-2 rounded-md text-sm font-medium hover:bg-secondary transition flex items-center gap-2"
               title="Sign out"

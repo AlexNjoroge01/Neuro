@@ -11,6 +11,8 @@ import { z } from "zod";
 import { protectedProcedure } from "../createRouter";
 import { Role } from "@prisma/client";
 import { mpesaRouter } from "../api/routers/mpesa";
+import { userRouter } from "./user";
+import { notificationsRouter } from "./notifications";
 
 export const cartRouter = createRouter({
   get: protectedProcedure.query(async ({ ctx }) => {
@@ -35,7 +37,7 @@ export const cartRouter = createRouter({
       update: {},
       create: { userId: ctx.session.user.id },
     });
-    const existing = await ctx.prisma.cartItem.findFirst({ where: { cartId: cart.id, productId: input.productId }});
+    const existing = await ctx.prisma.cartItem.findFirst({ where: { cartId: cart.id, productId: input.productId } });
     if (existing) {
       const newQty = Math.max(1, existing.quantity + input.delta);
       return ctx.prisma.cartItem.update({ where: { id: existing.id }, data: { quantity: newQty } });
@@ -52,7 +54,7 @@ export const cartRouter = createRouter({
       update: {},
       create: { userId: ctx.session.user.id },
     });
-    const existing = await ctx.prisma.cartItem.findFirst({ where: { cartId: cart.id, productId: input.productId }});
+    const existing = await ctx.prisma.cartItem.findFirst({ where: { cartId: cart.id, productId: input.productId } });
     if (existing) {
       return ctx.prisma.cartItem.update({ where: { id: existing.id }, data: { quantity: input.quantity } });
     }
@@ -64,7 +66,7 @@ export const cartRouter = createRouter({
     });
   }),
   clear: protectedProcedure.mutation(async ({ ctx }) => {
-    const cart = await ctx.prisma.cart.findUnique({ where: { userId: ctx.session.user.id }});
+    const cart = await ctx.prisma.cart.findUnique({ where: { userId: ctx.session.user.id } });
     if (!cart) return;
     await ctx.prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
   })
@@ -99,7 +101,7 @@ export const orderRouter = createRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
     if (ctx.session.user.role === "ADMIN" || ctx.session.user.role === "SUPERUSER") {
       return ctx.prisma.order.findMany({
-        include: { items: { include: { product: true } }, user: true },
+        include: { items: { include: { product: true } }, user: true, transactions: true },
         orderBy: { createdAt: "desc" },
       });
     }
@@ -111,7 +113,7 @@ export const orderRouter = createRouter({
     });
   }),
   fulfill: protectedProcedure.input(
-    z.object({ orderId: z.string(), status: z.enum(["PAID","SHIPPED","COMPLETED"]) })
+    z.object({ orderId: z.string(), status: z.enum(["PAID", "SHIPPED", "COMPLETED"]) })
   ).mutation(async ({ ctx, input }) => {
     if (ctx.session.user.role !== "ADMIN" && ctx.session.user.role !== "SUPERUSER") {
       throw new Error("Unauthorized");
@@ -121,11 +123,11 @@ export const orderRouter = createRouter({
 });
 
 export const appRouter = mergeRouters(
-	createRouter({}),
-	createRouter({ products: productsRouter }),
-	createRouter({ inventory: inventoryRouter }),
-	createRouter({ reports: reportsRouter }),
-	createRouter({ dashboard: dashboardRouter }),
+  createRouter({}),
+  createRouter({ products: productsRouter }),
+  createRouter({ inventory: inventoryRouter }),
+  createRouter({ reports: reportsRouter }),
+  createRouter({ dashboard: dashboardRouter }),
   createRouter({ sales: salesRouter }),
   createRouter({ accounting: accountingRouter }),
   createRouter({ fleet: fleetRouter }),
@@ -133,6 +135,8 @@ export const appRouter = mergeRouters(
   createRouter({ mpesa: mpesaRouter }),
   createRouter({ cart: cartRouter }),
   createRouter({ orders: orderRouter }),
+  createRouter({ notifications: notificationsRouter }),
+  createRouter({ user: userRouter }),
 );
 
 export type AppRouter = typeof appRouter; 

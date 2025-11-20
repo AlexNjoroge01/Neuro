@@ -74,9 +74,8 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-[#D6FF00] hover:text-[#0F172A] ${
-                active ? "bg-[#0F172A] text-[#D6FF00] font-medium" : ""
-              }`}
+              className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-[#D6FF00] hover:text-[#0F172A] ${active ? "bg-[#0F172A] text-[#D6FF00] font-medium" : ""
+                }`}
             >
               <Icon className="h-4 w-4" />
               <span>{label}</span>

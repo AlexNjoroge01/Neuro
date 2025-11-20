@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
+import { Resend } from "resend";
+import { OrderEmailTemplate } from "@/components/email-template";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -79,7 +81,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   console.log(`[${new Date().toISOString()}] CALLBACK RECEIVED: ${request.method} ${request.url}`);
   try {
     const payload = (await request.json()) as unknown;
-    console.log("Raw payload:", payload);
+    console.log("Raw payload:", JSON.stringify(payload, null, 2));
     const parsed = callbackSchema.safeParse(payload);
 
     if (!parsed.success) {
@@ -125,18 +127,141 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       include: { order: true },
     });
 
+    console.log(`[${new Date().toISOString()}] Transaction updated:`, {
+      id: transaction.id,
+      orderId: transaction.orderId,
+      resultCode: stkCallback.ResultCode,
+    });
+
     if (transaction.orderId) {
       if (stkCallback.ResultCode === 0) {
+        console.log(`[${new Date().toISOString()}] Payment successful, updating order status to PAID`);
+
+        // Payment successful - update order status
         await prisma.order.update({
           where: { id: transaction.orderId },
           data: { status: "PAID" },
         });
+
+        // Fetch complete order details with user and items
+        const order = await prisma.order.findUnique({
+          where: { id: transaction.orderId },
+          include: {
+            user: true,
+            items: {
+              include: {
+                product: true,
+              },
+            },
+            transactions: true,
+          },
+        });
+
+        if (order) {
+          console.log(`[${new Date().toISOString()}] Order fetched successfully:`, {
+            orderId: order.id,
+            userId: order.userId,
+            total: order.total,
+          });
+
+          try {
+            // Get all admin and superuser accounts
+            const admins = await prisma.user.findMany({
+              where: {
+                role: {
+                  in: ["ADMIN", "SUPERUSER"],
+                },
+              },
+            });
+
+            console.log(`[${new Date().toISOString()}] Found ${admins.length} admin(s)`);
+
+            if (admins.length === 0) {
+              console.warn(`[${new Date().toISOString()}] WARNING: No admin users found!`);
+            }
+
+            // Create notifications for all admins
+            const notificationPromises = admins.map((admin) => {
+              console.log(`[${new Date().toISOString()}] Creating notification for admin: ${admin.email}`);
+              return prisma.notification.create({
+                data: {
+                  userId: admin.id,
+                  orderId: order.id,
+                  title: "New Paid Order Received",
+                  message: `Order #${order.id.slice(0, 8)} from ${order.user.name || order.user.email} - KES ${order.total.toLocaleString()}`,
+                },
+              });
+            });
+
+            const createdNotifications = await Promise.all(notificationPromises);
+            console.log(`[${new Date().toISOString()}] Successfully created ${createdNotifications.length} notification(s)`);
+
+            // Send email notification
+            try {
+              const resendApiKey = process.env.RESEND_API_KEY;
+              if (resendApiKey) {
+                const resend = new Resend(resendApiKey);
+
+                const orderItems = order.items.map((item) => ({
+                  name: item.product?.name || "Unknown Product",
+                  quantity: item.quantity,
+                  price: item.price,
+                }));
+
+                // Get phone number from the transaction (captured during M-Pesa payment)
+                const orderTransaction = order.transactions?.[0];
+                const customerPhone = orderTransaction?.phoneNumber || "N/A";
+
+                await resend.emails.send({
+                  from: "Aggies World <onboarding@resend.dev>",
+                  to: ["alexnjoroge102@gmail.com"],
+                  subject: `New Order #${order.id.slice(0, 8)} - KES ${order.total.toLocaleString()}`,
+                  react: OrderEmailTemplate({
+                    customerName: order.user.name || "N/A",
+                    customerEmail: order.user.email || "N/A",
+                    customerPhone: customerPhone,
+                    customerAddress: undefined,
+                    orderId: order.id,
+                    orderTotal: order.total,
+                    orderItems: orderItems,
+                    orderDate: order.createdAt.toLocaleString(),
+                  }),
+                });
+
+                console.info(
+                  `[${new Date().toISOString()}] Email notification sent for order ${order.id}`,
+                );
+              } else {
+                console.warn(
+                  `[${new Date().toISOString()}] RESEND_API_KEY not configured, skipping email notification`,
+                );
+              }
+            } catch (emailError) {
+              console.error(
+                `[${new Date().toISOString()}] Failed to send email notification`,
+                emailError,
+              );
+              // Don't fail the callback if email fails
+            }
+          } catch (notificationError) {
+            console.error(
+              `[${new Date().toISOString()}] CRITICAL: Failed to create notifications`,
+              notificationError,
+            );
+            // Log but don't fail the callback
+          }
+        } else {
+          console.error(`[${new Date().toISOString()}] ERROR: Order not found for ID ${transaction.orderId}`);
+        }
       } else {
+        console.log(`[${new Date().toISOString()}] Payment failed, updating order status to CANCELLED`);
         await prisma.order.update({
           where: { id: transaction.orderId },
           data: { status: "CANCELLED" },
         });
       }
+    } else {
+      console.warn(`[${new Date().toISOString()}] WARNING: Transaction has no orderId`);
     }
 
     console.info(
@@ -152,4 +277,3 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json("OK", { status: 200 });
   }
 }
-
