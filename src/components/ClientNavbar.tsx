@@ -196,7 +196,7 @@ export default function ClientNavbar() {
                 </AnimatePresence>
               </div>
             ) : (
-              <Link href="/auth/login" className="flex items-center gap-2 text-foreground hover:text-primary transition">
+              <Link href="/auth/login" className="flex items-center gap-2 text-secondary bg-primary  px-2 py-2 rounded-md hover:bg-primary/90 transition">
                 <LogIn className="h-5 w-5" />
                 <span>Login</span>
               </Link>
@@ -315,7 +315,7 @@ export default function ClientNavbar() {
                   </button>
                 </>
               ) : (
-                <Link href="/auth/login" className="flex items-center gap-2 py-2 text-primary">
+                <Link href="/auth/login" className="flex items-center gap-2 py-2 bg-primary text-secondary">
                   <LogIn className="h-5 w-5" />
                   Login
                 </Link>

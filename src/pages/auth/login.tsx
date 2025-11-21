@@ -67,7 +67,7 @@ export default function LoginPage() {
     }
     if (res?.ok) {
       toast.success("Login successful! Redirecting...");
-      window.location.href = res.url ?? "/dashboard";
+      window.location.href = "/";
     }
 
     setIsLoading(false);

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import ClientNavbar from "@/components/ClientNavbar";
 import Footer from "@/components/Footer";
+import { toast } from "react-toastify";
 
 export default function ProductDetail() {
   const router = useRouter();
@@ -34,10 +35,12 @@ export default function ProductDetail() {
 
   async function addToCart() {
     if (status !== "authenticated") {
+      toast.error("Please login to add items to cart");
       router.push("/auth/login");
       return;
     }
     await add.mutateAsync({ productId: product.id, delta: qty });
+    toast.success("Item added to cart!");
   }
 
   function buyNow() {
@@ -138,7 +141,7 @@ export default function ProductDetail() {
           </div>
 
           <div className="flex gap-3">
-            
+
             <button
               onClick={addToCart}
               className="px-6 py-3 rounded bg-primary text-primary-foreground font-bold"
