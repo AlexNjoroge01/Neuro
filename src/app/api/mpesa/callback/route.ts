@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import { Resend } from "resend";
+import { render } from "@react-email/render";
 import { OrderEmailTemplate } from "@/components/email-template";
 
 export const runtime = "nodejs";
@@ -249,11 +250,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 const orderTransaction = order.transactions?.[0];
                 const customerPhone = orderTransaction?.phoneNumber || "N/A";
 
-                await resend.emails.send({
-                  from: "Aggies World <onboarding@resend.dev>",
-                  to: ["alexnjoroge102@gmail.com"],
-                  subject: `New Order #${order.id.slice(0, 8)} - KES ${order.total.toLocaleString()}`,
-                  react: OrderEmailTemplate({
+                // Format M-PESA transaction date: 20251121103726 -> "21/11/2025 10:37:26"
+                const formatMpesaDate = (dateStr: string | undefined): string => {
+                  if (!dateStr) return "N/A";
+                  const year = dateStr.substring(0, 4);
+                  const month = dateStr.substring(4, 6);
+                  const day = dateStr.substring(6, 8);
+                  const hour = dateStr.substring(8, 10);
+                  const minute = dateStr.substring(10, 12);
+                  const second = dateStr.substring(12, 14);
+                  return `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+                };
+
+                console.log(`[${new Date().toISOString()}] Rendering email template...`);
+                const emailHtml = await render(
+                  OrderEmailTemplate({
                     customerName: order.user.name || "N/A",
                     customerEmail: order.user.email || "N/A",
                     customerPhone: customerPhone,
@@ -262,12 +273,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                     orderTotal: order.total,
                     orderItems: orderItems,
                     orderDate: order.createdAt.toLocaleString(),
+                    mpesaReceiptNumber: orderTransaction?.mpesaReceiptNumber || undefined,
+                    mpesaTransactionDate: formatMpesaDate(orderTransaction?.transactionDate || undefined),
+                    mpesaPhoneNumber: orderTransaction?.phoneNumber || undefined,
+                    mpesaAmount: orderTransaction?.amount || undefined,
                   }),
+                  {
+                    pretty: false,
+                  }
+                );
+                console.log(`[${new Date().toISOString()}] Email template rendered successfully. HTML length: ${emailHtml.length}`);
+
+                console.log(`[${new Date().toISOString()}] Sending email via Resend...`);
+                const emailResponse = await resend.emails.send({
+                  from: "Buysmart Kenya <onboarding@resend.dev>",
+                  to: ["clientcare.global@gmail.com"],
+                  subject: `New Order #${order.id.slice(0, 8)} - KES ${order.total.toLocaleString()}`,
+                  html: emailHtml,
                 });
 
-                console.info(
-                  `[${new Date().toISOString()}] Email notification sent for order ${order.id}`,
-                );
+                console.log(`[${new Date().toISOString()}] Resend API response:`, JSON.stringify(emailResponse, null, 2));
+
+                if (emailResponse.error) {
+                  console.error(`[${new Date().toISOString()}] Resend API returned error:`, emailResponse.error);
+                } else {
+                  console.info(
+                    `[${new Date().toISOString()}] Email notification sent successfully for order ${order.id}. Email ID: ${emailResponse.data?.id}`,
+                  );
+                }
               } else {
                 console.warn(
                   `[${new Date().toISOString()}] RESEND_API_KEY not configured, skipping email notification`,
