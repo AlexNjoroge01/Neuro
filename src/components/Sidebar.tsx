@@ -13,6 +13,7 @@ import {
   ShoppingBag,
   ClipboardList,
   User,
+  UserCog,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useMemo } from "react";
@@ -40,6 +41,22 @@ const ADMIN_ITEMS = [
   { href: "/settings", label: "Settings", Icon: Settings },
 ];
 
+const SUPERUSER_ITEMS = [
+  { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { href: "/products", label: "Products", Icon: Package },
+  { href: "/inventory", label: "Inventory", Icon: Boxes },
+  { href: "/sales", label: "POS", Icon: BarChart3 },
+  { href: "/accounting", label: "Accounting", Icon: Wallet },
+  { href: "/fleet", label: "Fleet", Icon: Truck },
+  { href: "/hr", label: "HR & Payroll", Icon: UsersRound },
+  { href: "/reports", label: "Reports", Icon: BarChart3 },
+  { href: "/shop", label: "Shop", Icon: ShoppingBag },
+  { href: "/orders", label: "All Orders", Icon: ClipboardList },
+  { href: "/account", label: "Account", Icon: User },
+  { href: "/settings", label: "Settings", Icon: Settings },
+  { href: "/admin-users", label: "Admin Management", Icon: UserCog },
+];
+
 const CUSTOMER_ITEMS = [
   { href: "/shop", label: "Shop", Icon: Package },
   { href: "/cart", label: "Cart", Icon: Boxes },
@@ -57,7 +74,8 @@ export default function Sidebar() {
       // Not logged in, show public shop/cart only
       return CUSTOMER_ITEMS.filter(item => ["/shop", "/cart"].includes(item.href));
     }
-    if (role === "SUPERUSER" || role === "ADMIN") return ADMIN_ITEMS;
+    if (role === "SUPERUSER") return SUPERUSER_ITEMS;
+    if (role === "ADMIN") return ADMIN_ITEMS;
     return CUSTOMER_ITEMS;
   }, [role, status]);
 
