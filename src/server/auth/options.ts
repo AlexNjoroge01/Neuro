@@ -27,29 +27,64 @@ export const authOptions: NextAuthOptions = {
         if (!user || !user.passwordHash) return null;
         const valid = await bcrypt.compare(credentials.password, user.passwordHash);
         if (!valid) return null;
-        return { id: user.id, name: user.name ?? null, email: user.email ?? null } as any;
+        return {
+          id: user.id,
+          name: user.name ?? null,
+          email: user.email ?? null,
+          role: user.role,
+          phone: user.phone,
+          address: user.address,
+          shippingInfo: user.shippingInfo
+        } as any;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // On first sign in, persist the user id and role to the token
+      // On first sign in, persist the user id
       if (user) {
         token.id = (user as any).id ?? token.sub;
-        // Fetch user from DB if role not present
-        if (!(user as any).role) {
-          const u = await prisma.user.findUnique({ where: { id: token.id as string } });
-          token.role = u?.role ?? "CUSTOMER";
-        } else {
-          token.role = (user as any).role;
+      }
+
+      // Always fetch fresh user data from database to ensure session is up-to-date
+      // This prevents stale session data and ensures role/profile changes are reflected immediately
+      const userId = (token.id as string) ?? token.sub;
+      if (userId) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: userId },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+            phone: true,
+            address: true,
+            shippingInfo: true
+          }
+        });
+
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.email = dbUser.email;
+          token.name = dbUser.name;
+          token.role = dbUser.role;
+          token.phone = dbUser.phone;
+          token.address = dbUser.address;
+          token.shippingInfo = dbUser.shippingInfo;
         }
       }
+
       return token;
     },
     async session({ session, token }) {
       if (session.user && token) {
-        session.user.id = (token as any).id ?? token.sub ?? session.user.id;
-        session.user.role = token.role ?? "CUSTOMER";
+        session.user.id = (token.id as string) ?? token.sub ?? session.user.id;
+        session.user.email = (token.email as string) ?? session.user.email;
+        session.user.name = (token.name as string) ?? session.user.name;
+        session.user.role = (token.role as string) ?? "CUSTOMER";
+        session.user.phone = token.phone as string | undefined;
+        session.user.address = token.address as string | undefined;
+        session.user.shippingInfo = token.shippingInfo as string | undefined;
       }
       return session;
     },
