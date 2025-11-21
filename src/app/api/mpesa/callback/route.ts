@@ -78,23 +78,60 @@ const parseAmount = (value: string | undefined): number | undefined => {
 };
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  console.log(`[${new Date().toISOString()}] CALLBACK RECEIVED: ${request.method} ${request.url}`);
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] ========== M-PESA CALLBACK START ==========`);
+  console.log(`[${timestamp}] Method: ${request.method}`);
+  console.log(`[${timestamp}] URL: ${request.url}`);
+
   try {
-    const payload = (await request.json()) as unknown;
-    console.log("Raw payload:", JSON.stringify(payload, null, 2));
+    // Read raw body first to handle empty/malformed JSON
+    const rawBody = await request.text();
+    console.log(`[${timestamp}] Raw body length: ${rawBody.length}`);
+    console.log(`[${timestamp}] Raw body:`, rawBody);
+
+    // Handle empty body
+    if (!rawBody || rawBody.trim() === '') {
+      console.warn(`[${timestamp}] Empty callback body received`);
+      return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" }, { status: 200 });
+    }
+
+    // Parse JSON safely
+    let payload: unknown;
+    try {
+      payload = JSON.parse(rawBody);
+      console.log(`[${timestamp}] Parsed payload:`, JSON.stringify(payload, null, 2));
+    } catch (parseError) {
+      console.error(`[${timestamp}] JSON parse error:`, parseError);
+      console.error(`[${timestamp}] Failed to parse body:`, rawBody);
+      return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" }, { status: 200 });
+    }
+
     const parsed = callbackSchema.safeParse(payload);
 
     if (!parsed.success) {
       console.error(
-        `[${new Date().toISOString()}] Invalid M-PESA callback payload`,
+        `[${timestamp}] Invalid M-PESA callback payload`,
         parsed.error.flatten(),
       );
-      return NextResponse.json("OK", { status: 200 });
+      return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" }, { status: 200 });
     }
 
     const {
       Body: { stkCallback },
     } = parsed.data;
+
+    console.log(`[${timestamp}] CheckoutRequestID: ${stkCallback.CheckoutRequestID}`);
+    console.log(`[${timestamp}] ResultCode: ${stkCallback.ResultCode}`);
+
+    // Check for duplicate callback (idempotency)
+    const existingTransaction = await prisma.transaction.findUnique({
+      where: { checkoutRequestId: stkCallback.CheckoutRequestID },
+    });
+
+    if (existingTransaction && existingTransaction.resultCode !== null) {
+      console.log(`[${timestamp}] Duplicate callback detected for ${stkCallback.CheckoutRequestID}, already processed with ResultCode ${existingTransaction.resultCode}`);
+      return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" }, { status: 200 });
+    }
 
     const metadataItems = stkCallback.CallbackMetadata?.Item;
     const mpesaReceiptNumber = findCallbackValue(metadataItems, "MpesaReceiptNumber");
@@ -265,15 +302,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     console.info(
-      `[${new Date().toISOString()}] Callback processed for CheckoutRequestID ${stkCallback.CheckoutRequestID} with ResultCode ${stkCallback.ResultCode}`,
+      `[${timestamp}] Callback processed for CheckoutRequestID ${stkCallback.CheckoutRequestID} with ResultCode ${stkCallback.ResultCode}`,
     );
+    console.log(`[${timestamp}] ========== M-PESA CALLBACK END ==========`);
 
-    return NextResponse.json("OK", { status: 200 });
+    return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" }, { status: 200 });
   } catch (error: unknown) {
     console.error(
-      `[${new Date().toISOString()}] Failed to process M-PESA callback`,
+      `[${timestamp}] CRITICAL ERROR: Failed to process M-PESA callback`,
       error,
     );
-    return NextResponse.json("OK", { status: 200 });
+    console.log(`[${timestamp}] ========== M-PESA CALLBACK END (ERROR) ==========`);
+    return NextResponse.json({ ResultCode: 0, ResultDesc: "Accepted" }, { status: 200 });
   }
 }
