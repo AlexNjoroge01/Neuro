@@ -64,7 +64,7 @@ export default function Sidebar() {
   return (
     <aside className="w-64 h-screen flex flex-col border-r border-gray-200/20 p-4 hidden md:flex bg-white">
       {/* Logo / Title */}
-      <div className="px-2 py-3 text-xl font-semibold">Aggies World</div>
+      <div className="px-2 py-3 text-2xl font-bold text-secondary">Buysmart Kenya</div>
 
       {/* Navigation */}
       <nav className="mt-4 space-y-1 flex-1 overflow-y-auto">

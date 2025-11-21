@@ -77,6 +77,47 @@ export default function OrdersPage() {
               </div>
             </div>
 
+            {/* M-PESA Payment Information - Show for all users if available */}
+            {order.transactions?.[0]?.mpesaReceiptNumber && (
+              <div className="mt-3 pt-3 border-t border-white/20">
+                <div className="text-xs text-primary font-semibold mb-2 flex items-center gap-1">
+                  💳 Payment Information
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs bg-primary/10 p-3 rounded-lg border border-primary/20">
+                  <div>
+                    <span className="text-white/70">Status:</span>{" "}
+                    <span className="text-green-400 font-semibold">✓ CONFIRMED</span>
+                  </div>
+                  <div>
+                    <span className="text-white/70">M-PESA Receipt:</span>{" "}
+                    <span className="text-white font-mono">{order.transactions[0].mpesaReceiptNumber}</span>
+                  </div>
+                  <div>
+                    <span className="text-white/70">Transaction Date:</span>{" "}
+                    <span className="text-white">
+                      {order.transactions[0].transactionDate
+                        ? (() => {
+                          const dateStr = order.transactions[0].transactionDate;
+                          const year = dateStr.substring(0, 4);
+                          const month = dateStr.substring(4, 6);
+                          const day = dateStr.substring(6, 8);
+                          const hour = dateStr.substring(8, 10);
+                          const minute = dateStr.substring(10, 12);
+                          return `${day}/${month}/${year} ${hour}:${minute}`;
+                        })()
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-white/70">Amount Paid:</span>{" "}
+                    <span className="text-white font-semibold">
+                      KES {order.transactions[0].amount?.toLocaleString() || "N/A"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {isAdmin && (
               <div className="mt-3 pt-3 border-t border-white/20">
                 <div className="text-xs text-white/70 font-medium mb-2">Customer Details:</div>

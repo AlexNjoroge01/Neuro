@@ -108,7 +108,7 @@ export const orderRouter = createRouter({
     // Customer: only their own
     return ctx.prisma.order.findMany({
       where: { userId: ctx.session.user.id },
-      include: { items: { include: { product: true } } },
+      include: { items: { include: { product: true } }, transactions: true },
       orderBy: { createdAt: "desc" },
     });
   }),

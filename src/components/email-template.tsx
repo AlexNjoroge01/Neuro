@@ -13,6 +13,10 @@ interface OrderEmailTemplateProps {
         price: number;
     }>;
     orderDate: string;
+    mpesaReceiptNumber?: string;
+    mpesaTransactionDate?: string;
+    mpesaPhoneNumber?: string;
+    mpesaAmount?: number;
 }
 
 export function OrderEmailTemplate({
@@ -24,6 +28,10 @@ export function OrderEmailTemplate({
     orderTotal,
     orderItems,
     orderDate,
+    mpesaReceiptNumber,
+    mpesaTransactionDate,
+    mpesaPhoneNumber,
+    mpesaAmount,
 }: OrderEmailTemplateProps) {
     return (
         <div style={{ fontFamily: "Arial, sans-serif", maxWidth: "600px", margin: "0 auto" }}>
@@ -39,6 +47,29 @@ export function OrderEmailTemplate({
                     <p style={{ margin: "5px 0" }}><strong>Order Date:</strong> {orderDate}</p>
                     <p style={{ margin: "5px 0" }}><strong>Total Amount:</strong> KES {orderTotal.toLocaleString()}</p>
                 </div>
+
+                {mpesaReceiptNumber && (
+                    <>
+                        <h2 style={{ color: "#0F172A" }}>💳 Payment Information</h2>
+                        <div style={{ backgroundColor: "#D6FF00", padding: "15px", borderRadius: "8px", marginBottom: "20px", border: "2px solid #0F172A" }}>
+                            <p style={{ margin: "5px 0", color: "#0F172A" }}>
+                                <strong>✅ Payment Status:</strong> <span style={{ color: "#059669" }}>CONFIRMED</span>
+                            </p>
+                            <p style={{ margin: "5px 0", color: "#0F172A" }}>
+                                <strong>M-PESA Receipt:</strong> {mpesaReceiptNumber}
+                            </p>
+                            <p style={{ margin: "5px 0", color: "#0F172A" }}>
+                                <strong>Transaction Date:</strong> {mpesaTransactionDate}
+                            </p>
+                            <p style={{ margin: "5px 0", color: "#0F172A" }}>
+                                <strong>Phone Number:</strong> {mpesaPhoneNumber}
+                            </p>
+                            <p style={{ margin: "5px 0", color: "#0F172A" }}>
+                                <strong>Amount Paid:</strong> KES {mpesaAmount?.toLocaleString()}
+                            </p>
+                        </div>
+                    </>
+                )}
 
                 <h2 style={{ color: "#0F172A" }}>Customer Information</h2>
 
@@ -88,7 +119,7 @@ export function OrderEmailTemplate({
             </div>
 
             <div style={{ padding: "20px", textAlign: "center", color: "#6b7280", fontSize: "12px" }}>
-                <p>This is an automated notification from Aggies World</p>
+                <p>This is an automated notification from Buysmart Kenya</p>
             </div>
         </div>
     );
