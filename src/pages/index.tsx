@@ -7,6 +7,8 @@ export default function Home() {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
+
+  // Admin/Superuser always go to dashboard
   if (session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER") {
     return {
       redirect: {
@@ -15,18 +17,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  if (session?.user?.role === "CUSTOMER") {
-    return {
-      redirect: {
-        destination: "/shop",
-        permanent: false,
-      },
-    };
-  }
-  // Unauthenticated users land on login
+
+  // Everyone else (customers and unauthenticated users) go to shop
   return {
     redirect: {
-      destination: "/auth/login",
+      destination: "/shop",
       permanent: false,
     },
   };

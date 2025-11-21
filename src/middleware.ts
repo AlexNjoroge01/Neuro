@@ -1,8 +1,8 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function middleware(req:NextRequest) {
-  const requestUrl = req.nextUrl;          
+export async function middleware(req: NextRequest) {
+  const requestUrl = req.nextUrl;
   const pathname = requestUrl.pathname;
 
   if (
@@ -11,14 +11,14 @@ export async function middleware(req:NextRequest) {
     req.nextUrl.pathname.startsWith("/static") ||
     req.nextUrl.pathname.startsWith("/uploads") ||
     req.nextUrl.pathname.startsWith("/favicon.ico") ||
-    req.nextUrl.pathname.startsWith("/images")||
+    req.nextUrl.pathname.startsWith("/images") ||
     req.nextUrl.pathname.startsWith("/api/auth") ||
     pathname.match(/\.(jpg|jpeg|png|gif|svg|ico|webp|avif|mp4|woff2?)$/)
   ) {
     return NextResponse.next();
   }
 
-  const PUBLIC_PATHS = ["/shop", "/auth/login", "/auth/register", "/login", "/register", "/shop/"];
+  const PUBLIC_PATHS = ["/", "/shop", "/auth/login", "/auth/register", "/login", "/register", "/shop/"];
   const CUSTOMER_PATHS = ["/account", "/cart", "/orders"];
   const ADMIN_PATHS = [
     "/dashboard", "/products", "/inventory", "/sales", "/pos", "/accounting", "/hr", "/reports", "/settings"
