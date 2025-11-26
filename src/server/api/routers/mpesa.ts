@@ -4,10 +4,11 @@ import { createRouter, protectedProcedure } from "@/server/createRouter";
 import {
   buildTimestamp,
   fetchAccessToken,
-  getRequiredEnv,
   mpesaBaseUrl,
   normalizePhoneNumber,
 } from "@/server/mpesa/utils";
+import { env } from "@/env";
+
 
 const stkPushSuccessResponseSchema = z
   .object({
@@ -48,9 +49,10 @@ export const mpesaRouter = createRouter({
     .mutation(async ({ input, ctx }) => {
       const { amount, phoneNumber } = input;
       const normalizedPhone = normalizePhoneNumber(phoneNumber);
-      const businessShortCode = getRequiredEnv("MPESA_SHORTCODE");
-      const passkey = getRequiredEnv("MPESA_PASSKEY");
-      const callbackUrl = getRequiredEnv("MPESA_CALLBACK_URL");
+      const businessShortCode = env.MPESA_SHORTCODE;
+      const passkey = env.MPESA_PASSKEY;
+      const callbackUrl = env.MPESA_CALLBACK_URL;
+
 
       const cart = await ctx.prisma.cart.findUnique({
         where: { userId: ctx.session.user.id },
@@ -109,8 +111,7 @@ export const mpesaRouter = createRouter({
       );
 
       console.info(
-        `[${new Date().toISOString()}] Initiating STK push for order ${order.id} on behalf of user ${
-          ctx.session?.user?.id ?? "unknown"
+        `[${new Date().toISOString()}] Initiating STK push for order ${order.id} on behalf of user ${ctx.session?.user?.id ?? "unknown"
         }`,
       );
 

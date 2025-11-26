@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
+import { env } from "@/env";
 
-export const mpesaBaseUrl =
-  process.env.MPESA_BASE_URL?.replace(/\/$/, "") ?? "https://sandbox.safaricom.co.ke";
+export const mpesaBaseUrl = env.MPESA_BASE_URL;
 
 type AccessTokenCache = {
   token: string;
@@ -15,16 +15,6 @@ export type AccessTokenPayload = {
   expiresInSeconds: number;
 };
 
-export const getRequiredEnv = (key: keyof NodeJS.ProcessEnv): string => {
-  const value = process.env[key];
-  if (!value) {
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: `Missing environment variable: ${key}`,
-    });
-  }
-  return value;
-};
 
 export const buildTimestamp = (): string => {
   const now = new Date();
@@ -35,8 +25,8 @@ export const buildTimestamp = (): string => {
 };
 
 export const fetchAccessToken = async (): Promise<AccessTokenPayload> => {
-  const consumerKey = getRequiredEnv("MPESA_CONSUMER_KEY");
-  const consumerSecret = getRequiredEnv("MPESA_CONSUMER_SECRET");
+  const consumerKey = env.MPESA_CONSUMER_KEY;
+  const consumerSecret = env.MPESA_CONSUMER_SECRET;
   const credentials = Buffer.from(`${consumerKey}:${consumerSecret}`).toString("base64");
 
   if (accessTokenCache && accessTokenCache.expiresAt > Date.now()) {

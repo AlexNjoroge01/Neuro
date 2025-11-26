@@ -3,18 +3,22 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import SidebarLayout from "@/components/Layout";
-import { Plus, Mail, Shield, Edit2, Trash2 } from "lucide-react";
+import { Plus, Mail, Lock, Shield, Edit2, Trash2, Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
 const createAdminSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address"),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Must contain an uppercase letter")
-    .regex(/[0-9]/, "Must contain a number")
-    .regex(/[^A-Za-z0-9]/, "Must contain a symbol"),
+    .min(8, "Password must be at least 8 characters long")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
 });
 
 type CreateAdminForm = z.infer<typeof createAdminSchema>;
@@ -30,6 +34,7 @@ export default function AdminUsersPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CreateAdminForm>({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Partial<CreateAdminForm>>({});
   const [creating, setCreating] = useState(false);
 
@@ -52,9 +57,11 @@ export default function AdminUsersPage() {
     if (!result.success) {
       const fieldErrors: Partial<CreateAdminForm> = {};
       result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0] as keyof CreateAdminForm] = issue.message;
+        const path = issue.path[0] as keyof CreateAdminForm;
+        fieldErrors[path] = issue.message;
       });
       setErrors(fieldErrors);
+      toast.error(result.error.issues[0].message);
       return false;
     }
     setErrors({});
@@ -81,11 +88,11 @@ export default function AdminUsersPage() {
       const updated = await res.json();
       setAdmins(updated);
       setFormData({ email: "", password: "" });
+      setShowPassword(false);
       setOpen(false);
       toast.success("Admin created successfully!");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
-      setErrors({ password: msg });
       toast.error(msg);
     } finally {
       setCreating(false);
@@ -95,13 +102,31 @@ export default function AdminUsersPage() {
   const handleEdit = (admin: { id: string; email: string }) => {
     setEditingAdmin(admin);
     setFormData({ email: admin.email, password: "" });
+    setShowPassword(false);
     setOpen(true);
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingAdmin) return;
-    if (!validate()) return;
+
+    // When editing, password is optional → only validate if provided
+    const passwordToValidate = formData.password.trim() === "" ? "Temp123!" : formData.password;
+    const result = createAdminSchema.safeParse({ ...formData, password: passwordToValidate });
+
+    if (!result.success) {
+      const fieldErrors: Partial<CreateAdminForm> = {};
+      result.error.issues.forEach((issue) => {
+        const path = issue.path[0] as keyof CreateAdminForm;
+        if (path === "password" && formData.password.trim() === "") return; // skip password error if empty on edit
+        fieldErrors[path] = issue.message;
+      });
+      if (Object.keys(fieldErrors).length > 0) {
+        setErrors(fieldErrors);
+        toast.error(result.error.issues[0].message);
+        return;
+      }
+    }
 
     setCreating(true);
     try {
@@ -119,12 +144,12 @@ export default function AdminUsersPage() {
       const updated = await res.json();
       setAdmins(updated);
       setFormData({ email: "", password: "" });
+      setShowPassword(false);
       setEditingAdmin(null);
       setOpen(false);
       toast.success("Admin updated successfully!");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
-      setErrors({ password: msg });
       toast.error(msg);
     } finally {
       setCreating(false);
@@ -184,9 +209,9 @@ export default function AdminUsersPage() {
           </div>
 
           {/* Table Card */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-secondary rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-primary">
                 All Admins ({admins.length})
               </h2>
               <button
@@ -207,18 +232,18 @@ export default function AdminUsersPage() {
                 {/* Responsive Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
+                    <thead className="bg-secondary border-b border-secondary">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
+                        <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Role</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-secondary">
                       {paginated.map((admin, idx) => (
                         <tr key={admin.id}>
-                          <td className="px-6 py-4 text-sm text-gray-900">
+                          <td className="px-6 py-4 text-sm text-white">
                             {(page - 1) * ITEMS_PER_PAGE + idx + 1}
                           </td>
                           <td className="px-6 py-4">
@@ -226,7 +251,7 @@ export default function AdminUsersPage() {
                               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                                 <Mail className="h-5 w-5 text-primary" />
                               </div>
-                              <span className="font-medium">{admin.email}</span>
+                              <span className="font-medium text-primary">{admin.email}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4 text-center">
@@ -300,37 +325,61 @@ export default function AdminUsersPage() {
                 The new admin will receive an invitation email.
               </p>
 
-              <form onSubmit={editingAdmin ? handleUpdate : handleSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
+              <form onSubmit={editingAdmin ? handleUpdate : handleSubmit} className="space-y-6">
+                {/* Email Field */}
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Email Address <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="email"
-                    required
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${errors.email ? "border-red-500" : "border-gray-300"
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <input
+                      className={`w-full pl-11 pr-4 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${
+                        errors.email ? "border-red-500" : "border-input"
                       }`}
-                    placeholder="admin@example.com"
-                    value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                  />
-                  {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+                      type="email"
+                      placeholder="admin@example.com"
+                      value={formData.email}
+                      onChange={(e) => handleChange("email", e.target.value)}
+                      required
+                      disabled={creating}
+                    />
+                  </div>
+                  {errors.email && <p className="text-sm text-red-600 mt-1.5">{errors.email}</p>}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password
+                {/* Password Field */}
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Password {editingAdmin ? "(leave blank to keep current)" : <span className="text-red-500">*</span>}
                   </label>
-                  <input
-                    type="password"
-                    required={!editingAdmin}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${errors.password ? "border-red-500" : "border-gray-300"
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <input
+                      className={`w-full pl-11 pr-12 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${
+                        errors.password ? "border-red-500" : "border-input"
                       }`}
-                    placeholder="Min 8 chars • upper • number • symbol"
-                    value={formData.password}
-                    onChange={(e) => handleChange("password", e.target.value)}
-                  />
-                  {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Min 8 chars • upper • lower • number • symbol"
+                      value={formData.password}
+                      onChange={(e) => handleChange("password", e.target.value)}
+                      required={!editingAdmin}
+                      disabled={creating}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((p) => !p)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                      disabled={creating}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5 text-muted-foreground" />
+                      ) : (
+                        <Eye className="h-5 w-5 text-muted-foreground" />
+                      )}
+                    </button>
+                  </div>
+                  {errors.password && <p className="text-sm text-red-600 mt-1.5">{errors.password}</p>}
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
@@ -340,18 +389,27 @@ export default function AdminUsersPage() {
                       setOpen(false);
                       setEditingAdmin(null);
                       setFormData({ email: "", password: "" });
+                      setShowPassword(false);
                       setErrors({});
                     }}
-                    className="px-5 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50"
+                    className="px-5 py-2.5 border border-input rounded-md font-medium hover:bg-accent transition"
+                    disabled={creating}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={creating}
-                    className="px-5 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50"
+                    className="px-5 py-2.5 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 transition flex items-center gap-2 disabled:opacity-70"
                   >
-                    {creating ? (editingAdmin ? "Updating..." : "Creating...") : (editingAdmin ? "Update Admin" : "Create Admin")}
+                    {creating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {editingAdmin ? "Updating..." : "Creating..."}
+                      </>
+                    ) : (
+                      <>{editingAdmin ? "Update Admin" : "Create Admin"}</>
+                    )}
                   </button>
                 </div>
               </form>

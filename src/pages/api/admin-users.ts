@@ -3,12 +3,31 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/server/auth/options';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { rateLimiters } from '@/lib/rate-limit';
 
 const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Apply rate limiting
+  const rateLimitResult = rateLimiters.auth({
+    ip: req.headers['x-forwarded-for'] as string || req.headers['x-real-ip'] as string || 'unknown',
+    headers: {
+      get: (key: string) => req.headers[key.toLowerCase()] as string | null
+    }
+  } as any);
+
+  // Set rate limit headers
+  Object.entries(rateLimitResult.headers).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
+
+  if (!rateLimitResult.success) {
+    return res.status(429).json({ error: "Too many requests. Please try again later." });
+  }
+
   const session = await getServerSession(req, res, authOptions);
   if (session?.user?.role !== 'SUPERUSER') return res.status(403).json({ error: 'Forbidden' });
+
 
   if (req.method === 'GET') {
     // Return all active admins (not soft deleted)
