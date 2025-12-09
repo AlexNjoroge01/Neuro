@@ -27,7 +27,7 @@ export default function OrdersPage() {
       </div>
     );
 
-  async function handleFulfill(orderId: string, nextStatus: string) {
+  async function handleFulfill(orderId: string, nextStatus: "PAID" | "SHIPPED" | "COMPLETED") {
     setStatusUpdating(orderId);
     await fulfill.mutateAsync({ orderId, status: nextStatus });
     setStatusUpdating("");

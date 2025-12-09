@@ -3,13 +3,13 @@ import { createRouter, publicProcedure, protectedProcedure } from "../createRout
 
 export const productsRouter = createRouter({
     list: protectedProcedure.query(async ({ ctx }) => {
-		return ctx.prisma.product.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
-	}),
+        return ctx.prisma.product.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
+    }),
     get: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
-		return ctx.prisma.product.findFirst({ where: { id: input, deletedAt: null } });
-	}),
+        return ctx.prisma.product.findFirst({ where: { id: input, deletedAt: null } });
+    }),
     create: protectedProcedure
-		.input(
+        .input(
             z.object({
                 name: z.string().min(1),
                 unit: z.string().min(1),
@@ -21,12 +21,12 @@ export const productsRouter = createRouter({
                 category: z.string().optional(),
                 brand: z.string().optional(),
             })
-		)
-		.mutation(async ({ ctx, input }) => {
-			return ctx.prisma.product.create({ data: input });
-		}),
+        )
+        .mutation(async ({ ctx, input }) => {
+            return ctx.prisma.product.create({ data: input });
+        }),
     update: protectedProcedure
-		.input(
+        .input(
             z.object({
                 id: z.string(),
                 name: z.string().min(1).optional(),
@@ -39,17 +39,17 @@ export const productsRouter = createRouter({
                 category: z.string().optional(),
                 brand: z.string().optional(),
             })
-		)
-		.mutation(async ({ ctx, input }) => {
-			const { id, ...data } = input;
-			return ctx.prisma.product.update({ where: { id }, data });
-		}),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const { id, ...data } = input;
+            return ctx.prisma.product.update({ where: { id }, data });
+        }),
     delete: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
-		return ctx.prisma.product.update({ where: { id: input }, data: { deletedAt: new Date() } });
-	}),
+        return ctx.prisma.product.update({ where: { id: input }, data: { deletedAt: new Date() } });
+    }),
     restore: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
-		return ctx.prisma.product.update({ where: { id: input }, data: { deletedAt: null } });
-	}),
+        return ctx.prisma.product.update({ where: { id: input }, data: { deletedAt: null } });
+    }),
     publicList: publicProcedure.query(async ({ ctx }) => {
         // Only expose public fields (base, omit those that cause Prisma select errors for now)
         return ctx.prisma.product.findMany({
@@ -64,7 +64,7 @@ export const productsRouter = createRouter({
     }),
     search: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
         const q = input.trim();
-        if (!q) return [] as any[];
+        if (!q) return [];
         return ctx.prisma.product.findMany({
             where: {
                 deletedAt: null,

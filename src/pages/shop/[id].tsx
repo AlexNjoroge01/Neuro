@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import ClientNavbar from "@/components/ClientNavbar";
 import Footer from "@/components/Footer";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 export default function ProductDetail() {
   const router = useRouter();
@@ -20,7 +21,6 @@ export default function ProductDetail() {
   );
 
   const [qty, setQty] = useState(1);
-  const [activeImg, setActiveImg] = useState(0);
 
   if (isLoading) return <div className="p-8">Loading...</div>;
   if (!product) return <div className="p-8">Product not found.</div>;
@@ -31,7 +31,7 @@ export default function ProductDetail() {
       : `/uploads/${product.image}`
     : "";
   const gallery = [baseImg, baseImg, baseImg, baseImg].filter(Boolean);
-  const limitedStock = (product.stock ?? 0) <= 5;
+
 
   async function addToCart() {
     if (status !== "authenticated") {
@@ -39,13 +39,12 @@ export default function ProductDetail() {
       router.push("/auth/login");
       return;
     }
+    if (!product) return;
     await add.mutateAsync({ productId: product.id, delta: qty });
     toast.success("Item added to cart!");
   }
 
-  function buyNow() {
-    addToCart().then(() => router.push("/cart"));
-  }
+
 
   return (
     <div>
@@ -57,10 +56,12 @@ export default function ProductDetail() {
         {/* Left: Image gallery */}
         <div>
           <div className="border rounded-lg bg-gray-50 h-[420px] flex items-center justify-center overflow-hidden mb-3">
-            {gallery[activeImg] ? (
-              <img
-                src={gallery[activeImg]}
+            {gallery[0] ? (
+              <Image
+                src={gallery[0]}
                 alt={product.name}
+                width={420}
+                height={420}
                 className="object-contain w-full h-full"
               />
             ) : (

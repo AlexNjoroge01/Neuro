@@ -15,11 +15,11 @@ export default function SalesPage() {
   const utils = trpc.useUtils();
   const { data: products } = trpc.products.list.useQuery();
   const { data: recent } = trpc.sales.list.useQuery();
-  const createSale = trpc.sales.create.useMutation({ 
-    onSuccess: () => { 
-      utils.sales.list.invalidate(); 
-      utils.dashboard.overview.invalidate(); 
-    } 
+  const createSale = trpc.sales.create.useMutation({
+    onSuccess: () => {
+      utils.sales.list.invalidate();
+      utils.dashboard.overview.invalidate();
+    }
   });
 
   const [form, setForm] = useState({ productId: "", quantity: "", paymentMethod: "CASH" as "CASH" | "MPESA" });
@@ -89,85 +89,85 @@ export default function SalesPage() {
   return (
     <SidebarLayout>
       <ClientOnly>
-      <div className="grid gap-6 md:grid-cols-2">
-        <form onSubmit={submit} className="border rounded-lg p-3 grid gap-2 bg-background">
-          <div className="font-medium">New Sale</div>
-          <select 
-            className="border rounded px-2 py-1 bg-gray-100/10" 
-            value={form.productId} 
-            onChange={(e) => setForm({ ...form, productId: e.target.value })}
-          >
-            <option value="">Select product</option>
-            {(products ?? []).map((p) => (
-              <option key={p.id} value={p.id}>{p.name} ({p.unit}{p.size ? ` - ${p.size}` : ""}) - {formatKES(p.price)} - Stock: {p.stock}</option>
-            ))}
-          </select>
-          <input 
-            className="border rounded px-2 py-1 bg-gray-100/10" 
-            placeholder="Quantity" 
-            value={form.quantity} 
-            onChange={(e) => setForm({ ...form, quantity: e.target.value })} 
-          />
-          <select 
-            className="border rounded px-2 py-1 bg-gray-100/10" 
-            value={form.paymentMethod} 
-            onChange={(e) => setForm({ ...form, paymentMethod: e.target.value as any })}
-          >
-            <option value="CASH">Cash</option>
-            <option value="MPESA">Mpesa</option>
-          </select>
-          <div className="text-sm">Total: {formatKES(total)}</div>
-          <button className="bg-primary text-primary-foreground rounded px-2 py-1">Record Sale</button>
-        </form>
+        <div className="grid gap-6 md:grid-cols-2">
+          <form onSubmit={submit} className="border rounded-lg p-3 grid gap-2 bg-background">
+            <div className="font-medium">New Sale</div>
+            <select
+              className="border rounded px-2 py-1 bg-gray-100/10"
+              value={form.productId}
+              onChange={(e) => setForm({ ...form, productId: e.target.value })}
+            >
+              <option value="">Select product</option>
+              {(products ?? []).map((p) => (
+                <option key={p.id} value={p.id}>{p.name} ({p.unit}{p.size ? ` - ${p.size}` : ""}) - {formatKES(p.price)} - Stock: {p.stock}</option>
+              ))}
+            </select>
+            <input
+              className="border rounded px-2 py-1 bg-gray-100/10"
+              placeholder="Quantity"
+              value={form.quantity}
+              onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+            />
+            <select
+              className="border rounded px-2 py-1 bg-gray-100/10"
+              value={form.paymentMethod}
+              onChange={(e) => setForm({ ...form, paymentMethod: e.target.value as "CASH" | "MPESA" })}
+            >
+              <option value="CASH">Cash</option>
+              <option value="MPESA">Mpesa</option>
+            </select>
+            <div className="text-sm">Total: {formatKES(total)}</div>
+            <button className="bg-primary text-primary-foreground rounded px-2 py-1">Record Sale</button>
+          </form>
 
-        <div className="border rounded-lg p-3 bg-background">
-          <div className="font-medium mb-2">Recent Sales</div>
-          <div className="overflow-x-auto max-h-96 overflow-y-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="border-t">
-                  <th className="text-left p-3">Date</th>
-                  <th className="text-left p-3">Product</th>
-                  <th className="text-left p-3">Qty</th>
-                  <th className="text-left p-3">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(recent ?? []).map((s) => (
-                  <tr key={s.id} className="border-t">
-                    <td className="p-3">{new Date(s.createdAt).toLocaleString()}</td>
-                    <td className="p-3">{s.product?.name}</td>
-                    <td className="p-3">{s.quantity}</td>
-                    <td className="p-3">{formatKES(s.totalPrice)}</td>
+          <div className="border rounded-lg p-3 bg-background">
+            <div className="font-medium mb-2">Recent Sales</div>
+            <div className="overflow-x-auto max-h-96 overflow-y-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-t">
+                    <th className="text-left p-3">Date</th>
+                    <th className="text-left p-3">Product</th>
+                    <th className="text-left p-3">Qty</th>
+                    <th className="text-left p-3">Total</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {(recent ?? []).map((s) => (
+                    <tr key={s.id} className="border-t">
+                      <td className="p-3">{new Date(s.createdAt).toLocaleString()}</td>
+                      <td className="p-3">{s.product?.name}</td>
+                      <td className="p-3">{s.quantity}</td>
+                      <td className="p-3">{formatKES(s.totalPrice)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="border rounded-lg p-4 bg-background">
-          <div className="mb-2 font-medium">Daily Sales Trend</div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={barData}>
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="revenue" fill={SYSTEM_COLORS[1]} radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
+          <div className="border rounded-lg p-4 bg-background">
+            <div className="mb-2 font-medium">Daily Sales Trend</div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={barData}>
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="revenue" fill={SYSTEM_COLORS[1]} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Stat title="Today's Sales" value={formatKES(salesStats.todaySales)} index={0} />
+            <Stat title="This Week's Sales" value={formatKES(salesStats.weekSales)} index={1} />
+            <Stat title="Cash Sales" value={formatKES(salesStats.cashSales)} index={2} />
+            <Stat title="Mpesa Sales" value={formatKES(salesStats.mpesaSales)} index={3} />
           </div>
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Stat title="Today's Sales" value={formatKES(salesStats.todaySales)} index={0} />
-          <Stat title="This Week's Sales" value={formatKES(salesStats.weekSales)} index={1} />
-          <Stat title="Cash Sales" value={formatKES(salesStats.cashSales)} index={2} />
-          <Stat title="Mpesa Sales" value={formatKES(salesStats.mpesaSales)} index={3} />
-        </div>
-      </div>
       </ClientOnly>
     </SidebarLayout>
   );

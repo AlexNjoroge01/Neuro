@@ -76,7 +76,7 @@ export default function InventoryPage() {
                 <select
                   className="border rounded px-2 py-1 bg-gray-100/10"
                   value={type}
-                  onChange={(e) => setType(e.target.value as any)}
+                  onChange={(e) => setType(e.target.value as "ADD" | "REMOVE")}
                 >
                   <option value="ADD">Addition</option>
                   <option value="REMOVE">Reduction</option>

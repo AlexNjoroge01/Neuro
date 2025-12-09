@@ -2,8 +2,10 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { rateLimiters } from "@/lib/rate-limit";
+import { NextRequest } from 'next/server';
 
 const prisma = new PrismaClient();
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -17,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     headers: {
       get: (key: string) => req.headers[key.toLowerCase()] as string | null
     }
-  } as any);
+  } as unknown as NextRequest);
 
   // Set rate limit headers
   Object.entries(rateLimitResult.headers).forEach(([key, value]) => {

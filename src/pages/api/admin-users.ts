@@ -4,8 +4,16 @@ import { authOptions } from '@/server/auth/options';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { rateLimiters } from '@/lib/rate-limit';
+import { NextRequest } from 'next/server';
 
 const prisma = new PrismaClient();
+
+interface AdminUpdateData {
+  email?: string;
+  passwordHash?: string;
+}
+
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Apply rate limiting
@@ -14,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     headers: {
       get: (key: string) => req.headers[key.toLowerCase()] as string | null
     }
-  } as any);
+  } as unknown as NextRequest);
 
   // Set rate limit headers
   Object.entries(rateLimitResult.headers).forEach(([key, value]) => {
@@ -72,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Cannot edit your own account' });
     }
 
-    const updateData: any = {};
+    const updateData: AdminUpdateData = {};
     if (email) updateData.email = email;
     if (password) updateData.passwordHash = await bcrypt.hash(password, 10);
 

@@ -5,6 +5,28 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { env } from "@/env";
 
+// Extend NextAuth types
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      role?: string;
+      phone?: string | null;
+      address?: string | null;
+      shippingInfo?: string | null;
+    };
+  }
+  interface User {
+    role?: string;
+    phone?: string | null;
+    address?: string | null;
+    shippingInfo?: string | null;
+  }
+}
+
 
 const prisma = new PrismaClient();
 
@@ -37,7 +59,7 @@ export const authOptions: NextAuthOptions = {
           phone: user.phone,
           address: user.address,
           shippingInfo: user.shippingInfo
-        } as any;
+        } as { id: string; name: string | null; email: string | null; role: string; phone?: string | null; address?: string | null; shippingInfo?: string | null };
       },
     }),
   ],
@@ -45,7 +67,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       // On first sign in, persist the user id
       if (user) {
-        token.id = (user as any).id ?? token.sub;
+        token.id = user.id ?? token.sub;
       }
 
       // Always fetch fresh user data from database to ensure session is up-to-date

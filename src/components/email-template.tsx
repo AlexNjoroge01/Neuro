@@ -119,7 +119,7 @@ export function OrderEmailTemplate({
             </div>
 
             <div style={{ padding: "20px", textAlign: "center", color: "#6b7280", fontSize: "12px" }}>
-                <p>This is an automated notification from Buysmart Kenya</p>
+                <p>This is an automated notification from Dukafiy</p>
             </div>
         </div>
     );

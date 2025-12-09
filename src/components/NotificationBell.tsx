@@ -36,7 +36,7 @@ export default function NotificationBell() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const handleNotificationClick = async (notificationId: string, orderId: string) => {
+    const handleNotificationClick = async (notificationId: string) => {
         await markAsRead.mutateAsync({ notificationId });
         setIsOpen(false);
         // Navigate to orders page - the Link component will handle this
@@ -81,7 +81,7 @@ export default function NotificationBell() {
                                 <Link
                                     key={notification.id}
                                     href={`/orders`}
-                                    onClick={() => handleNotificationClick(notification.id, notification.orderId)}
+                                    onClick={() => handleNotificationClick(notification.id)}
                                     className={`block p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${!notification.read ? "bg-blue-50" : ""
                                         }`}
                                 >

@@ -286,7 +286,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
                 console.log(`[${new Date().toISOString()}] Sending email via Resend...`);
                 const emailResponse = await resend.emails.send({
-                  from: "Buysmart Kenya <onboarding@resend.dev>",
+                  from: "Dukafiy <onboarding@resend.dev>",
                   to: ["clientcare.global@gmail.com"],
                   subject: `New Order #${order.id.slice(0, 8)} - KES ${order.total.toLocaleString()}`,
                   html: emailHtml,

@@ -1,6 +1,8 @@
 import SidebarLayout from "@/components/Layout";
 import { trpc } from "@/utils/trpc";
 import { FormEvent, useState, useMemo } from "react";
+import Image from "next/image";               // ← added
+// import placeholder from "@/public/placeholder.jpg"; // ← optional fallback (you can adjust path)
 
 export default function ProductsPage() {
   const utils = trpc.useUtils();
@@ -19,7 +21,7 @@ export default function ProductsPage() {
   });
 
   const [form, setForm] = useState({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "", image: "", category: "", brand: "" });
-  const [file, setFile] = useState<File|null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -28,7 +30,7 @@ export default function ProductsPage() {
     return { totalProducts: products?.length ?? 0 };
   }, [products]);
 
-  async function handleFileUpload(): Promise<string|undefined> {
+  async function handleFileUpload(): Promise<string | undefined> {
     if (!file) return undefined;
     const fd = new FormData();
     fd.append("file", file);
@@ -53,7 +55,7 @@ export default function ProductsPage() {
     }
     createProduct.mutate({
       name: form.name,
-      unit: form.unit as any,
+      unit: form.unit,
       size: form.size || undefined,
       price,
       costPrice,
@@ -140,9 +142,21 @@ export default function ProductsPage() {
                 }}
               />
               {filePreview ? (
-                <img src={filePreview} alt="Preview" className="h-24 w-24 object-cover rounded" />
+                <Image
+                  src={filePreview}
+                  alt="Preview"
+                  width={96}
+                  height={96}
+                  className="h-24 w-24 object-cover rounded"
+                />
               ) : form.image ? (
-                <img src={"/uploads/" + form.image} alt="Preview" className="h-24 w-24 object-cover rounded" />
+                <Image
+                  src={"/uploads/" + form.image}
+                  alt="Preview"
+                  width={96}
+                  height={96}
+                  className="h-24 w-24 object-cover rounded"
+                />
               ) : null}
 
               <input
@@ -203,7 +217,19 @@ export default function ProductsPage() {
                 <td className="p-3">{p.stock}</td>
                 <td className="p-3">{p.category ?? "-"}</td>
                 <td className="p-3">{p.brand ?? "-"}</td>
-                <td className="p-3">{p.image ? (<img src={"/uploads/" + p.image} alt={p.name} className="h-10 w-10 object-cover rounded" />) : "-"}</td>
+                <td className="p-3">
+                  {p.image ? (
+                    <Image
+                      src={"/uploads/" + p.image}
+                      alt={p.name}
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 object-cover rounded"
+                    />
+                  ) : (
+                    "-"
+                  )}
+                </td>
                 <td className="p-3 space-x-2">
                   <button
                     className="underline"

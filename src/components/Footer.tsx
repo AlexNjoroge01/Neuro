@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Brand Info */}
         <div>
-          <h2 className="text-xl font-bold text-primary mb-3">BuySmart Kenya</h2>
+          <h2 className="text-xl font-bold text-primary mb-3">Dukafiy</h2>
           <p className="text-sm text-white/80 leading-relaxed">
             Your go-to hub for premium tech, sleek design, and unmatched shopping
             experience. We don’t just sell products — we sell vibes.
@@ -56,7 +56,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-border py-4 text-center text-sm text-white/70">
-        © {new Date().getFullYear()} <span className="text-primary font-semibold">BuySmart Kenya</span>. All rights reserved.
+        © {new Date().getFullYear()} <span className="text-primary font-semibold">Dukafiy</span>. All rights reserved.
       </div>
 
       <div className="py-4 text-center text-sm">

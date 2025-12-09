@@ -9,10 +9,10 @@ export const config = {
   },
 };
 
-function parseForm(req: NextApiRequest): Promise<{ files: any } > {
+function parseForm(req: NextApiRequest): Promise<{ files: unknown }> {
   return new Promise((resolve, reject) => {
     const form = formidable({ multiples: false, maxFileSize: 5 * 1024 * 1024 });
-    form.parse(req, (err: any, _fields: any, files: any) => {
+    form.parse(req, (err: unknown, _fields: unknown, files: unknown) => {
       if (err) return reject(err);
       resolve({ files });
     });
@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
     const { files } = await parseForm(req);
-    const raw: any = (files as any).file;
+    const raw = (files as Record<string, unknown>).file;
     const file = Array.isArray(raw) ? raw[0] : raw;
     if (!file) return res.status(400).json({ error: 'No file uploaded' });
 

@@ -15,8 +15,8 @@ export default function ClientNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [showResults, setShowResults] = useState(false);
-  const { data: results, isFetching } = trpc.products.search.useQuery(search, { 
-    enabled: search.trim().length >= 2 
+  const { data: results, isFetching } = trpc.products.search.useQuery(search, {
+    enabled: search.trim().length >= 2
   });
 
   // Ref for mobile menu (bottom sheet)
@@ -78,7 +78,7 @@ export default function ClientNavbar() {
     try {
       await signOut({ callbackUrl: "/auth/login" });
       toast.success("Signed out successfully");
-    } catch (error) {
+    } catch {
       toast.error("Sign out failed. Please try again.");
     }
   };
@@ -90,7 +90,7 @@ export default function ClientNavbar() {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/">
-              <p className="text-2xl font-bold text-primary">BuySmart Kenya</p>
+              <p className="text-2xl font-bold text-primary">Dukafiy</p>
             </Link>
           </div>
 
@@ -166,7 +166,7 @@ export default function ClientNavbar() {
                   aria-expanded={mobileMenuOpen}
                 >
                   <span className="flex text-sm text-primary font-medium">
-                    Hi, {firstName || session.user?.email}                    
+                    Hi, {firstName || session.user?.email}
                   </span>
                   <ChevronDown className={`h-4 w-4 text-primary transition ${mobileMenuOpen ? "rotate-180" : ""}`} />
                 </button>
@@ -243,9 +243,9 @@ export default function ClientNavbar() {
                 <input
                   type="text"
                   value={search}
-                  onChange={(e) => { 
-                    setSearch(e.target.value); 
-                    setShowResults(true); 
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setShowResults(true);
                   }}
                   onBlur={() => setTimeout(() => setShowResults(false), 200)}
                   placeholder="Search products..."
