@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }: AppPropsWithSession) {
           toastClassName={() =>
             "relative flex min-h-12 rounded-md bg-card text-foreground border border-border shadow-lg"
           }
-          bodyClassName={() => "flex w-full py-2 text-sm font-medium"}
+
           progressClassName="bg-primary"
         />
       </>

@@ -1,43 +1,11 @@
-import { Bell, Search, LogIn, LogOut } from "lucide-react";
+import { Search, LogIn, LogOut } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import NotificationBell from "./NotificationBell";
-import "next-auth";
-
-// Add type patch for session.user (role)
-declare module "next-auth" {
-  interface User {
-    role?: string;
-  }
-  interface Session {
-    user: User & {
-      role?: string;
-    };
-  }
-}
 
 export default function Navbar() {
   const { data: session, status } = useSession();
-  const [cartCount, setCartCount] = useState(0);
-
-  // ✅ Load cart count from localStorage
-  useEffect(() => {
-    const updateCartCount = () => {
-      try {
-        const storedCart = JSON.parse(localStorage.getItem("cart") ?? "[]");
-        setCartCount(storedCart.length);
-      } catch {
-        setCartCount(0);
-      }
-    };
-    updateCartCount();
-
-    // Listen for cart changes (from other tabs or triggers)
-    window.addEventListener("storage", updateCartCount);
-    return () => window.removeEventListener("storage", updateCartCount);
-  }, []);
 
   return (
     <nav className="w-full bg-background border-b border-gray-200/20 p-4 flex justify-between items-center shadow-md">

@@ -14,7 +14,7 @@ export default function ShopPage() {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER";
   const { data: products, isLoading } = trpc.products.publicList.useQuery();
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>("All");
 
   // Background carousel setup
   const images = ["/b4.jpg", "/c1.jpg", "/c2.jpg", "/c3.jpg"];
@@ -90,7 +90,7 @@ export default function ShopPage() {
       </div>
 
       {/* Filter Bar - Full Width Container Alignment */}
-    <div className="bg-muted/30 py-12">
+      <div className="bg-muted/30 py-12">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-foreground mb-8">
             Category name

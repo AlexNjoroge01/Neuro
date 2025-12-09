@@ -130,15 +130,15 @@ export default function AccountPage() {
           <div className="flex gap-2">
             <button
               onClick={handleSave}
-              disabled={updateProfile.isLoading}
+              disabled={updateProfile.isPending}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
-              {updateProfile.isLoading ? "Saving..." : "Save"}
+              {updateProfile.isPending ? "Saving..." : "Save"}
             </button>
             <button
               onClick={handleCancel}
-              disabled={updateProfile.isLoading}
+              disabled={updateProfile.isPending}
               className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition disabled:opacity-50"
             >
               <X className="h-4 w-4" />

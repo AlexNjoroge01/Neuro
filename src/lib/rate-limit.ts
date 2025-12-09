@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 /**
  * Simple in-memory rate limiter
@@ -62,7 +62,7 @@ export function rateLimit(config: RateLimitConfig) {
         // Get identifier (IP address by default)
         const id = identifier
             ? identifier(req)
-            : req.ip || req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+            : req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
 
         const now = Date.now();
         const windowMs = windowSeconds * 1000;

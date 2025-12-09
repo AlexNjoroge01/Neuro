@@ -67,7 +67,7 @@ const CUSTOMER_ITEMS = [
 export default function Sidebar() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
 
   const navItems = useMemo(() => {
     if (!status || status === "loading" || status !== "authenticated") {
@@ -80,9 +80,9 @@ export default function Sidebar() {
   }, [role, status]);
 
   return (
-    <aside className="w-64 h-screen flex flex-col border-r border-gray-200/20 p-4 hidden md:flex bg-white">
+    <aside className="w-64 h-screen flex flex-col border-r border-gray-200/20 p-4 md:flex bg-white">
       {/* Logo / Title */}
-      <div className="px-2 py-3 text-2xl font-bold text-secondary">Buysmart Kenya</div>
+      <div className="px-2 py-3 text-2xl font-bold text-secondary">Dukafiy</div>
 
       {/* Navigation */}
       <nav className="mt-4 space-y-1 flex-1 overflow-y-auto">
