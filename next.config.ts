@@ -8,6 +8,16 @@ const nextConfig: NextConfig = {
     } : false
   },
 
+  // Image optimization configuration
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+    ],
+  },
+
   // Security headers
   async headers() {
     return [
@@ -58,7 +68,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'", // Inline styles for dynamic styling
               "img-src 'self' data: blob: https:",
               "font-src 'self' data:",
-              "connect-src 'self' https://sandbox.safaricom.co.ke https://api.safaricom.co.ke",
+              "connect-src 'self' https://sandbox.safaricom.co.ke https://api.safaricom.co.ke https://api.cloudinary.com",
               "frame-ancestors 'self'",
               "base-uri 'self'",
               "form-action 'self'"

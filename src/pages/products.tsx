@@ -1,8 +1,8 @@
 import SidebarLayout from "@/components/Layout";
 import { trpc } from "@/utils/trpc";
 import { FormEvent, useState, useMemo } from "react";
-import Image from "next/image";               // ← added
-// import placeholder from "@/public/placeholder.jpg"; // ← optional fallback (you can adjust path)
+import Image from "next/image";
+import { useCloudinaryUpload } from "@/hooks/useCloudinaryUpload";
 
 export default function ProductsPage() {
   const utils = trpc.useUtils();
@@ -24,23 +24,12 @@ export default function ProductsPage() {
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [uploading, setUploading] = useState(false);
+
+  const { uploadImage, isUploading } = useCloudinaryUpload();
 
   const productStats = useMemo(() => {
     return { totalProducts: products?.length ?? 0 };
   }, [products]);
-
-  async function handleFileUpload(): Promise<string | undefined> {
-    if (!file) return undefined;
-    const fd = new FormData();
-    fd.append("file", file);
-    setUploading(true);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    setUploading(false);
-    if (!res.ok) return undefined;
-    const json = await res.json();
-    return json.filename;
-  }
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -51,7 +40,8 @@ export default function ProductsPage() {
 
     let image = form.image;
     if (file) {
-      image = await handleFileUpload() || "";
+      const cloudinaryUrl = await uploadImage(file);
+      image = cloudinaryUrl || "";
     }
     createProduct.mutate({
       name: form.name,
@@ -151,7 +141,7 @@ export default function ProductsPage() {
                 />
               ) : form.image ? (
                 <Image
-                  src={"/uploads/" + form.image}
+                  src={form.image.startsWith('https://') ? form.image : "/uploads/" + form.image}
                   alt="Preview"
                   width={96}
                   height={96}
@@ -182,9 +172,9 @@ export default function ProductsPage() {
                 <button
                   type="submit"
                   className="bg-primary text-primary-foreground rounded px-3 py-1"
-                  disabled={uploading}
+                  disabled={isUploading}
                 >
-                  {uploading ? "Uploading..." : "Add Product"}
+                  {isUploading ? "Uploading..." : "Add Product"}
                 </button>
               </div>
             </form>
@@ -220,7 +210,7 @@ export default function ProductsPage() {
                 <td className="p-3">
                   {p.image ? (
                     <Image
-                      src={"/uploads/" + p.image}
+                      src={p.image.startsWith('https://') ? p.image : "/uploads/" + p.image}
                       alt={p.name}
                       width={40}
                       height={40}

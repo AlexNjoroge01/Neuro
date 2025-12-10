@@ -199,7 +199,7 @@ export default function OrdersPage() {
                         <div className="flex items-center gap-2">
                           {item.product?.image ? (
                             <Image
-                              src={"/uploads/" + item.product.image}
+                              src={(item.product.image.startsWith('https://') ? item.product.image : item.product.image.startsWith('/uploads') ? item.product.image : "/uploads/" + item.product.image)}
                               alt={item.product?.name ?? "Product"}
                               width={32}
                               height={32}

@@ -7,7 +7,7 @@ const faqs = [
   {
     question: "How can I place an order?",
     answer:
-      "Placing an order is easy! Simply browse our website, select the products you want, add them to your cart, and proceed to checkout. Follow the on-screen instructions to complete your purchase.",
+      "Placing an order is easy! Simply start by going into your Account settings, update your contact, address and shipping information. Once done hit save and you can start browse our website, select the products you want, add them to your cart, and proceed to checkout. Follow the on-screen instructions to complete your purchase.",
   },
   {
     question: "What payment methods do you accept?",

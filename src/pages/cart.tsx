@@ -193,9 +193,11 @@ export default function CartPage() {
                                         <Image
                                             src={
                                                 item.product?.image
-                                                    ? item.product.image.startsWith("/uploads")
+                                                    ? item.product.image.startsWith('https://')
                                                         ? item.product.image
-                                                        : `/uploads/${item.product.image}`
+                                                        : item.product.image.startsWith("/uploads")
+                                                            ? item.product.image
+                                                            : `/uploads/${item.product.image}`
                                                     : "/placeholder.png"
                                             }
                                             alt={item.product?.name ?? "Product"}
