@@ -144,52 +144,59 @@ export default function ShopPage() {
                 </h2>
 
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {items.map((prod) => (
-                    <div
-                      key={prod.id}
-                      className="group bg-secondary rounded-lg p-5 shadow-lg hover:shadow-xl transition-all border border-border flex flex-col cursor-pointer"
-                    >
-                      <Link href={`/shop/${prod.id}`} className="flex flex-col h-full">
-                        {/* ← PROPER NEXT/IMAGE IMPLEMENTATION */}
-                        <div className="aspect-square rounded-lg mb-4 flex items-center justify-center overflow-hidden bg-transparent relative">
-                          {prod.image ? (
-                            <Image
-                              src={
-                                prod.image.startsWith("/uploads")
-                                  ? prod.image
-                                  : `/uploads/${prod.image}`
-                              }
-                              alt={prod.name}
-                              fill
-                              className="object-contain group-hover:scale-105 transition"
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                              quality={85}
-                            />
-                          ) : (
-                            <span className="text-gray-400 text-6xl">Headphones</span>
-                          )}
-                        </div>
+                  {items.map((prod) => {
+                    // Handle both Cloudinary URLs (https://) and legacy /uploads/ paths
+                    const imageSrc = prod.image
+                      ? prod.image.startsWith('https://')
+                        ? prod.image
+                        : prod.image.startsWith("/uploads")
+                          ? prod.image
+                          : `/uploads/${prod.image}`
+                      : "";
 
-                        <div className="flex-1">
-                          <div className="text-xs mb-1 text-primary font-semibold uppercase tracking-wider">
-                            {prod.brand || "Brand"}
+                    return (
+                      <div
+                        key={prod.id}
+                        className="group bg-secondary rounded-lg p-5 shadow-lg hover:shadow-xl transition-all border border-border flex flex-col cursor-pointer"
+                      >
+                        <Link href={`/shop/${prod.id}`} className="flex flex-col h-full">
+                          {/* ← PROPER NEXT/IMAGE IMPLEMENTATION */}
+                          <div className="aspect-square rounded-lg mb-4 flex items-center justify-center overflow-hidden bg-transparent relative">
+                            {imageSrc ? (
+                              <Image
+                                src={imageSrc}
+                                alt={prod.name}
+                                fill
+                                className="object-contain group-hover:scale-105 transition"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                quality={85}
+                              />
+                            ) : (
+                              <span className="text-gray-400 text-6xl">Headphones</span>
+                            )}
                           </div>
-                          <div className="font-bold text-lg mb-1 text-foreground line-clamp-2">
-                            {prod.name}
+
+                          <div className="flex-1">
+                            <div className="text-xs mb-1 text-primary font-semibold uppercase tracking-wider">
+                              {prod.brand || "Brand"}
+                            </div>
+                            <div className="font-bold text-lg mb-1 text-foreground line-clamp-2">
+                              {prod.name}
+                            </div>
+                            <div className="text-xs text-white mb-1">
+                              {prod.category || "Category"}
+                            </div>
                           </div>
-                          <div className="text-xs text-white mb-1">
-                            {prod.category || "Category"}
+                          <div className="mt-2 mb-2 font-bold text-2xl text-primary">
+                            {formatKES(prod.price ?? 0)}
                           </div>
-                        </div>
-                        <div className="mt-2 mb-2 font-bold text-2xl text-primary">
-                          {formatKES(prod.price ?? 0)}
-                        </div>
-                        <div className="text-sm text-white">
-                          In Stock: <b className="text-white">{prod.stock}</b>
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
+                          <div className="text-sm text-white">
+                            In Stock: <b className="text-white">{prod.stock}</b>
+                          </div>
+                        </Link>
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             );

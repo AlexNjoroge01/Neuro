@@ -25,10 +25,13 @@ export default function ProductDetail() {
   if (isLoading) return <div className="p-8">Loading...</div>;
   if (!product) return <div className="p-8">Product not found.</div>;
 
+  // Handle both Cloudinary URLs (https://) and legacy /uploads/ paths
   const baseImg = product.image
-    ? product.image.startsWith("/uploads")
+    ? product.image.startsWith('https://')
       ? product.image
-      : `/uploads/${product.image}`
+      : product.image.startsWith("/uploads")
+        ? product.image
+        : `/uploads/${product.image}`
     : "";
   const gallery = [baseImg, baseImg, baseImg, baseImg].filter(Boolean);
 
