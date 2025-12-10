@@ -1,0 +1,8 @@
+    [build]
+      command = "next build"
+      publish = ".next"
+
+    [[redirects]]
+      from = "/old-path"
+      to = "/new-path"
+      status = 301
