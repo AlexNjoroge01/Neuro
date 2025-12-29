@@ -10,7 +10,9 @@ import { trpc } from "@/utils/trpc";
 export default function AccountPage() {
   const { data: session, status } = useSession();
   const utils = trpc.useUtils();
-  const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER";
+  const isAdmin =
+    status === "authenticated" &&
+    (session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER");
 
   const [detectedTimezone, setDetectedTimezone] = useState<string>("");
   const [detectedCountry, setDetectedCountry] = useState<string>("");
@@ -113,7 +115,7 @@ export default function AccountPage() {
   };
 
   const accountContent = (
-    <div className="max-w-4xl mx-auto px-6 bg-secondary rounded-lg mt-4 mb-4 py-12">
+    <div className="max-full mx-auto px-6 bg-secondary rounded-lg mt-4 mb-4 py-12">
       <div className="flex justify-between items-center mb-10">
         <h1 className="text-4xl font-bold text-white text-center md:text-left">
           Account Settings
@@ -121,9 +123,9 @@ export default function AccountPage() {
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-primary font-bold text-secondary rounded-lg hover:bg-primary/90 transition"
           >
-            <Edit className="h-4 w-4" />
+            <Edit className="h-4 w-4 text-secondary" />
             Edit Profile
           </button>
         ) : (
@@ -159,7 +161,7 @@ export default function AccountPage() {
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <p className="text-white/80 text-lg font-medium">Your Role</p>
-            <span className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-primary text-white font-bold text-lg shadow-lg">
+            <span className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-primary text-secondary font-bold text-lg shadow-lg">
               <Shield className="h-6 w-6" />
               {role || "User"}
             </span>

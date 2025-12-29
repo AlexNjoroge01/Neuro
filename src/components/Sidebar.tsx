@@ -70,9 +70,13 @@ export default function Sidebar() {
   const role = session?.user?.role;
 
   const navItems = useMemo(() => {
-    if (!status || status === "loading" || status !== "authenticated") {
+    if (status === "loading") {
+      // While auth is resolving, render no items to avoid flicker between customer/admin menus
+      return [] as typeof CUSTOMER_ITEMS;
+    }
+    if (status !== "authenticated") {
       // Not logged in, show public shop/cart only
-      return CUSTOMER_ITEMS.filter(item => ["/shop", "/cart"].includes(item.href));
+      return CUSTOMER_ITEMS.filter((item) => ["/shop", "/cart"].includes(item.href));
     }
     if (role === "SUPERUSER") return SUPERUSER_ITEMS;
     if (role === "ADMIN") return ADMIN_ITEMS;

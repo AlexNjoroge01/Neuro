@@ -39,7 +39,9 @@ export default function ProductDetail() {
   async function addToCart() {
     if (status !== "authenticated") {
       toast.error("Please login to add items to cart");
-      router.push("/auth/login");
+      // Preserve the product page so we can redirect back here after login
+      const callbackUrl = typeof router.asPath === "string" ? router.asPath : `/shop/${id}`;
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
       return;
     }
     if (!product) return;

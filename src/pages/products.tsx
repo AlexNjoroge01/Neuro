@@ -24,12 +24,31 @@ export default function ProductsPage() {
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
 
   const { uploadImage, isUploading } = useCloudinaryUpload();
 
   const productStats = useMemo(() => {
     return { totalProducts: products?.length ?? 0 };
   }, [products]);
+
+  function openEditModal(product: { id: string; name: string; unit: string; size: string | null; price: number; costPrice: number; stock: number; image: string | null; category: string | null; brand: string | null }) {
+    setEditingProductId(product.id);
+    setForm({
+      name: product.name,
+      unit: product.unit,
+      size: product.size || "",
+      price: product.price.toString(),
+      costPrice: product.costPrice.toString(),
+      stock: product.stock.toString(),
+      image: product.image || "",
+      category: product.category || "",
+      brand: product.brand || "",
+    });
+    setFile(null);
+    setFilePreview("");
+    setIsModalOpen(true);
+  }
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -43,21 +62,38 @@ export default function ProductsPage() {
       const cloudinaryUrl = await uploadImage(file);
       image = cloudinaryUrl || "";
     }
-    createProduct.mutate({
-      name: form.name,
-      unit: form.unit,
-      size: form.size || undefined,
-      price,
-      costPrice,
-      stock,
-      image: image || undefined,
-      category: form.category || undefined,
-      brand: form.brand || undefined,
-    });
+
+    if (editingProductId) {
+      updateProduct.mutate({
+        id: editingProductId,
+        name: form.name,
+        unit: form.unit,
+        size: form.size || undefined,
+        price,
+        costPrice,
+        stock,
+        image: image || undefined,
+        category: form.category || undefined,
+        brand: form.brand || undefined,
+      });
+    } else {
+      createProduct.mutate({
+        name: form.name,
+        unit: form.unit,
+        size: form.size || undefined,
+        price,
+        costPrice,
+        stock,
+        image: image || undefined,
+        category: form.category || undefined,
+        brand: form.brand || undefined,
+      });
+    }
     setForm({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "", image: "", category: "", brand: "" });
     setFile(null);
     setFilePreview("");
     setIsModalOpen(false);
+    setEditingProductId(null);
   }
 
   return (
@@ -82,7 +118,7 @@ export default function ProductsPage() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50  flex items-center justify-center z-50">
           <div className="bg-background border border-gray-200/20 rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-4">Add New Product</h2>
+            <h2 className="text-lg font-semibold mb-4">{editingProductId ? "Edit Product" : "Add New Product"}</h2>
             <form onSubmit={submit} className="grid gap-4">
               <input
                 className="border rounded px-2 py-1 bg-gray-100/10"
@@ -165,7 +201,10 @@ export default function ProductsPage() {
                 <button
                   type="button"
                   className="bg-secondary text-secondary-foreground rounded px-3 py-1"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setEditingProductId(null);
+                  }}
                 >
                   Cancel
                 </button>
@@ -174,7 +213,7 @@ export default function ProductsPage() {
                   className="bg-primary text-primary-foreground rounded px-3 py-1"
                   disabled={isUploading}
                 >
-                  {isUploading ? "Uploading..." : "Add Product"}
+                  {isUploading ? "Uploading..." : editingProductId ? "Update Product" : "Add Product"}
                 </button>
               </div>
             </form>
@@ -222,17 +261,17 @@ export default function ProductsPage() {
                 </td>
                 <td className="p-3 space-x-2">
                   <button
-                    className="underline"
-                    onClick={() => updateProduct.mutate({ id: p.id, stock: p.stock + 1 })}
+                    className="bg-blue-600 text-white px-2 py-1 rounded-2xl"
+                    onClick={() => openEditModal(p)}
                   >
-                    +1 Stock
+                    Edit
                   </button>
-                  <button className="text-red-600 underline" onClick={() => deleteProduct.mutate(p.id)}>
-                    Archive
+                  <button className="text-red-600 border bg-red-600 text-white px-2 py-1 rounded-2xl" onClick={() => deleteProduct.mutate(p.id)}>
+                    Delete
                   </button>
-                  <button className="underline" onClick={() => restoreProduct.mutate(p.id)}>
+                  {/* <button className="underline" onClick={() => restoreProduct.mutate(p.id)}>
                     Restore
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

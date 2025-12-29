@@ -12,7 +12,9 @@ export default function OrdersPage() {
     enabled: status === "authenticated",
   });
   const fulfill = trpc.orders.fulfill.useMutation();
-  const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER";
+  const isAdmin =
+    status === "authenticated" &&
+    (session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER");
   const [statusUpdating, setStatusUpdating] = useState("");
 
   if (status !== "authenticated")

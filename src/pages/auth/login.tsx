@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 // Zod schema with strict validation
 const loginSchema = z.object({
@@ -22,6 +23,7 @@ const loginSchema = z.object({
 });
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -54,11 +56,14 @@ export default function LoginPage() {
       return;
     }
 
+    const callbackFromQuery =
+      typeof router.query.callbackUrl === "string" ? router.query.callbackUrl : null;
+
     const res = await signIn("credentials", {
       email,
       password,
       redirect: false,
-      callbackUrl: "/dashboard",
+      callbackUrl: callbackFromQuery ?? "/dashboard",
     });
 
     if (res?.error) {
@@ -67,7 +72,14 @@ export default function LoginPage() {
     }
     if (res?.ok) {
       toast.success("Login successful! Redirecting...");
-      window.location.href = "/";
+      // If we came here with a callbackUrl (e.g. from a product page),
+      // send the user back there. Otherwise fall back to home (/),
+      // which will route based on their role.
+      if (callbackFromQuery) {
+        window.location.href = callbackFromQuery;
+      } else {
+        window.location.href = "/";
+      }
     }
 
     setIsLoading(false);
@@ -174,7 +186,7 @@ export default function LoginPage() {
                 />
                 <span className="text-foreground">Keep me logged in on this Device.</span>
               </label>
-              <Link href="/auth/forgot" className="text-primary hover:underline whitespace-nowrap">
+              <Link href="/auth/forgot" className="text-secondary hover:underline whitespace-nowrap">
                 Forgot Your Password?
               </Link>
             </div>
@@ -197,7 +209,7 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-muted-foreground">
             Dont Have an Account?{" "}
-            <Link href="/auth/register" className="text-primary font-medium hover:underline">
+            <Link href="/auth/register" className="text-secondary font-medium hover:underline">
               Sign Up
             </Link>
           </p>
