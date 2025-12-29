@@ -11,8 +11,10 @@ import SidebarLayout from "@/components/Layout";
 import { useSession } from "next-auth/react";
 
 export default function ShopPage() {
-  const { data: session } = useSession();
-  const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER";
+  const { data: session, status } = useSession();
+  const isAdmin =
+    status === "authenticated" &&
+    (session?.user?.role === "ADMIN" || session?.user?.role === "SUPERUSER");
   const { data: products, isLoading } = trpc.products.publicList.useQuery();
   const [selectedCategory, setSelectedCategory] = useState<string | null>("All");
 
@@ -177,21 +179,18 @@ export default function ShopPage() {
                           </div>
 
                           <div className="flex-1">
-                            <div className="text-xs mb-1 text-primary font-semibold uppercase tracking-wider">
-                              {prod.brand || "Brand"}
-                            </div>
-                            <div className="font-bold text-lg mb-1 text-foreground line-clamp-2">
+                            <div className="font-bold text-2xl mb-2 text-white line-clamp-2">
                               {prod.name}
                             </div>
                             <div className="text-xs text-white mb-1">
                               {prod.category || "Category"}
                             </div>
+                            <div className="text-xs mb-1 text-primary font-semibold uppercase tracking-wider">
+                              {prod.brand || "Brand"}
+                            </div>
                           </div>
-                          <div className="mt-2 mb-2 font-bold text-2xl text-primary">
+                          <div className="mt-2 font-bold text-2xl text-primary">
                             {formatKES(prod.price ?? 0)}
-                          </div>
-                          <div className="text-sm text-white">
-                            In Stock: <b className="text-white">{prod.stock}</b>
                           </div>
                         </Link>
                       </div>
