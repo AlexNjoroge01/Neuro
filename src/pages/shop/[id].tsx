@@ -101,7 +101,7 @@ export default function ProductDetail() {
           </div>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="text-3xl font-extrabold text-primary">
+            <div className="text-3xl font-extrabold text-secondary">
               KES {product.price.toLocaleString()}
             </div>
             {/* {limitedStock && (

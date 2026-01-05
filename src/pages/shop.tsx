@@ -95,7 +95,7 @@ export default function ShopPage() {
       <div className="bg-muted/30 py-12">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-foreground mb-8">
-            Category name
+            Shop by Category 
           </h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
