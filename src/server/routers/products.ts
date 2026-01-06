@@ -3,10 +3,17 @@ import { createRouter, publicProcedure, protectedProcedure } from "../createRout
 
 export const productsRouter = createRouter({
     list: protectedProcedure.query(async ({ ctx }) => {
-        return ctx.prisma.product.findMany({ where: { deletedAt: null }, orderBy: { createdAt: "desc" } });
+        return ctx.prisma.product.findMany({
+            where: { deletedAt: null },
+            orderBy: { createdAt: "desc" },
+            include: { variations: true }
+        });
     }),
     get: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
-        return ctx.prisma.product.findFirst({ where: { id: input, deletedAt: null } });
+        return ctx.prisma.product.findFirst({
+            where: { id: input, deletedAt: null },
+            include: { variations: true }
+        });
     }),
     create: protectedProcedure
         .input(
@@ -20,10 +27,23 @@ export const productsRouter = createRouter({
                 image: z.string().optional(),
                 category: z.string().optional(),
                 brand: z.string().optional(),
+                variations: z.array(z.object({
+                    name: z.string(),
+                    image: z.string().optional(),
+                })).optional(),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            return ctx.prisma.product.create({ data: input });
+            const { variations, ...productData } = input;
+            return ctx.prisma.product.create({
+                data: {
+                    ...productData,
+                    variations: variations ? {
+                        create: variations
+                    } : undefined
+                },
+                include: { variations: true }
+            });
         }),
     update: protectedProcedure
         .input(
@@ -38,11 +58,52 @@ export const productsRouter = createRouter({
                 image: z.string().optional(),
                 category: z.string().optional(),
                 brand: z.string().optional(),
+                variations: z.array(z.object({
+                    id: z.string().optional(),
+                    name: z.string(),
+                    image: z.string().optional(),
+                })).optional(),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const { id, ...data } = input;
-            return ctx.prisma.product.update({ where: { id }, data });
+            const { id, variations, ...data } = input;
+            
+            // Handle variations if provided
+            if (variations !== undefined) {
+                const existingIds = variations.filter(v => v.id).map(v => v.id!);
+                
+                // Delete variations not in the new list
+                await ctx.prisma.productVariation.deleteMany({
+                    where: {
+                        productId: id,
+                        id: { notIn: existingIds }
+                    }
+                });
+                
+                // Update existing and create new variations
+                for (const v of variations) {
+                    if (v.id) {
+                        await ctx.prisma.productVariation.update({
+                            where: { id: v.id },
+                            data: { name: v.name, image: v.image }
+                        });
+                    } else {
+                        await ctx.prisma.productVariation.create({
+                            data: {
+                                productId: id,
+                                name: v.name,
+                                image: v.image
+                            }
+                        });
+                    }
+                }
+            }
+            
+            return ctx.prisma.product.update({
+                where: { id },
+                data,
+                include: { variations: true }
+            });
         }),
     delete: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
         return ctx.prisma.product.update({ where: { id: input }, data: { deletedAt: new Date() } });
@@ -55,11 +116,13 @@ export const productsRouter = createRouter({
         return ctx.prisma.product.findMany({
             where: { deletedAt: null },
             orderBy: { createdAt: "desc" },
+            include: { variations: true }
         });
     }),
     publicGet: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
         return ctx.prisma.product.findFirst({
             where: { id: input, deletedAt: null },
+            include: { variations: true }
         });
     }),
     search: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {

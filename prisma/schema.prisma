@@ -31,6 +31,18 @@ model Product {
   InventoryLog InventoryLog[]
   orderItems   OrderItem[]     // 👈 NEW for eCommerce
   cartItems    CartItem[]      // 👈 NEW for eCommerce
+  variations   ProductVariation[]
+}
+
+model ProductVariation {
+  id        String   @id @default(cuid())
+  productId String
+  name      String
+  image     String?
+  createdAt DateTime @default(now())
+  
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems CartItem[]
 }
 
 model Sale {
@@ -235,13 +247,15 @@ model Cart {
 }
 
 model CartItem {
-  id        String     @id @default(cuid())
-  cartId    String
-  productId String
-  quantity  Int
+  id          String     @id @default(cuid())
+  cartId      String
+  productId   String
+  quantity    Int
+  variationId String?
 
-  cart      Cart       @relation(fields: [cartId], references: [id])
-  product   Product    @relation(fields: [productId], references: [id])
+  cart      Cart               @relation(fields: [cartId], references: [id])
+  product   Product            @relation(fields: [productId], references: [id])
+  variation ProductVariation?  @relation(fields: [variationId], references: [id])
 }
 
 model Transaction {

@@ -23,6 +23,7 @@ export const cartRouter = createRouter({
         items: {
           include: {
             product: true,
+            variation: true,
           },
         },
       },
@@ -31,18 +32,32 @@ export const cartRouter = createRouter({
   add: protectedProcedure.input(z.object({
     productId: z.string(),
     delta: z.number().int().default(1),
+    variationId: z.string().optional(),
   })).mutation(async ({ ctx, input }) => {
     const cart = await ctx.prisma.cart.upsert({
       where: { userId: ctx.session.user.id },
       update: {},
       create: { userId: ctx.session.user.id },
     });
-    const existing = await ctx.prisma.cartItem.findFirst({ where: { cartId: cart.id, productId: input.productId } });
+    const existing = await ctx.prisma.cartItem.findFirst({ 
+      where: { 
+        cartId: cart.id, 
+        productId: input.productId,
+        variationId: input.variationId || null
+      } 
+    });
     if (existing) {
       const newQty = Math.max(1, existing.quantity + input.delta);
       return ctx.prisma.cartItem.update({ where: { id: existing.id }, data: { quantity: newQty } });
     }
-    return ctx.prisma.cartItem.create({ data: { cartId: cart.id, productId: input.productId, quantity: Math.max(1, input.delta) } });
+    return ctx.prisma.cartItem.create({ 
+      data: { 
+        cartId: cart.id, 
+        productId: input.productId, 
+        variationId: input.variationId,
+        quantity: Math.max(1, input.delta) 
+      } 
+    });
   }),
   addOrUpdate: protectedProcedure.input(z.object({
     productId: z.string(),
