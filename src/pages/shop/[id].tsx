@@ -15,13 +15,23 @@ export default function ProductDetail() {
   const add = trpc.cart.add.useMutation({
     onSuccess: () => utils.cart.get.invalidate(),
   });
-  const { data: product, isLoading } = trpc.products.publicGet.useQuery(
+  const { data: rawProduct, isLoading } = trpc.products.publicGet.useQuery(
     typeof id === "string" ? id : "",
     { enabled: !!id }
   );
 
   const [qty, setQty] = useState(1);
   const [selectedVariation, setSelectedVariation] = useState<string | null>(null);
+
+  type ProductWithVariations = {
+    variations?: {
+      id: string;
+      name: string;
+      image?: string | null;
+    }[];
+  };
+
+  const product = rawProduct as (typeof rawProduct & ProductWithVariations) | null;
 
   if (isLoading) return <div className="p-8">Loading...</div>;
   if (!product) return <div className="p-8">Product not found.</div>;
