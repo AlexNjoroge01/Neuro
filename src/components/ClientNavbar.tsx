@@ -62,14 +62,20 @@ export default function ClientNavbar() {
     return () => window.removeEventListener("storage", updateCount);
   }, [status]);
 
-  type CartWithItems = { items?: { quantity: number }[] };
+  type CartWithItems = {
+    items?: {
+      quantity: number;
+    }[];
+  };
 
   const cartCount = useMemo(() => {
     if (status === "authenticated") {
       // `cart.get` includes related items in the router, but the inferred TS
       // type here only exposes the base cart fields. We locally describe the
-      // shape we actually use (just `items.quantity`) for type safety.
-      const items = (serverCart as CartWithItems | undefined)?.items ?? [];
+      // shape we actually use (just `items.quantity`) and cast via `unknown`
+      // to keep things type-safe without `any`.
+      const items =
+        (serverCart as unknown as CartWithItems | undefined)?.items ?? [];
       return items.reduce((sum, i) => sum + i.quantity, 0);
     }
     return localCount;

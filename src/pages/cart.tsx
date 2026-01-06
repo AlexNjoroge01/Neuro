@@ -106,7 +106,31 @@ export default function CartPage() {
         return () => clearTimeout(timeout);
     }, [checkoutRequestId]);
 
-    const items = useMemo(() => cart?.items ?? [], [cart]);
+    type CartWithItems = {
+        items?: {
+            id: string;
+            quantity: number;
+            productId: string;
+            product?: {
+                price?: number | null;
+                image?: string | null;
+                name?: string | null;
+            } | null;
+            variationId?: string | null;
+            variation?: {
+                id: string;
+                name?: string | null;
+                image?: string | null;
+            } | null;
+        }[];
+    };
+
+    const items = useMemo(
+        () =>
+            ((cart as unknown as CartWithItems | undefined)?.items) ??
+            [],
+        [cart],
+    );
     const subtotal = useMemo(
         () => items.reduce((sum, item) => sum + (item.product?.price ?? 0) * item.quantity, 0),
         [items],
