@@ -64,7 +64,10 @@ export default function ClientNavbar() {
 
   const cartCount = useMemo(() => {
     if (status === "authenticated") {
-      return (serverCart?.items ?? []).reduce((sum, i) => sum + i.quantity, 0);
+      // On the server, the cart includes related items; on the client the
+      // inferred type may not expose `items`, so we safely access it via `any`.
+      const items = ((serverCart as any)?.items ?? []) as Array<{ quantity: number }>;
+      return items.reduce((sum, i) => sum + i.quantity, 0);
     }
     return localCount;
   }, [status, serverCart, localCount]);
