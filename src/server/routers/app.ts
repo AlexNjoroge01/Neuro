@@ -9,6 +9,7 @@ import { fleetRouter } from "./fleet";
 import { hrRouter } from "./hr";
 import { z } from "zod";
 import { protectedProcedure } from "../createRouter";
+import { Prisma } from "@prisma/client";
 
 import { mpesaRouter } from "../api/routers/mpesa";
 import { userRouter } from "./user";
@@ -17,16 +18,18 @@ import { notificationsRouter } from "./notifications";
 export const cartRouter = createRouter({
   get: protectedProcedure.query(async ({ ctx }) => {
     // Fetch current user's cart
-    return ctx.prisma.cart.findUnique({
-      where: { userId: ctx.session.user.id },
-      include: {
-        items: {
-          include: {
-            product: true,
-            variation: true,
-          },
+    const cartInclude = {
+      items: {
+        include: {
+          product: true,
+          variation: true,
         },
       },
+    } as unknown as Prisma.CartInclude;
+
+    return ctx.prisma.cart.findUnique({
+      where: { userId: ctx.session.user.id },
+      include: cartInclude,
     });
   }),
   add: protectedProcedure.input(z.object({
