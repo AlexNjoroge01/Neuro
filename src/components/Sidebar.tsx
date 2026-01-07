@@ -32,13 +32,13 @@ const ADMIN_ITEMS = [
   { href: "/inventory", label: "Inventory", Icon: Boxes },
   { href: "/sales", label: "POS", Icon: BarChart3 },
   { href: "/accounting", label: "Accounting", Icon: Wallet },
-  { href: "/fleet", label: "Fleet", Icon: Truck },
-  { href: "/hr", label: "HR & Payroll", Icon: UsersRound },
-  { href: "/reports", label: "Reports", Icon: BarChart3 },
+  //{ href: "/fleet", label: "Fleet", Icon: Truck },
+  //{ href: "/hr", label: "HR & Payroll", Icon: UsersRound },
+  //{ href: "/reports", label: "Reports", Icon: BarChart3 },
   { href: "/shop", label: "Shop", Icon: ShoppingBag },
   { href: "/orders", label: "All Orders", Icon: ClipboardList },
   { href: "/account", label: "Account", Icon: User },
-  { href: "/settings", label: "Settings", Icon: Settings },
+  //{ href: "/settings", label: "Settings", Icon: Settings },
 ];
 
 const SUPERUSER_ITEMS = [
@@ -76,7 +76,9 @@ export default function Sidebar() {
     }
     if (status !== "authenticated") {
       // Not logged in, show public shop/cart only
-      return CUSTOMER_ITEMS.filter((item) => ["/shop", "/cart"].includes(item.href));
+      return CUSTOMER_ITEMS.filter((item) =>
+        ["/shop", "/cart"].includes(item.href),
+      );
     }
     if (role === "SUPERUSER") return SUPERUSER_ITEMS;
     if (role === "ADMIN") return ADMIN_ITEMS;
@@ -96,8 +98,9 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-[#D6FF00] hover:text-[#0F172A] ${active ? "bg-[#0F172A] text-[#D6FF00] font-medium" : ""
-                }`}
+              className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors hover:bg-[#D6FF00] hover:text-[#0F172A] ${
+                active ? "bg-[#0F172A] text-[#D6FF00] font-medium" : ""
+              }`}
             >
               <Icon className="h-4 w-4" />
               <span>{label}</span>
