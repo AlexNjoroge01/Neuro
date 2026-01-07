@@ -242,7 +242,7 @@ export default function ProductsPage() {
                   <button
                     type="button"
                     onClick={() => setVariations([...variations, { name: "", image: "" }])}
-                    className="text-primary text-sm underline"
+                    className="text-secondary text-sm underline"
                   >
                     + Add Variation
                   </button>

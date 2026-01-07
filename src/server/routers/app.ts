@@ -9,8 +9,7 @@ import { fleetRouter } from "./fleet";
 import { hrRouter } from "./hr";
 import { z } from "zod";
 import { protectedProcedure } from "../createRouter";
-import { Prisma } from "@prisma/client";
-
+import { Prisma } from "../../../prisma/generated/prisma/client";
 import { mpesaRouter } from "../api/routers/mpesa";
 import { userRouter } from "./user";
 import { notificationsRouter } from "./notifications";

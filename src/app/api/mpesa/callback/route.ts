@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../../../../prisma/generated/prisma/client";
 import { z } from "zod";
 import { Resend } from "resend";
 import { render } from "@react-email/render";
 import { OrderEmailTemplate } from "@/components/email-template";
+import { PrismaPg } from '@prisma/adapter-pg';
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,7 +36,9 @@ type CallbackItem = NonNullable<
 >["Item"][number];
 
 const prismaClientSingleton = (): PrismaClient => {
-  return new PrismaClient();
+  return new PrismaClient({ adapter: new PrismaPg({ 
+    connectionString: process.env.DATABASE_URL 
+  }) });
 };
 
 type GlobalWithPrisma = typeof globalThis & {
@@ -286,8 +289,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
                 console.log(`[${new Date().toISOString()}] Sending email via Resend...`);
                 const emailResponse = await resend.emails.send({
-                  from: "Dukafiy <onboarding@resend.dev>",
-                  to: ["clientcare.global@gmail.com"],
+                  from: "Dukafiy <support@dukafiy.com>",
+                  to: ["agneskiama65@gmail.com", "alexnjoroge102@gmail.com"],
                   subject: `New Order #${order.id.slice(0, 8)} - KES ${order.total.toLocaleString()}`,
                   html: emailHtml,
                 });
