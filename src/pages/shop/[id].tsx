@@ -23,13 +23,18 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [selectedVariation, setSelectedVariation] = useState<string | null>(null);
 
-  type ProductWithVariations = {
-    variations?: {
-      id: string;
-      name: string;
-      image?: string | null;
-    }[];
+
+  type ProductVariation = {
+    id: string;
+    name: string;
+    image?: string | null;
   };
+
+
+  type ProductWithVariations = {
+    variations?: ProductVariation[];
+  };
+
 
   const product = rawProduct as (typeof rawProduct & ProductWithVariations) | null;
 
@@ -37,7 +42,7 @@ export default function ProductDetail() {
   if (!product) return <div className="p-8">Product not found.</div>;
 
   // Determine the currently displayed main image
-  const selectedVar = product.variations?.find(v => v.id === selectedVariation);
+  const selectedVar = product.variations?.find((v: ProductVariation) => v.id === selectedVariation);
   const mainImageSrc = selectedVar?.image
     ? selectedVar.image.startsWith('https://')
       ? selectedVar.image
@@ -70,7 +75,7 @@ export default function ProductDetail() {
     });
     
     const itemName = selectedVariation 
-      ? product.variations?.find(v => v.id === selectedVariation)?.name 
+      ? product.variations?.find((v: ProductVariation) => v.id === selectedVariation)?.name 
       : product.name;
     toast.success(`${itemName} added to cart!`);
   }
@@ -115,7 +120,18 @@ export default function ProductDetail() {
             <div className="mb-4">
               <div className="text-sm font-semibold mb-2">Variations Available</div>
               <div className="flex flex-wrap gap-3">
-                {product.variations.map((variation) => (
+                {/* Default option */}
+                <button
+                  onClick={() => setSelectedVariation(null)}
+                  className={`px-4 py-2 rounded border text-sm font-medium transition ${
+                    selectedVariation === null
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:border-primary"
+                  }`}
+                >
+                  Default
+                </button>
+                {product.variations.map((variation: ProductVariation) => (
                   <button
                     key={variation.id}
                     onClick={() => setSelectedVariation(variation.id)}

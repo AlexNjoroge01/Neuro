@@ -1,9 +1,10 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from "bcryptjs";
 import { env } from "@/env";
+import { PrismaClient } from '../../../prisma/generated/prisma/client';
 
 // Extend NextAuth types
 declare module "next-auth" {
@@ -28,7 +29,11 @@ declare module "next-auth" {
 }
 
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ 
+    connectionString: process.env.DATABASE_URL 
+  })
+});
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),

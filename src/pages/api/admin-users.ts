@@ -1,12 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/server/auth/options';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../../prisma/generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from 'bcryptjs';
 import { rateLimiters } from '@/lib/rate-limit';
 import { NextRequest } from 'next/server';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ 
+  connectionString: process.env.DATABASE_URL 
+});
+
+const prisma = new PrismaClient({ adapter });
 
 interface AdminUpdateData {
   email?: string;

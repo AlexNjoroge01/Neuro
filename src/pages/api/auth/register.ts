@@ -1,10 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../../../prisma/generated/prisma/client";
+import { PrismaPg } from '@prisma/adapter-pg';
 import bcrypt from "bcryptjs";
 import { rateLimiters } from "@/lib/rate-limit";
 import { NextRequest } from 'next/server';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ 
+    connectionString: process.env.DATABASE_URL 
+  })
+});
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
