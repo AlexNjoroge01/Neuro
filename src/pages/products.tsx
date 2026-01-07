@@ -25,6 +25,13 @@ export default function ProductsPage() {
   const [filePreview, setFilePreview] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [variations, setVariations] = useState<Array<{
+    id?: string;
+    name: string;
+    image: string;
+    file?: File;
+    preview?: string;
+  }>>([]);
 
   const { uploadImage, isUploading } = useCloudinaryUpload();
 
@@ -32,7 +39,7 @@ export default function ProductsPage() {
     return { totalProducts: products?.length ?? 0 };
   }, [products]);
 
-  function openEditModal(product: { id: string; name: string; unit: string; size: string | null; price: number; costPrice: number; stock: number; image: string | null; category: string | null; brand: string | null }) {
+  function openEditModal(product: { id: string; name: string; unit: string; size: string | null; price: number; costPrice: number; stock: number; image: string | null; category: string | null; brand: string | null; variations?: Array<{ id: string; name: string; image: string | null }> }) {
     setEditingProductId(product.id);
     setForm({
       name: product.name,
@@ -47,6 +54,12 @@ export default function ProductsPage() {
     });
     setFile(null);
     setFilePreview("");
+    setVariations(product.variations?.map(v => ({
+      id: v.id,
+      name: v.name,
+      image: v.image || "",
+      preview: v.image || undefined
+    })) || []);
     setIsModalOpen(true);
   }
 
@@ -63,6 +76,22 @@ export default function ProductsPage() {
       image = cloudinaryUrl || "";
     }
 
+    // Upload variation images
+    const variationsData = await Promise.all(
+      variations.map(async (v) => {
+        let varImage = v.image;
+        if (v.file) {
+          const url = await uploadImage(v.file);
+          varImage = url || "";
+        }
+        return {
+          id: v.id,
+          name: v.name,
+          image: varImage
+        };
+      })
+    );
+
     if (editingProductId) {
       updateProduct.mutate({
         id: editingProductId,
@@ -75,6 +104,7 @@ export default function ProductsPage() {
         image: image || undefined,
         category: form.category || undefined,
         brand: form.brand || undefined,
+        variations: variationsData.length > 0 ? variationsData : undefined
       });
     } else {
       createProduct.mutate({
@@ -87,11 +117,13 @@ export default function ProductsPage() {
         image: image || undefined,
         category: form.category || undefined,
         brand: form.brand || undefined,
+        variations: variationsData.length > 0 ? variationsData : undefined
       });
     }
     setForm({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "", image: "", category: "", brand: "" });
     setFile(null);
     setFilePreview("");
+    setVariations([]);
     setIsModalOpen(false);
     setEditingProductId(null);
   }
@@ -116,101 +148,180 @@ export default function ProductsPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50  flex items-center justify-center z-50">
-          <div className="bg-background border border-gray-200/20 rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-4">{editingProductId ? "Edit Product" : "Add New Product"}</h2>
-            <form onSubmit={submit} className="grid gap-4">
-              <input
-                className="border rounded px-2 py-1 bg-gray-100/10"
-                placeholder="Name"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-              <input
-                className="border rounded px-2 py-1 bg-gray-100/10"
-                placeholder="Unit (e.g., kg, piece, tray)"
-                value={form.unit}
-                onChange={(e) => setForm({ ...form, unit: e.target.value })}
-              />
-              <input
-                className="border rounded px-2 py-1 bg-gray-100/10"
-                placeholder="Size (optional)"
-                value={form.size}
-                onChange={(e) => setForm({ ...form, size: e.target.value })}
-              />
-              <input
-                className="border rounded px-2 py-1 bg-gray-100/10"
-                placeholder="Price"
-                value={form.price}
-                onChange={(e) => setForm({ ...form, price: e.target.value })}
-              />
-              <input
-                className="border rounded px-2 py-1 bg-gray-100/10"
-                placeholder="Cost Price"
-                value={form.costPrice}
-                onChange={(e) => setForm({ ...form, costPrice: e.target.value })}
-              />
-              <input
-                className="border rounded px-2 py-1 bg-gray-100/10"
-                placeholder="Stock"
-                value={form.stock}
-                onChange={(e) => setForm({ ...form, stock: e.target.value })}
-              />
-              {/* Product file/image upload */}
-              <input
-                type="file"
-                accept="image/*"
-                className="border rounded px-2 py-1 bg-gray-100/10"
-                onChange={e => {
-                  const f = e.target.files ? e.target.files[0] : null;
-                  setFile(f);
-                  setFilePreview(f ? URL.createObjectURL(f) : "");
-                }}
-              />
-              {filePreview ? (
-                <Image
-                  src={filePreview}
-                  alt="Preview"
-                  width={96}
-                  height={96}
-                  className="h-24 w-24 object-cover rounded"
-                />
-              ) : form.image ? (
-                <Image
-                  src={form.image.startsWith('https://') ? form.image : "/uploads/" + form.image}
-                  alt="Preview"
-                  width={96}
-                  height={96}
-                  className="h-24 w-24 object-cover rounded"
-                />
-              ) : null}
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+          <div className="bg-background border border-gray-200/20 rounded-lg p-6 w-full max-w-4xl my-8 mx-4">
+            <h2 className="text-lg font-semibold mb-6">{editingProductId ? "Edit Product" : "Add New Product"}</h2>
+            
+            <form onSubmit={submit} className="grid gap-6">
+              {/* Main product fields - 2 columns */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid gap-4">
+                  <input
+                    className="border rounded px-2 py-1 bg-gray-100/10"
+                    placeholder="Name"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  />
+                  <input
+                    className="border rounded px-2 py-1 bg-gray-100/10"
+                    placeholder="Unit (e.g., kg, piece, tray)"
+                    value={form.unit}
+                    onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                  />
+                  <input
+                    className="border rounded px-2 py-1 bg-gray-100/10"
+                    placeholder="Size (optional)"
+                    value={form.size}
+                    onChange={(e) => setForm({ ...form, size: e.target.value })}
+                  />
+                  <input
+                    className="border rounded px-2 py-1 bg-gray-100/10"
+                    placeholder="Category"
+                    value={form.category}
+                    onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  />
+                  <input
+                    className="border rounded px-2 py-1 bg-gray-100/10"
+                    placeholder="Brand"
+                    value={form.brand}
+                    onChange={(e) => setForm({ ...form, brand: e.target.value })}
+                  />
+                </div>
 
-              <input
-                className="border rounded px-2 py-1 bg-gray-100/10"
-                placeholder="Category"
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-              />
-              <input
-                className="border rounded px-2 py-1 bg-gray-100/10"
-                placeholder="Brand"
-                value={form.brand}
-                onChange={(e) => setForm({ ...form, brand: e.target.value })}
-              />
-              <div className="flex gap-2 justify-end">
+                <div className="grid gap-4">
+                  <input
+                    className="border rounded px-2 py-1 bg-gray-100/10"
+                    placeholder="Price"
+                    value={form.price}
+                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                  />
+                  <input
+                    className="border rounded px-2 py-1 bg-gray-100/10"
+                    placeholder="Cost Price"
+                    value={form.costPrice}
+                    onChange={(e) => setForm({ ...form, costPrice: e.target.value })}
+                  />
+                  <input
+                    className="border rounded px-2 py-1 bg-gray-100/10"
+                    placeholder="Stock"
+                    value={form.stock}
+                    onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                  />
+
+                  {/* Product image upload + preview */}
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="border rounded px-2 py-1 bg-gray-100/10 w-full"
+                      onChange={e => {
+                        const f = e.target.files ? e.target.files[0] : null;
+                        setFile(f);
+                        setFilePreview(f ? URL.createObjectURL(f) : "");
+                      }}
+                    />
+                    {(filePreview || form.image) && (
+                      <div className="mt-3">
+                        <Image
+                          src={filePreview || (form.image.startsWith('https://') ? form.image : "/uploads/" + form.image)}
+                          alt="Product Preview"
+                          width={120}
+                          height={120}
+                          className="h-32 w-32 object-cover rounded border"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Variations Section */}
+              <div className="border-t pt-6">
+                <div className="flex justify-between items-center mb-4">
+                  <label className="text-sm font-medium">Product Variations (Optional)</label>
+                  <button
+                    type="button"
+                    onClick={() => setVariations([...variations, { name: "", image: "" }])}
+                    className="text-primary text-sm underline"
+                  >
+                    + Add Variation
+                  </button>
+                </div>
+
+                <div className="max-h-96 overflow-y-auto">
+                  {variations.map((variation, index) => (
+                    <div key={index} className="border rounded p-4 mb-4 bg-gray-50/5 grid md:grid-cols-3 gap-4 items-start">
+                      <div>
+                        <input
+                          className="border rounded px-2 py-1 bg-gray-100/10 w-full"
+                          placeholder="Variation name (e.g., Fresh Care Pomegranate)"
+                          value={variation.name}
+                          onChange={(e) => {
+                            const updated = [...variations];
+                            updated[index].name = e.target.value;
+                            setVariations(updated);
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="border rounded px-2 py-1 bg-gray-100/10 w-full text-sm"
+                          onChange={(e) => {
+                            const f = e.target.files?.[0];
+                            if (f) {
+                              const updated = [...variations];
+                              updated[index].file = f;
+                              updated[index].preview = URL.createObjectURL(f);
+                              setVariations(updated);
+                            }
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex items-start justify-between">
+                        {(variation.preview || variation.image) && (
+                          <Image
+                            src={variation.preview || variation.image}
+                            alt="Variation preview"
+                            width={80}
+                            height={80}
+                            className="h-20 w-20 object-cover rounded border"
+                          />
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setVariations(variations.filter((_, i) => i !== index))}
+                          className="text-red-600 text-sm ml-4"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action buttons - always visible */}
+              <div className="flex gap-3 justify-end pt-4 border-t">
                 <button
                   type="button"
-                  className="bg-secondary text-secondary-foreground rounded px-3 py-1"
+                  className="bg-secondary text-secondary-foreground rounded px-4 py-2"
                   onClick={() => {
                     setIsModalOpen(false);
                     setEditingProductId(null);
+                    setVariations([]);
+                    setFile(null);
+                    setFilePreview("");
                   }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-primary text-primary-foreground rounded px-3 py-1"
+                  className="bg-primary text-primary-foreground rounded px-4 py-2"
                   disabled={isUploading}
                 >
                   {isUploading ? "Uploading..." : editingProductId ? "Update Product" : "Add Product"}
@@ -269,9 +380,6 @@ export default function ProductsPage() {
                   <button className="text-red-600 border bg-red-600 text-white px-2 py-1 rounded-2xl" onClick={() => deleteProduct.mutate(p.id)}>
                     Delete
                   </button>
-                  {/* <button className="underline" onClick={() => restoreProduct.mutate(p.id)}>
-                    Restore
-                  </button> */}
                 </td>
               </tr>
             ))}

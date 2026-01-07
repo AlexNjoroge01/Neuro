@@ -106,7 +106,31 @@ export default function CartPage() {
         return () => clearTimeout(timeout);
     }, [checkoutRequestId]);
 
-    const items = useMemo(() => cart?.items ?? [], [cart]);
+    type CartWithItems = {
+        items?: {
+            id: string;
+            quantity: number;
+            productId: string;
+            product?: {
+                price?: number | null;
+                image?: string | null;
+                name?: string | null;
+            } | null;
+            variationId?: string | null;
+            variation?: {
+                id: string;
+                name?: string | null;
+                image?: string | null;
+            } | null;
+        }[];
+    };
+
+    const items = useMemo(
+        () =>
+            ((cart as unknown as CartWithItems | undefined)?.items) ??
+            [],
+        [cart],
+    );
     const subtotal = useMemo(
         () => items.reduce((sum, item) => sum + (item.product?.price ?? 0) * item.quantity, 0),
         [items],
@@ -192,15 +216,21 @@ export default function CartPage() {
                                     <div className="w-24 h-24 relative rounded-lg overflow-hidden flex-shrink-0">
                                         <Image
                                             src={
-                                                item.product?.image
-                                                    ? item.product.image.startsWith('https://')
-                                                        ? item.product.image
-                                                        : item.product.image.startsWith("/uploads")
+                                                item.variation?.image
+                                                    ? item.variation.image.startsWith('https://')
+                                                        ? item.variation.image
+                                                        : item.variation.image.startsWith("/uploads")
+                                                            ? item.variation.image
+                                                            : `/uploads/${item.variation.image}`
+                                                    : item.product?.image
+                                                        ? item.product.image.startsWith('https://')
                                                             ? item.product.image
-                                                            : `/uploads/${item.product.image}`
-                                                    : "/placeholder.png"
+                                                            : item.product.image.startsWith("/uploads")
+                                                                ? item.product.image
+                                                                : `/uploads/${item.product.image}`
+                                                        : "/placeholder.png"
                                             }
-                                            alt={item.product?.name ?? "Product"}
+                                            alt={item.variation?.name || item.product?.name || "Product"}
                                             fill
                                             className="object-cover"
                                         />
@@ -211,6 +241,11 @@ export default function CartPage() {
                                             {item.product ? (
                                                 <Link href={`/shop/${item.productId}`} className="hover:text-primary transition">
                                                     {item.product.name}
+                                                    {item.variation && (
+                                                        <span className="text-sm text-muted-foreground ml-2">
+                                                            ({item.variation.name})
+                                                        </span>
+                                                    )}
                                                 </Link>
                                             ) : (
                                                 item.productId

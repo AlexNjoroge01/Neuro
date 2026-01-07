@@ -9,6 +9,7 @@ import { fleetRouter } from "./fleet";
 import { hrRouter } from "./hr";
 import { z } from "zod";
 import { protectedProcedure } from "../createRouter";
+import { Prisma } from "@prisma/client";
 
 import { mpesaRouter } from "../api/routers/mpesa";
 import { userRouter } from "./user";
@@ -17,32 +18,49 @@ import { notificationsRouter } from "./notifications";
 export const cartRouter = createRouter({
   get: protectedProcedure.query(async ({ ctx }) => {
     // Fetch current user's cart
-    return ctx.prisma.cart.findUnique({
-      where: { userId: ctx.session.user.id },
-      include: {
-        items: {
-          include: {
-            product: true,
-          },
+    const cartInclude = {
+      items: {
+        include: {
+          product: true,
+          variation: true,
         },
       },
+    } as unknown as Prisma.CartInclude;
+
+    return ctx.prisma.cart.findUnique({
+      where: { userId: ctx.session.user.id },
+      include: cartInclude,
     });
   }),
   add: protectedProcedure.input(z.object({
     productId: z.string(),
     delta: z.number().int().default(1),
+    variationId: z.string().optional(),
   })).mutation(async ({ ctx, input }) => {
     const cart = await ctx.prisma.cart.upsert({
       where: { userId: ctx.session.user.id },
       update: {},
       create: { userId: ctx.session.user.id },
     });
-    const existing = await ctx.prisma.cartItem.findFirst({ where: { cartId: cart.id, productId: input.productId } });
+    const existing = await ctx.prisma.cartItem.findFirst({ 
+      where: { 
+        cartId: cart.id, 
+        productId: input.productId,
+        variationId: input.variationId || null
+      } 
+    });
     if (existing) {
       const newQty = Math.max(1, existing.quantity + input.delta);
       return ctx.prisma.cartItem.update({ where: { id: existing.id }, data: { quantity: newQty } });
     }
-    return ctx.prisma.cartItem.create({ data: { cartId: cart.id, productId: input.productId, quantity: Math.max(1, input.delta) } });
+    return ctx.prisma.cartItem.create({ 
+      data: { 
+        cartId: cart.id, 
+        productId: input.productId, 
+        variationId: input.variationId,
+        quantity: Math.max(1, input.delta) 
+      } 
+    });
   }),
   addOrUpdate: protectedProcedure.input(z.object({
     productId: z.string(),
