@@ -135,14 +135,14 @@ export const mpesaRouter = createRouter({
       //   Password: "*****",   // never log the real password
       // });
 
-      const response = await fetch(`${mpesaBaseUrl}/mpesa/stkpush/v1/processrequest`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(stkPayload),
-      });
+      const response = await fetch(mpesaBaseUrl, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${accessToken}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(stkPayload),
+});
 
       const responseBody = (await response.json()) as unknown;
 
