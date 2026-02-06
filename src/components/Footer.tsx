@@ -11,8 +11,8 @@ export default function Footer() {
         <div>
           <h2 className="text-xl font-bold text-primary mb-3">Dukafiy</h2>
           <p className="text-sm text-white/80 leading-relaxed">
-            Your go-to hub for premium tech, sleek design, and unmatched shopping
-            experience. We don’t just sell products — we sell vibes.
+            Your go-to platform for premium and unmatched shopping
+            experience. We don’t just sell products — we sell lifestyle.
           </p>
         </div>
 
@@ -35,10 +35,10 @@ export default function Footer() {
               <MapPin className="h-4 w-4 text-primary" /> Nairobi, Kenya
             </li>
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-primary" /> +254 700 123 456
+              <Phone className="h-4 w-4 text-primary" /> +254 745933849
             </li>
             <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-primary" /> support@neuro.co.ke
+              <Mail className="h-4 w-4 text-primary" /> Agneskiama65@gmail.com
             </li>
           </ul>
         </div>
@@ -60,11 +60,11 @@ export default function Footer() {
       </div>
 
       <div className="py-4 text-center text-sm">
-         <span className="text-primary font-semibold">Developed by BrightLine Labs</span>.
+         <span className="text-primary font-semibold">Developed by Alex Njoroge</span>.
          <br/>
-         <span className="text-white/70 font-semibold">Contact us at clientcare.global@gmail.com</span>.
+         <span className="text-white/70 font-semibold">Contact me at alexnjoroge102@gmail.com</span>.
          <br/>
-          <span className="text-white/70 font-semibold">Or call our Office Number: 0716090099</span>.
+          <span className="text-white/70 font-semibold">Or call my Office Number: 0716836186</span>.
       </div>
     </footer>
   );

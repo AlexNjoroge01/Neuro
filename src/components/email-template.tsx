@@ -113,7 +113,7 @@ export function OrderEmailTemplate({
 
                 <div style={{ marginTop: "30px", padding: "15px", backgroundColor: "#D6FF00", borderRadius: "8px", textAlign: "center" }}>
                     <p style={{ margin: 0, color: "#0F172A", fontWeight: "bold" }}>
-                        ⚡ Action Required: Please arrange delivery for this order
+                        ⚡ Thank you for shopping with Dukafiy! We appreciate your business. Our team is preparing your order for shipment and will notify you once its on the way.
                     </p>
                 </div>
             </div>

@@ -129,11 +129,11 @@ export const mpesaRouter = createRouter({
         TransactionDesc: "Order Payment",
       };
 
-      // DEBUG LOG – shows EXACTLY what goes to Daraja
-      console.log("[STK PUSH] Request body →", {
-        ...stkPayload,
-        Password: "*****",   // never log the real password
-      });
+      // // DEBUG LOG – shows EXACTLY what goes to Daraja
+      // console.log("[STK PUSH] Request body →", {
+      //   ...stkPayload,
+      //   Password: "*****",   // never log the real password
+      // });
 
       const response = await fetch(`${mpesaBaseUrl}/mpesa/stkpush/v1/processrequest`, {
         method: "POST",
