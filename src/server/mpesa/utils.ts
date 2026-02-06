@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { env } from "@/env";
 
 export const mpesaBaseUrl = env.MPESA_BASE_URL;
+const MPESA_OAUTH_URL = "https://api.safaricom.co.ke/oauth/v1/generate";
 
 type AccessTokenCache = {
   token: string;
@@ -37,7 +38,7 @@ export const fetchAccessToken = async (): Promise<AccessTokenPayload> => {
   }
 
   const response = await fetch(
-    `${mpesaBaseUrl}/oauth/v1/generate?grant_type=client_credentials`,
+    `${MPESA_OAUTH_URL}?grant_type=client_credentials`,
     {
       method: "GET",
       headers: {
