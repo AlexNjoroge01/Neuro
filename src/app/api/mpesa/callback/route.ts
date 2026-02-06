@@ -290,7 +290,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 console.log(`[${new Date().toISOString()}] Sending email via Resend...`);
                 const emailResponse = await resend.emails.send({
                   from: "Dukafiy <support@dukafiy.com>",
-                  to: ["agneskiama65@gmail.com", "alexnjoroge102@gmail.com"],
+                  to: [
+                    "agneskiama65@gmail.com",
+                    "alexnjoroge102@gmail.com",
+                    order.user.email ?? "",
+                  ].filter(Boolean), // Safety: remove any empty/falsy email
                   subject: `New Order #${order.id.slice(0, 8)} - KES ${order.total.toLocaleString()}`,
                   html: emailHtml,
                 });

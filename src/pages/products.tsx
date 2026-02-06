@@ -93,7 +93,7 @@ export default function ProductsPage() {
     );
 
     if (editingProductId) {
-      updateProduct.mutate({
+      await updateProduct.mutateAsync({
         id: editingProductId,
         name: form.name,
         unit: form.unit,
@@ -104,10 +104,10 @@ export default function ProductsPage() {
         image: image || undefined,
         category: form.category || undefined,
         brand: form.brand || undefined,
-        variations: variationsData.length > 0 ? variationsData : undefined
+        variations: variationsData.length > 0 ? variationsData : undefined,
       });
     } else {
-      createProduct.mutate({
+      await createProduct.mutateAsync({
         name: form.name,
         unit: form.unit,
         size: form.size || undefined,
@@ -117,7 +117,7 @@ export default function ProductsPage() {
         image: image || undefined,
         category: form.category || undefined,
         brand: form.brand || undefined,
-        variations: variationsData.length > 0 ? variationsData : undefined
+        variations: variationsData.length > 0 ? variationsData : undefined,
       });
     }
     setForm({ name: "", unit: "", size: "", price: "", costPrice: "", stock: "", image: "", category: "", brand: "" });
@@ -148,8 +148,8 @@ export default function ProductsPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
-          <div className="bg-background border border-gray-200/20 rounded-lg p-6 w-full max-w-4xl my-8 mx-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8">
+          <div className="bg-background border border-gray-200/20 rounded-lg p-6 w-full max-w-4xl mx-4 max-h-full overflow-y-auto">
             <h2 className="text-lg font-semibold mb-6">{editingProductId ? "Edit Product" : "Add New Product"}</h2>
             
             <form onSubmit={submit} className="grid gap-6">
@@ -248,7 +248,7 @@ export default function ProductsPage() {
                   </button>
                 </div>
 
-                <div className="max-h-96 overflow-y-auto">
+                <div className="max-h-96 overflow-y-auto pr-2">
                   {variations.map((variation, index) => (
                     <div key={index} className="border rounded p-4 mb-4 bg-gray-50/5 grid md:grid-cols-3 gap-4 items-start">
                       <div>
@@ -305,7 +305,7 @@ export default function ProductsPage() {
               </div>
 
               {/* Action buttons - always visible */}
-              <div className="flex gap-3 justify-end pt-4 border-t">
+              <div className="flex gap-3 justify-end pt-4 border-t sticky bottom-0 bg-background py-4 -mx-6 px-6">
                 <button
                   type="button"
                   className="bg-secondary text-secondary-foreground rounded px-4 py-2"

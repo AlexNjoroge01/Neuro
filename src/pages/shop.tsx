@@ -83,8 +83,9 @@ export default function ShopPage() {
                   href="/shop"
                   className="bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold text-lg hover:bg-primary/90 transition shadow-lg"
                 >
-                  Buy Now
+                  Explore our categories below
                 </Link>
+                
               </div>
             </div>
           </div>

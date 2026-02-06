@@ -7,12 +7,12 @@ const faqs = [
   {
     question: "How can I place an order?",
     answer:
-      "Placing an order is easy! Simply start by going into your Account settings, update your contact, address and shipping information. Once done hit save and you can start browse our website, select the products you want, add them to your cart, and proceed to checkout. Follow the on-screen instructions to complete your purchase.",
+      "Placing an order is easy! Simply start by going into your Account settings, update your contact, and shipping location information. Once done hit save and you can start browse our website, select the products you want, add them to your cart, and proceed to checkout. Follow the on-screen instructions to complete your purchase.",
   },
   {
     question: "What payment methods do you accept?",
     answer:
-      "We accept a variety of payment methods, including credit cards and cash on delivery. Choose the one that suits you best during the checkout process.",
+      "Currently, we only accept payments via Mpesa STK Push. More payment options will be added in the future.",
   },
   {
     question: "How long does delivery take?",
@@ -22,7 +22,7 @@ const faqs = [
   {
     question: "Do you offer refunds or returns?",
     answer:
-      "Yes, we have a hassle-free return and refund policy. If you're not satisfied with your purchase, you can initiate a return request, and we'll guide you through the process.",
+      "Yes, we have a hassle-free return and refund policy. If you're not satisfied with your purchase, you can initiate a return request by emailing the support team at Agneskiama65@gmail.com, and we'll guide you through the process.",
   },
   {
     question: "Is my personal information safe?",
@@ -36,7 +36,7 @@ export default function FAQs() {
 
   return (
     <section className="max-w-4xl mx-auto px-6 py-16">
-      <h2 className="text-3xl font-bold text-primary text-center mb-10">
+      <h2 className="text-3xl font-bold text-secondary text-center mb-10">
         Frequently Asked Questions
       </h2>
       <div className="space-y-4">
