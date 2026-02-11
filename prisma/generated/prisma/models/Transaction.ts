@@ -47,8 +47,8 @@ export type TransactionMinAggregateOutputType = {
   phoneNumber: string | null
   transactionDate: string | null
   createdAt: Date | null
-  updatedAt: Date | null
   orderId: string | null
+  updatedAt: Date | null
 }
 
 export type TransactionMaxAggregateOutputType = {
@@ -62,8 +62,8 @@ export type TransactionMaxAggregateOutputType = {
   phoneNumber: string | null
   transactionDate: string | null
   createdAt: Date | null
-  updatedAt: Date | null
   orderId: string | null
+  updatedAt: Date | null
 }
 
 export type TransactionCountAggregateOutputType = {
@@ -77,8 +77,8 @@ export type TransactionCountAggregateOutputType = {
   phoneNumber: number
   transactionDate: number
   createdAt: number
-  updatedAt: number
   orderId: number
+  updatedAt: number
   _all: number
 }
 
@@ -104,8 +104,8 @@ export type TransactionMinAggregateInputType = {
   phoneNumber?: true
   transactionDate?: true
   createdAt?: true
-  updatedAt?: true
   orderId?: true
+  updatedAt?: true
 }
 
 export type TransactionMaxAggregateInputType = {
@@ -119,8 +119,8 @@ export type TransactionMaxAggregateInputType = {
   phoneNumber?: true
   transactionDate?: true
   createdAt?: true
-  updatedAt?: true
   orderId?: true
+  updatedAt?: true
 }
 
 export type TransactionCountAggregateInputType = {
@@ -134,8 +134,8 @@ export type TransactionCountAggregateInputType = {
   phoneNumber?: true
   transactionDate?: true
   createdAt?: true
-  updatedAt?: true
   orderId?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -236,8 +236,8 @@ export type TransactionGroupByOutputType = {
   phoneNumber: string | null
   transactionDate: string | null
   createdAt: Date
-  updatedAt: Date
   orderId: string | null
+  updatedAt: Date
   _count: TransactionCountAggregateOutputType | null
   _avg: TransactionAvgAggregateOutputType | null
   _sum: TransactionSumAggregateOutputType | null
@@ -274,8 +274,8 @@ export type TransactionWhereInput = {
   phoneNumber?: Prisma.StringNullableFilter<"Transaction"> | string | null
   transactionDate?: Prisma.StringNullableFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   orderId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
 }
 
@@ -290,8 +290,8 @@ export type TransactionOrderByWithRelationInput = {
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   transactionDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   order?: Prisma.OrderOrderByWithRelationInput
 }
 
@@ -309,8 +309,8 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   phoneNumber?: Prisma.StringNullableFilter<"Transaction"> | string | null
   transactionDate?: Prisma.StringNullableFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   orderId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
 }, "id" | "checkoutRequestId">
 
@@ -325,8 +325,8 @@ export type TransactionOrderByWithAggregationInput = {
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   transactionDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.TransactionCountOrderByAggregateInput
   _avg?: Prisma.TransactionAvgOrderByAggregateInput
   _max?: Prisma.TransactionMaxOrderByAggregateInput
@@ -348,8 +348,8 @@ export type TransactionScalarWhereWithAggregatesInput = {
   phoneNumber?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   transactionDate?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
-  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   orderId?: Prisma.StringNullableWithAggregatesFilter<"Transaction"> | string | null
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
 }
 
 export type TransactionCreateInput = {
@@ -378,8 +378,8 @@ export type TransactionUncheckedCreateInput = {
   phoneNumber?: string | null
   transactionDate?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
   orderId?: string | null
+  updatedAt?: Date | string
 }
 
 export type TransactionUpdateInput = {
@@ -408,8 +408,8 @@ export type TransactionUncheckedUpdateInput = {
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transactionDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TransactionCreateManyInput = {
@@ -423,8 +423,8 @@ export type TransactionCreateManyInput = {
   phoneNumber?: string | null
   transactionDate?: string | null
   createdAt?: Date | string
-  updatedAt?: Date | string
   orderId?: string | null
+  updatedAt?: Date | string
 }
 
 export type TransactionUpdateManyMutationInput = {
@@ -452,8 +452,8 @@ export type TransactionUncheckedUpdateManyInput = {
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transactionDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TransactionListRelationFilter = {
@@ -477,8 +477,8 @@ export type TransactionCountOrderByAggregateInput = {
   phoneNumber?: Prisma.SortOrder
   transactionDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type TransactionAvgOrderByAggregateInput = {
@@ -497,8 +497,8 @@ export type TransactionMaxOrderByAggregateInput = {
   phoneNumber?: Prisma.SortOrder
   transactionDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type TransactionMinOrderByAggregateInput = {
@@ -512,8 +512,8 @@ export type TransactionMinOrderByAggregateInput = {
   phoneNumber?: Prisma.SortOrder
   transactionDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type TransactionSumOrderByAggregateInput = {
@@ -631,8 +631,8 @@ export type TransactionScalarWhereInput = {
   phoneNumber?: Prisma.StringNullableFilter<"Transaction"> | string | null
   transactionDate?: Prisma.StringNullableFilter<"Transaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   orderId?: Prisma.StringNullableFilter<"Transaction"> | string | null
+  updatedAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
 }
 
 export type TransactionCreateManyOrderInput = {
@@ -704,8 +704,8 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   phoneNumber?: boolean
   transactionDate?: boolean
   createdAt?: boolean
-  updatedAt?: boolean
   orderId?: boolean
+  updatedAt?: boolean
   order?: boolean | Prisma.Transaction$orderArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
 
@@ -720,8 +720,8 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   phoneNumber?: boolean
   transactionDate?: boolean
   createdAt?: boolean
-  updatedAt?: boolean
   orderId?: boolean
+  updatedAt?: boolean
   order?: boolean | Prisma.Transaction$orderArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
 
@@ -736,8 +736,8 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   phoneNumber?: boolean
   transactionDate?: boolean
   createdAt?: boolean
-  updatedAt?: boolean
   orderId?: boolean
+  updatedAt?: boolean
   order?: boolean | Prisma.Transaction$orderArgs<ExtArgs>
 }, ExtArgs["result"]["transaction"]>
 
@@ -752,11 +752,11 @@ export type TransactionSelectScalar = {
   phoneNumber?: boolean
   transactionDate?: boolean
   createdAt?: boolean
-  updatedAt?: boolean
   orderId?: boolean
+  updatedAt?: boolean
 }
 
-export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "merchantRequestId" | "checkoutRequestId" | "resultCode" | "resultDesc" | "amount" | "mpesaReceiptNumber" | "phoneNumber" | "transactionDate" | "createdAt" | "updatedAt" | "orderId", ExtArgs["result"]["transaction"]>
+export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "merchantRequestId" | "checkoutRequestId" | "resultCode" | "resultDesc" | "amount" | "mpesaReceiptNumber" | "phoneNumber" | "transactionDate" | "createdAt" | "orderId" | "updatedAt", ExtArgs["result"]["transaction"]>
 export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.Transaction$orderArgs<ExtArgs>
 }
@@ -783,8 +783,8 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     phoneNumber: string | null
     transactionDate: string | null
     createdAt: Date
-    updatedAt: Date
     orderId: string | null
+    updatedAt: Date
   }, ExtArgs["result"]["transaction"]>
   composites: {}
 }
@@ -1219,8 +1219,8 @@ export interface TransactionFieldRefs {
   readonly phoneNumber: Prisma.FieldRef<"Transaction", 'String'>
   readonly transactionDate: Prisma.FieldRef<"Transaction", 'String'>
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>
-  readonly updatedAt: Prisma.FieldRef<"Transaction", 'DateTime'>
   readonly orderId: Prisma.FieldRef<"Transaction", 'String'>
+  readonly updatedAt: Prisma.FieldRef<"Transaction", 'DateTime'>
 }
     
 

@@ -85,7 +85,7 @@ export default function ShopPage() {
                 >
                   Explore our categories below
                 </Link>
-                
+
               </div>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function ShopPage() {
       <div className="bg-muted/30 py-12">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-foreground mb-8">
-            Shop by Category 
+            Shop by Category
           </h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
@@ -162,7 +162,7 @@ export default function ShopPage() {
                         key={prod.id}
                         className="group bg-secondary rounded-lg p-5 shadow-lg hover:shadow-xl transition-all border border-border flex flex-col cursor-pointer"
                       >
-                        <Link href={`/shop/${prod.id}`} className="flex flex-col h-full">
+                        <Link href={`/shop/${prod.slug || prod.id}`} className="flex flex-col h-full">
                           {/* ← PROPER NEXT/IMAGE IMPLEMENTATION */}
                           <div className="aspect-square rounded-lg mb-4 flex items-center justify-center overflow-hidden bg-transparent relative">
                             {imageSrc ? (

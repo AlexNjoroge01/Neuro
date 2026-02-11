@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import SidebarLayout from "@/components/Layout";
 import { Plus, Mail, Lock, Shield, Edit2, Trash2, Eye, EyeOff, Loader2 } from "lucide-react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const createAdminSchema = z.object({
@@ -334,9 +334,8 @@ export default function AdminUsersPage() {
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <input
-                      className={`w-full pl-11 pr-4 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${
-                        errors.email ? "border-red-500" : "border-input"
-                      }`}
+                      className={`w-full pl-11 pr-4 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${errors.email ? "border-red-500" : "border-input"
+                        }`}
                       type="email"
                       placeholder="admin@example.com"
                       value={formData.email}
@@ -356,9 +355,8 @@ export default function AdminUsersPage() {
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <input
-                      className={`w-full pl-11 pr-12 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${
-                        errors.password ? "border-red-500" : "border-input"
-                      }`}
+                      className={`w-full pl-11 pr-12 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${errors.password ? "border-red-500" : "border-input"
+                        }`}
                       type={showPassword ? "text" : "password"}
                       placeholder="Min 8 chars • upper • lower • number • symbol"
                       value={formData.password}

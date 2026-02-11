@@ -4,6 +4,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "../createRouter";
+import { slugify } from "@/utils/slugify";
 
 export const productsRouter = createRouter({
   // List all products with variations
@@ -59,15 +60,17 @@ export const productsRouter = createRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { variations, ...productData } = input;
+      const slug = slugify(input.name);
 
       return ctx.prisma.product.create({
         data: {
           ...productData,
+          slug,
           variations:
             variations && variations.length > 0
               ? {
-                  create: variations,
-                }
+                create: variations,
+              }
               : undefined,
         },
         include: {
@@ -118,9 +121,13 @@ export const productsRouter = createRouter({
       return ctx.prisma.$transaction(async (tx) => {
         // Step 1: Update product data if provided
         if (Object.keys(productData).length > 0) {
+          const updateData: any = { ...productData };
+          if (productData.name) {
+            updateData.slug = slugify(productData.name);
+          }
           await tx.product.update({
             where: { id },
-            data: productData,
+            data: updateData,
           });
           console.log("✅ Product data updated");
         }
@@ -238,7 +245,10 @@ export const productsRouter = createRouter({
   // Public endpoint: Get single product
   publicGet: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
     return ctx.prisma.product.findFirst({
-      where: { id: input, deletedAt: null },
+      where: {
+        OR: [{ id: input }, { slug: input }],
+        deletedAt: null,
+      },
       include: {
         variations: {
           orderBy: { createdAt: "asc" },

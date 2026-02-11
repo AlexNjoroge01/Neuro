@@ -78,12 +78,12 @@ export type ModelName = (typeof ModelName)[keyof typeof ModelName]
  * Enums
  */
 
-export const TransactionIsolationLevel = {
+export const TransactionIsolationLevel = runtime.makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
   ReadCommitted: 'ReadCommitted',
   RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
-} as const
+} as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
@@ -91,17 +91,18 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const ProductScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  slug: 'slug',
   price: 'price',
-  costPrice: 'costPrice',
   stock: 'stock',
-  unit: 'unit',
-  size: 'size',
-  image: 'image',
-  category: 'category',
-  brand: 'brand',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  costPrice: 'costPrice',
+  size: 'size',
+  unit: 'unit',
+  deletedAt: 'deletedAt',
+  brand: 'brand',
+  category: 'category',
+  image: 'image'
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
@@ -123,9 +124,9 @@ export const SaleScalarFieldEnum = {
   productId: 'productId',
   quantity: 'quantity',
   totalPrice: 'totalPrice',
-  profit: 'profit',
-  paymentMethod: 'paymentMethod',
   createdAt: 'createdAt',
+  paymentMethod: 'paymentMethod',
+  profit: 'profit',
   deletedAt: 'deletedAt'
 } as const
 
@@ -136,10 +137,10 @@ export const InventoryLogScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
   change: 'change',
-  type: 'type',
   reason: 'reason',
   createdAt: 'createdAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  type: 'type'
 } as const
 
 export type InventoryLogScalarFieldEnum = (typeof InventoryLogScalarFieldEnum)[keyof typeof InventoryLogScalarFieldEnum]
@@ -152,9 +153,9 @@ export const UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   passwordHash: 'passwordHash',
-  role: 'role',
-  phone: 'phone',
   address: 'address',
+  phone: 'phone',
+  role: 'role',
   shippingInfo: 'shippingInfo',
   deletedAt: 'deletedAt'
 } as const
@@ -324,8 +325,8 @@ export const TransactionScalarFieldEnum = {
   phoneNumber: 'phoneNumber',
   transactionDate: 'transactionDate',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  orderId: 'orderId'
+  orderId: 'orderId',
+  updatedAt: 'updatedAt'
 } as const
 
 export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]

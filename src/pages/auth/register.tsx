@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 // Zod schema with strict validation (same strong password rules as login)
 const registerSchema = z.object({
@@ -129,9 +129,8 @@ export default function RegisterPage() {
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
-                  className={`w-full pl-11 pr-4 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${
-                    fieldErrors.name ? "border-red-500" : "border-input"
-                  }`}
+                  className={`w-full pl-11 pr-4 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${fieldErrors.name ? "border-red-500" : "border-input"
+                    }`}
                   type="text"
                   placeholder="Enter your full name"
                   value={name}
@@ -152,9 +151,8 @@ export default function RegisterPage() {
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
-                  className={`w-full pl-11 pr-4 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${
-                    fieldErrors.email ? "border-red-500" : "border-input"
-                  }`}
+                  className={`w-full pl-11 pr-4 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${fieldErrors.email ? "border-red-500" : "border-input"
+                    }`}
                   type="email"
                   placeholder="Enter your email address"
                   value={email}
@@ -175,9 +173,8 @@ export default function RegisterPage() {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
-                  className={`w-full pl-11 pr-12 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${
-                    fieldErrors.password ? "border-red-500" : "border-input"
-                  }`}
+                  className={`w-full pl-11 pr-12 py-3.5 bg-gray-100/10 border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition ${fieldErrors.password ? "border-red-500" : "border-input"
+                    }`}
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
                   value={password}

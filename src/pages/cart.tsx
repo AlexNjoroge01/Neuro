@@ -4,16 +4,12 @@ import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import ClientNavbar from "@/components/ClientNavbar";
 import Footer from "@/components/Footer";
 import { trpc } from "@/utils/trpc";
 
-const toastStyles = {
-    className: "bg-card text-foreground border border-border shadow-md",
-    progressClassName: "bg-primary",
-};
 
 export default function CartPage() {
     const router = useRouter();
@@ -44,11 +40,11 @@ export default function CartPage() {
             setIsProcessingPayment(true);
             // Keep modal open to show processing state
             hasRedirectedRef.current = false;
-            toast.info("Check your phone for the M-PESA prompt.", toastStyles);
+            toast.info("Check your phone for the M-PESA prompt.");
         },
         onError: (error) => {
             setIsProcessingPayment(false);
-            toast.error(error.message, toastStyles);
+            toast.error(error.message);
         },
     });
 
@@ -68,7 +64,7 @@ export default function CartPage() {
         if (resultCode === 0 && orderStatus === "PAID" && !hasRedirectedRef.current) {
             setIsProcessingPayment(false);
             setIsMpesaModalOpen(false);
-            toast.success("Payment confirmed! Redirecting to orders…", toastStyles);
+            toast.success("Payment confirmed! Redirecting to orders…");
             hasRedirectedRef.current = true;
             // Small delay for user to see success message
             setTimeout(() => {
@@ -81,8 +77,7 @@ export default function CartPage() {
             setIsProcessingPayment(false);
             setIsMpesaModalOpen(false);
             toast.error(
-                resultDesc ?? "Payment failed. Your items are still in the cart. Please try again.",
-                { ...toastStyles, autoClose: 5000 }
+                resultDesc ?? "Payment failed. Your items are still in the cart. Please try again."
             );
             hasRedirectedRef.current = true;
             setCheckoutRequestId(null);
@@ -97,8 +92,7 @@ export default function CartPage() {
                 setIsProcessingPayment(false);
                 setIsMpesaModalOpen(false);
                 toast.info(
-                    "Still waiting for M-PESA confirmation. You can check your orders page.",
-                    toastStyles,
+                    "Still waiting for M-PESA confirmation. You can check your orders page."
                 );
                 setCheckoutRequestId(null);
             }
@@ -115,6 +109,7 @@ export default function CartPage() {
                 price?: number | null;
                 image?: string | null;
                 name?: string | null;
+                slug?: string | null;
             } | null;
             variationId?: string | null;
             variation?: {
@@ -156,7 +151,7 @@ export default function CartPage() {
 
     const openMpesaModal = () => {
         if (subtotal <= 0) {
-            toast.error("Add at least one item to proceed with checkout.", toastStyles);
+            toast.error("Add at least one item to proceed with checkout.");
             return;
         }
         setIsMpesaModalOpen(true);
@@ -165,15 +160,15 @@ export default function CartPage() {
     const handleMpesaPayment = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (subtotal <= 0) {
-            toast.error("Your cart is empty.", toastStyles);
+            toast.error("Your cart is empty.");
             return;
         }
         if (!phoneNumber.trim()) {
-            toast.error("Enter the phone number registered with M-PESA.", toastStyles);
+            toast.error("Enter the phone number registered with M-PESA.");
             return;
         }
 
-        toast.info("Sending payment request…", toastStyles);
+        toast.info("Sending payment request…");
         try {
             await mpesaPayment.mutateAsync({
                 amount: Number(subtotal.toFixed(2)),
@@ -239,7 +234,7 @@ export default function CartPage() {
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-lg">
                                             {item.product ? (
-                                                <Link href={`/shop/${item.productId}`} className="hover:text-primary transition">
+                                                <Link href={`/shop/${item.product.slug || item.productId}`} className="hover:text-primary transition">
                                                     {item.product.name}
                                                     {item.variation && (
                                                         <span className="text-sm text-muted-foreground ml-2">

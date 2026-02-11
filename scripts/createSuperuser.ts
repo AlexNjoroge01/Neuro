@@ -1,4 +1,4 @@
-import { PrismaClient } from '../prisma/generated/prisma/client';
+import {PrismaClient} from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { PrismaPg } from '@prisma/adapter-pg';
 
@@ -10,7 +10,7 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const email = 'alexnjoroge102@gmail.com';
-  const password = 'Password@123';
+  const password = 'Shopify@1239';
   const name = 'Alex Njoroge';
   const passwordHash = await bcrypt.hash(password, 10);
 

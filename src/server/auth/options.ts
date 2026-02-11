@@ -28,12 +28,11 @@ declare module "next-auth" {
   }
 }
 
-
-const prisma = new PrismaClient({
-  adapter: new PrismaPg({ 
-    connectionString: process.env.DATABASE_URL 
-  })
+// PrismaClient with adapter as required by the generated client
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL
 });
+const prisma = new PrismaClient({ adapter }) as any;
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
