@@ -1,7 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "../prisma/generated/prisma/client";
 import { slugify } from "../src/utils/slugify";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ 
+  connectionString: process.env.DATABASE_URL 
+});
+
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
     console.log("Starting slug migration...");
