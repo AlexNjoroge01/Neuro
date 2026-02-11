@@ -5,7 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { trpc } from "@/utils/trpc";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function ClientNavbar() {
@@ -138,7 +138,7 @@ export default function ClientNavbar() {
                       results.map((p) => (
                         <Link
                           key={p.id}
-                          href={`/shop/${p.id}`}
+                          href={`/shop/${p.slug || p.id}`}
                           onClick={() => setMobileMenuOpen(false)} // Optional: close menu on selection
                           className="block px-4 py-3 text-sm hover:bg-accent transition"
                         >
@@ -285,7 +285,7 @@ export default function ClientNavbar() {
                         results.map((p) => (
                           <Link
                             key={p.id}
-                            href={`/shop/${p.id}`}
+                            href={`/shop/${p.slug || p.id}`}
                             onClick={() => {
                               setMobileMenuOpen(false);
                               setShowResults(false);

@@ -43,9 +43,9 @@ export type SaleMinAggregateOutputType = {
   productId: string | null
   quantity: number | null
   totalPrice: number | null
-  profit: number | null
-  paymentMethod: $Enums.PaymentMethod | null
   createdAt: Date | null
+  paymentMethod: $Enums.PaymentMethod | null
+  profit: number | null
   deletedAt: Date | null
 }
 
@@ -54,9 +54,9 @@ export type SaleMaxAggregateOutputType = {
   productId: string | null
   quantity: number | null
   totalPrice: number | null
-  profit: number | null
-  paymentMethod: $Enums.PaymentMethod | null
   createdAt: Date | null
+  paymentMethod: $Enums.PaymentMethod | null
+  profit: number | null
   deletedAt: Date | null
 }
 
@@ -65,9 +65,9 @@ export type SaleCountAggregateOutputType = {
   productId: number
   quantity: number
   totalPrice: number
-  profit: number
-  paymentMethod: number
   createdAt: number
+  paymentMethod: number
+  profit: number
   deletedAt: number
   _all: number
 }
@@ -90,9 +90,9 @@ export type SaleMinAggregateInputType = {
   productId?: true
   quantity?: true
   totalPrice?: true
-  profit?: true
-  paymentMethod?: true
   createdAt?: true
+  paymentMethod?: true
+  profit?: true
   deletedAt?: true
 }
 
@@ -101,9 +101,9 @@ export type SaleMaxAggregateInputType = {
   productId?: true
   quantity?: true
   totalPrice?: true
-  profit?: true
-  paymentMethod?: true
   createdAt?: true
+  paymentMethod?: true
+  profit?: true
   deletedAt?: true
 }
 
@@ -112,9 +112,9 @@ export type SaleCountAggregateInputType = {
   productId?: true
   quantity?: true
   totalPrice?: true
-  profit?: true
-  paymentMethod?: true
   createdAt?: true
+  paymentMethod?: true
+  profit?: true
   deletedAt?: true
   _all?: true
 }
@@ -210,9 +210,9 @@ export type SaleGroupByOutputType = {
   productId: string
   quantity: number
   totalPrice: number
-  profit: number
-  paymentMethod: $Enums.PaymentMethod
   createdAt: Date
+  paymentMethod: $Enums.PaymentMethod
+  profit: number
   deletedAt: Date | null
   _count: SaleCountAggregateOutputType | null
   _avg: SaleAvgAggregateOutputType | null
@@ -244,9 +244,9 @@ export type SaleWhereInput = {
   productId?: Prisma.StringFilter<"Sale"> | string
   quantity?: Prisma.IntFilter<"Sale"> | number
   totalPrice?: Prisma.FloatFilter<"Sale"> | number
-  profit?: Prisma.FloatFilter<"Sale"> | number
-  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Sale"> | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Sale"> | $Enums.PaymentMethod
+  profit?: Prisma.FloatFilter<"Sale"> | number
   deletedAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
 }
@@ -256,9 +256,9 @@ export type SaleOrderByWithRelationInput = {
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
-  profit?: Prisma.SortOrder
-  paymentMethod?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  profit?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   product?: Prisma.ProductOrderByWithRelationInput
 }
@@ -271,9 +271,9 @@ export type SaleWhereUniqueInput = Prisma.AtLeast<{
   productId?: Prisma.StringFilter<"Sale"> | string
   quantity?: Prisma.IntFilter<"Sale"> | number
   totalPrice?: Prisma.FloatFilter<"Sale"> | number
-  profit?: Prisma.FloatFilter<"Sale"> | number
-  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Sale"> | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Sale"> | $Enums.PaymentMethod
+  profit?: Prisma.FloatFilter<"Sale"> | number
   deletedAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
 }, "id">
@@ -283,9 +283,9 @@ export type SaleOrderByWithAggregationInput = {
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
-  profit?: Prisma.SortOrder
-  paymentMethod?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  profit?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.SaleCountOrderByAggregateInput
   _avg?: Prisma.SaleAvgOrderByAggregateInput
@@ -302,9 +302,9 @@ export type SaleScalarWhereWithAggregatesInput = {
   productId?: Prisma.StringWithAggregatesFilter<"Sale"> | string
   quantity?: Prisma.IntWithAggregatesFilter<"Sale"> | number
   totalPrice?: Prisma.FloatWithAggregatesFilter<"Sale"> | number
-  profit?: Prisma.FloatWithAggregatesFilter<"Sale"> | number
-  paymentMethod?: Prisma.EnumPaymentMethodWithAggregatesFilter<"Sale"> | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Sale"> | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodWithAggregatesFilter<"Sale"> | $Enums.PaymentMethod
+  profit?: Prisma.FloatWithAggregatesFilter<"Sale"> | number
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Sale"> | Date | string | null
 }
 
@@ -312,9 +312,9 @@ export type SaleCreateInput = {
   id?: string
   quantity: number
   totalPrice: number
-  profit?: number
-  paymentMethod: $Enums.PaymentMethod
   createdAt?: Date | string
+  paymentMethod: $Enums.PaymentMethod
+  profit?: number
   deletedAt?: Date | string | null
   product: Prisma.ProductCreateNestedOneWithoutSalesInput
 }
@@ -324,9 +324,9 @@ export type SaleUncheckedCreateInput = {
   productId: string
   quantity: number
   totalPrice: number
-  profit?: number
-  paymentMethod: $Enums.PaymentMethod
   createdAt?: Date | string
+  paymentMethod: $Enums.PaymentMethod
+  profit?: number
   deletedAt?: Date | string | null
 }
 
@@ -334,9 +334,9 @@ export type SaleUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   totalPrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  profit?: Prisma.FloatFieldUpdateOperationsInput | number
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  profit?: Prisma.FloatFieldUpdateOperationsInput | number
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   product?: Prisma.ProductUpdateOneRequiredWithoutSalesNestedInput
 }
@@ -346,9 +346,9 @@ export type SaleUncheckedUpdateInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   totalPrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  profit?: Prisma.FloatFieldUpdateOperationsInput | number
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  profit?: Prisma.FloatFieldUpdateOperationsInput | number
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -357,9 +357,9 @@ export type SaleCreateManyInput = {
   productId: string
   quantity: number
   totalPrice: number
-  profit?: number
-  paymentMethod: $Enums.PaymentMethod
   createdAt?: Date | string
+  paymentMethod: $Enums.PaymentMethod
+  profit?: number
   deletedAt?: Date | string | null
 }
 
@@ -367,9 +367,9 @@ export type SaleUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   totalPrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  profit?: Prisma.FloatFieldUpdateOperationsInput | number
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  profit?: Prisma.FloatFieldUpdateOperationsInput | number
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -378,9 +378,9 @@ export type SaleUncheckedUpdateManyInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   totalPrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  profit?: Prisma.FloatFieldUpdateOperationsInput | number
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  profit?: Prisma.FloatFieldUpdateOperationsInput | number
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -399,9 +399,9 @@ export type SaleCountOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
-  profit?: Prisma.SortOrder
-  paymentMethod?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  profit?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
 }
 
@@ -416,9 +416,9 @@ export type SaleMaxOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
-  profit?: Prisma.SortOrder
-  paymentMethod?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  profit?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
 }
 
@@ -427,9 +427,9 @@ export type SaleMinOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
-  profit?: Prisma.SortOrder
-  paymentMethod?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  profit?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
 }
 
@@ -489,9 +489,9 @@ export type SaleCreateWithoutProductInput = {
   id?: string
   quantity: number
   totalPrice: number
-  profit?: number
-  paymentMethod: $Enums.PaymentMethod
   createdAt?: Date | string
+  paymentMethod: $Enums.PaymentMethod
+  profit?: number
   deletedAt?: Date | string | null
 }
 
@@ -499,9 +499,9 @@ export type SaleUncheckedCreateWithoutProductInput = {
   id?: string
   quantity: number
   totalPrice: number
-  profit?: number
-  paymentMethod: $Enums.PaymentMethod
   createdAt?: Date | string
+  paymentMethod: $Enums.PaymentMethod
+  profit?: number
   deletedAt?: Date | string | null
 }
 
@@ -539,9 +539,9 @@ export type SaleScalarWhereInput = {
   productId?: Prisma.StringFilter<"Sale"> | string
   quantity?: Prisma.IntFilter<"Sale"> | number
   totalPrice?: Prisma.FloatFilter<"Sale"> | number
-  profit?: Prisma.FloatFilter<"Sale"> | number
-  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Sale"> | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodFilter<"Sale"> | $Enums.PaymentMethod
+  profit?: Prisma.FloatFilter<"Sale"> | number
   deletedAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
 }
 
@@ -549,9 +549,9 @@ export type SaleCreateManyProductInput = {
   id?: string
   quantity: number
   totalPrice: number
-  profit?: number
-  paymentMethod: $Enums.PaymentMethod
   createdAt?: Date | string
+  paymentMethod: $Enums.PaymentMethod
+  profit?: number
   deletedAt?: Date | string | null
 }
 
@@ -559,9 +559,9 @@ export type SaleUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   totalPrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  profit?: Prisma.FloatFieldUpdateOperationsInput | number
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  profit?: Prisma.FloatFieldUpdateOperationsInput | number
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -569,9 +569,9 @@ export type SaleUncheckedUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   totalPrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  profit?: Prisma.FloatFieldUpdateOperationsInput | number
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  profit?: Prisma.FloatFieldUpdateOperationsInput | number
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -579,9 +579,9 @@ export type SaleUncheckedUpdateManyWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   totalPrice?: Prisma.FloatFieldUpdateOperationsInput | number
-  profit?: Prisma.FloatFieldUpdateOperationsInput | number
-  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  profit?: Prisma.FloatFieldUpdateOperationsInput | number
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -592,9 +592,9 @@ export type SaleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   productId?: boolean
   quantity?: boolean
   totalPrice?: boolean
-  profit?: boolean
-  paymentMethod?: boolean
   createdAt?: boolean
+  paymentMethod?: boolean
+  profit?: boolean
   deletedAt?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["sale"]>
@@ -604,9 +604,9 @@ export type SaleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   productId?: boolean
   quantity?: boolean
   totalPrice?: boolean
-  profit?: boolean
-  paymentMethod?: boolean
   createdAt?: boolean
+  paymentMethod?: boolean
+  profit?: boolean
   deletedAt?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["sale"]>
@@ -616,9 +616,9 @@ export type SaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   productId?: boolean
   quantity?: boolean
   totalPrice?: boolean
-  profit?: boolean
-  paymentMethod?: boolean
   createdAt?: boolean
+  paymentMethod?: boolean
+  profit?: boolean
   deletedAt?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["sale"]>
@@ -628,13 +628,13 @@ export type SaleSelectScalar = {
   productId?: boolean
   quantity?: boolean
   totalPrice?: boolean
-  profit?: boolean
-  paymentMethod?: boolean
   createdAt?: boolean
+  paymentMethod?: boolean
+  profit?: boolean
   deletedAt?: boolean
 }
 
-export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "quantity" | "totalPrice" | "profit" | "paymentMethod" | "createdAt" | "deletedAt", ExtArgs["result"]["sale"]>
+export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "quantity" | "totalPrice" | "createdAt" | "paymentMethod" | "profit" | "deletedAt", ExtArgs["result"]["sale"]>
 export type SaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }
@@ -655,9 +655,9 @@ export type $SalePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     productId: string
     quantity: number
     totalPrice: number
-    profit: number
-    paymentMethod: $Enums.PaymentMethod
     createdAt: Date
+    paymentMethod: $Enums.PaymentMethod
+    profit: number
     deletedAt: Date | null
   }, ExtArgs["result"]["sale"]>
   composites: {}
@@ -1087,9 +1087,9 @@ export interface SaleFieldRefs {
   readonly productId: Prisma.FieldRef<"Sale", 'String'>
   readonly quantity: Prisma.FieldRef<"Sale", 'Int'>
   readonly totalPrice: Prisma.FieldRef<"Sale", 'Float'>
-  readonly profit: Prisma.FieldRef<"Sale", 'Float'>
-  readonly paymentMethod: Prisma.FieldRef<"Sale", 'PaymentMethod'>
   readonly createdAt: Prisma.FieldRef<"Sale", 'DateTime'>
+  readonly paymentMethod: Prisma.FieldRef<"Sale", 'PaymentMethod'>
+  readonly profit: Prisma.FieldRef<"Sale", 'Float'>
   readonly deletedAt: Prisma.FieldRef<"Sale", 'DateTime'>
 }
     

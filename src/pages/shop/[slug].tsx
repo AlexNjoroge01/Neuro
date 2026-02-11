@@ -4,20 +4,20 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import ClientNavbar from "@/components/ClientNavbar";
 import Footer from "@/components/Footer";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import Image from "next/image";
 
 export default function ProductDetail() {
   const router = useRouter();
-  const { id } = router.query;
+  const { slug } = router.query;
   const { status } = useSession();
   const utils = trpc.useUtils();
   const add = trpc.cart.add.useMutation({
     onSuccess: () => utils.cart.get.invalidate(),
   });
   const { data: rawProduct, isLoading } = trpc.products.publicGet.useQuery(
-    typeof id === "string" ? id : "",
-    { enabled: !!id }
+    typeof slug === "string" ? slug : "",
+    { enabled: !!slug }
   );
 
   const [qty, setQty] = useState(1);
@@ -62,20 +62,20 @@ export default function ProductDetail() {
   async function addToCart() {
     if (status !== "authenticated") {
       toast.error("Please login to add items to cart");
-      const callbackUrl = typeof router.asPath === "string" ? router.asPath : `/shop/${id}`;
+      const callbackUrl = typeof router.asPath === "string" ? router.asPath : `/shop/${slug}`;
       router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
       return;
     }
     if (!product) return;
-    
+
     await add.mutateAsync({
       productId: product.id,
       delta: qty,
       variationId: selectedVariation || undefined
     });
-    
-    const itemName = selectedVariation 
-      ? product.variations?.find((v: ProductVariation) => v.id === selectedVariation)?.name 
+
+    const itemName = selectedVariation
+      ? product.variations?.find((v: ProductVariation) => v.id === selectedVariation)?.name
       : product.name;
     toast.success(`${itemName} added to cart!`);
   }
@@ -123,11 +123,10 @@ export default function ProductDetail() {
                 {/* Default option */}
                 <button
                   onClick={() => setSelectedVariation(null)}
-                  className={`px-4 py-2 rounded border text-sm font-medium transition ${
-                    selectedVariation === null
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border hover:border-primary"
-                  }`}
+                  className={`px-4 py-2 rounded border text-sm font-medium transition ${selectedVariation === null
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border hover:border-primary"
+                    }`}
                 >
                   Default
                 </button>
@@ -135,11 +134,10 @@ export default function ProductDetail() {
                   <button
                     key={variation.id}
                     onClick={() => setSelectedVariation(variation.id)}
-                    className={`px-4 py-2 rounded border text-sm font-medium transition ${
-                      selectedVariation === variation.id
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border hover:border-primary"
-                    }`}
+                    className={`px-4 py-2 rounded border text-sm font-medium transition ${selectedVariation === variation.id
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border hover:border-primary"
+                      }`}
                   >
                     {variation.name}
                   </button>

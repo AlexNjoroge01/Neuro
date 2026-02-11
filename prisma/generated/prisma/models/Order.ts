@@ -232,10 +232,10 @@ export type OrderWhereInput = {
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   total?: Prisma.FloatFilter<"Order"> | number
   address?: Prisma.StringNullableFilter<"Order"> | string | null
+  notifications?: Prisma.NotificationListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.OrderItemListRelationFilter
   transactions?: Prisma.TransactionListRelationFilter
-  notifications?: Prisma.NotificationListRelationFilter
 }
 
 export type OrderOrderByWithRelationInput = {
@@ -246,10 +246,10 @@ export type OrderOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   total?: Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
   user?: Prisma.UserOrderByWithRelationInput
   items?: Prisma.OrderItemOrderByRelationAggregateInput
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
-  notifications?: Prisma.NotificationOrderByRelationAggregateInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -263,10 +263,10 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   total?: Prisma.FloatFilter<"Order"> | number
   address?: Prisma.StringNullableFilter<"Order"> | string | null
+  notifications?: Prisma.NotificationListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.OrderItemListRelationFilter
   transactions?: Prisma.TransactionListRelationFilter
-  notifications?: Prisma.NotificationListRelationFilter
 }, "id">
 
 export type OrderOrderByWithAggregationInput = {
@@ -304,10 +304,10 @@ export type OrderCreateInput = {
   status?: $Enums.OrderStatus
   total: number
   address?: string | null
+  notifications?: Prisma.NotificationCreateNestedManyWithoutOrderInput
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateInput = {
@@ -318,9 +318,9 @@ export type OrderUncheckedCreateInput = {
   status?: $Enums.OrderStatus
   total: number
   address?: string | null
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutOrderInput
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUpdateInput = {
@@ -330,10 +330,10 @@ export type OrderUpdateInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifications?: Prisma.NotificationUpdateManyWithoutOrderNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateInput = {
@@ -344,9 +344,9 @@ export type OrderUncheckedUpdateInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutOrderNestedInput
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateManyInput = {
@@ -533,9 +533,9 @@ export type OrderCreateWithoutUserInput = {
   status?: $Enums.OrderStatus
   total: number
   address?: string | null
+  notifications?: Prisma.NotificationCreateNestedManyWithoutOrderInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutUserInput = {
@@ -545,9 +545,9 @@ export type OrderUncheckedCreateWithoutUserInput = {
   status?: $Enums.OrderStatus
   total: number
   address?: string | null
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutOrderInput
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutUserInput = {
@@ -596,9 +596,9 @@ export type OrderCreateWithoutItemsInput = {
   status?: $Enums.OrderStatus
   total: number
   address?: string | null
+  notifications?: Prisma.NotificationCreateNestedManyWithoutOrderInput
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutItemsInput = {
@@ -609,8 +609,8 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   status?: $Enums.OrderStatus
   total: number
   address?: string | null
-  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutOrderInput
+  transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutItemsInput = {
@@ -636,9 +636,9 @@ export type OrderUpdateWithoutItemsInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifications?: Prisma.NotificationUpdateManyWithoutOrderNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutItemsInput = {
@@ -649,8 +649,8 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutOrderNestedInput
+  transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutTransactionsInput = {
@@ -660,9 +660,9 @@ export type OrderCreateWithoutTransactionsInput = {
   status?: $Enums.OrderStatus
   total: number
   address?: string | null
+  notifications?: Prisma.NotificationCreateNestedManyWithoutOrderInput
   user: Prisma.UserCreateNestedOneWithoutOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutTransactionsInput = {
@@ -673,8 +673,8 @@ export type OrderUncheckedCreateWithoutTransactionsInput = {
   status?: $Enums.OrderStatus
   total: number
   address?: string | null
-  items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutOrderInput
+  items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutTransactionsInput = {
@@ -700,9 +700,9 @@ export type OrderUpdateWithoutTransactionsInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifications?: Prisma.NotificationUpdateManyWithoutOrderNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutTransactionsInput = {
@@ -713,8 +713,8 @@ export type OrderUncheckedUpdateWithoutTransactionsInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutOrderNestedInput
+  items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutNotificationsInput = {
@@ -797,9 +797,9 @@ export type OrderUpdateWithoutUserInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifications?: Prisma.NotificationUpdateManyWithoutOrderNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutUserInput = {
@@ -809,9 +809,9 @@ export type OrderUncheckedUpdateWithoutUserInput = {
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutOrderNestedInput
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutUserInput = {
@@ -829,15 +829,15 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
  */
 
 export type OrderCountOutputType = {
+  notifications: number
   items: number
   transactions: number
-  notifications: number
 }
 
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  notifications?: boolean | OrderCountOutputTypeCountNotificationsArgs
   items?: boolean | OrderCountOutputTypeCountItemsArgs
   transactions?: boolean | OrderCountOutputTypeCountTransactionsArgs
-  notifications?: boolean | OrderCountOutputTypeCountNotificationsArgs
 }
 
 /**
@@ -848,6 +848,13 @@ export type OrderCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
    * Select specific fields to fetch from the OrderCountOutputType
    */
   select?: Prisma.OrderCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
 }
 
 /**
@@ -864,13 +871,6 @@ export type OrderCountOutputTypeCountTransactionsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.TransactionWhereInput
 }
 
-/**
- * OrderCountOutputType without action
- */
-export type OrderCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.NotificationWhereInput
-}
-
 
 export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -880,10 +880,10 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   status?: boolean
   total?: boolean
   address?: boolean
+  notifications?: boolean | Prisma.Order$notificationsArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
   transactions?: boolean | Prisma.Order$transactionsArgs<ExtArgs>
-  notifications?: boolean | Prisma.Order$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -921,10 +921,10 @@ export type OrderSelectScalar = {
 
 export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "createdAt" | "updatedAt" | "status" | "total" | "address", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  notifications?: boolean | Prisma.Order$notificationsArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
   transactions?: boolean | Prisma.Order$transactionsArgs<ExtArgs>
-  notifications?: boolean | Prisma.Order$notificationsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -937,10 +937,10 @@ export type OrderIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Order"
   objects: {
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
     user: Prisma.$UserPayload<ExtArgs>
     items: Prisma.$OrderItemPayload<ExtArgs>[]
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
-    notifications: Prisma.$NotificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1344,10 +1344,10 @@ readonly fields: OrderFieldRefs;
  */
 export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  notifications<T extends Prisma.Order$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.Order$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transactions<T extends Prisma.Order$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  notifications<T extends Prisma.Order$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1780,6 +1780,30 @@ export type OrderDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
+ * Order.notifications
+ */
+export type Order$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
+}
+
+/**
  * Order.items
  */
 export type Order$itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1825,30 +1849,6 @@ export type Order$transactionsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.TransactionScalarFieldEnum | Prisma.TransactionScalarFieldEnum[]
-}
-
-/**
- * Order.notifications
- */
-export type Order$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Notification
-   */
-  select?: Prisma.NotificationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Notification
-   */
-  omit?: Prisma.NotificationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NotificationInclude<ExtArgs> | null
-  where?: Prisma.NotificationWhereInput
-  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
-  cursor?: Prisma.NotificationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
 }
 
 /**

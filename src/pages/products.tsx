@@ -39,7 +39,7 @@ export default function ProductsPage() {
     return { totalProducts: products?.length ?? 0 };
   }, [products]);
 
-  function openEditModal(product: { id: string; name: string; unit: string; size: string | null; price: number; costPrice: number; stock: number; image: string | null; category: string | null; brand: string | null; variations?: Array<{ id: string; name: string; image: string | null }> }) {
+  function openEditModal(product: { id: string; name: string; slug: string | null; unit: string; size: string | null; price: number; costPrice: number; stock: number; image: string | null; category: string | null; brand: string | null; variations?: Array<{ id: string; name: string; image: string | null }> }) {
     setEditingProductId(product.id);
     setForm({
       name: product.name,
@@ -151,7 +151,7 @@ export default function ProductsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8">
           <div className="bg-background border border-gray-200/20 rounded-lg p-6 w-full max-w-4xl mx-4 max-h-full overflow-y-auto">
             <h2 className="text-lg font-semibold mb-6">{editingProductId ? "Edit Product" : "Add New Product"}</h2>
-            
+
             <form onSubmit={submit} className="grid gap-6">
               {/* Main product fields - 2 columns */}
               <div className="grid md:grid-cols-2 gap-6">

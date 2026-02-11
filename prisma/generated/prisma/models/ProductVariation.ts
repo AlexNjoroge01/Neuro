@@ -182,8 +182,8 @@ export type ProductVariationWhereInput = {
   name?: Prisma.StringFilter<"ProductVariation"> | string
   image?: Prisma.StringNullableFilter<"ProductVariation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductVariation"> | Date | string
-  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   cartItems?: Prisma.CartItemListRelationFilter
+  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
 }
 
 export type ProductVariationOrderByWithRelationInput = {
@@ -192,8 +192,8 @@ export type ProductVariationOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  product?: Prisma.ProductOrderByWithRelationInput
   cartItems?: Prisma.CartItemOrderByRelationAggregateInput
+  product?: Prisma.ProductOrderByWithRelationInput
 }
 
 export type ProductVariationWhereUniqueInput = Prisma.AtLeast<{
@@ -205,8 +205,8 @@ export type ProductVariationWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"ProductVariation"> | string
   image?: Prisma.StringNullableFilter<"ProductVariation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductVariation"> | Date | string
-  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   cartItems?: Prisma.CartItemListRelationFilter
+  product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
 }, "id">
 
 export type ProductVariationOrderByWithAggregationInput = {
@@ -236,8 +236,8 @@ export type ProductVariationCreateInput = {
   name: string
   image?: string | null
   createdAt?: Date | string
-  product: Prisma.ProductCreateNestedOneWithoutVariationsInput
   cartItems?: Prisma.CartItemCreateNestedManyWithoutVariationInput
+  product: Prisma.ProductCreateNestedOneWithoutVariationsInput
 }
 
 export type ProductVariationUncheckedCreateInput = {
@@ -254,8 +254,8 @@ export type ProductVariationUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  product?: Prisma.ProductUpdateOneRequiredWithoutVariationsNestedInput
   cartItems?: Prisma.CartItemUpdateManyWithoutVariationNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariationsNestedInput
 }
 
 export type ProductVariationUncheckedUpdateInput = {
@@ -555,8 +555,8 @@ export type ProductVariationSelect<ExtArgs extends runtime.Types.Extensions.Inte
   name?: boolean
   image?: boolean
   createdAt?: boolean
-  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   cartItems?: boolean | Prisma.ProductVariation$cartItemsArgs<ExtArgs>
+  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ProductVariationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariation"]>
 
@@ -588,8 +588,8 @@ export type ProductVariationSelectScalar = {
 
 export type ProductVariationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "name" | "image" | "createdAt", ExtArgs["result"]["productVariation"]>
 export type ProductVariationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   cartItems?: boolean | Prisma.ProductVariation$cartItemsArgs<ExtArgs>
+  product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ProductVariationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductVariationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -602,8 +602,8 @@ export type ProductVariationIncludeUpdateManyAndReturn<ExtArgs extends runtime.T
 export type $ProductVariationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProductVariation"
   objects: {
-    product: Prisma.$ProductPayload<ExtArgs>
     cartItems: Prisma.$CartItemPayload<ExtArgs>[]
+    product: Prisma.$ProductPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1005,8 +1005,8 @@ readonly fields: ProductVariationFieldRefs;
  */
 export interface Prisma__ProductVariationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   cartItems<T extends Prisma.ProductVariation$cartItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariation$cartItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
