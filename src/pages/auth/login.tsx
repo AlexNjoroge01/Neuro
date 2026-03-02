@@ -6,6 +6,7 @@ import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/router";
+import SEO from "@/components/SEO";
 
 // Zod schema with strict validation
 const loginSchema = z.object({
@@ -86,6 +87,13 @@ export default function LoginPage() {
   }
 
   return (
+    <>
+      <SEO
+        title="Login"
+        description="Sign in to your Dukafiy account to access your orders, cart, and manage your shopping experience."
+        keywords={["login", "sign in", "account", "Dukafiy"]}
+        noIndex={true}
+      />
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Side - Background Image + Translucent Card */}
       <div className="relative flex-1 hidden lg:block">
@@ -229,6 +237,6 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-
+    </>
   );
 }

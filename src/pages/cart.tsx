@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 import ClientNavbar from "@/components/ClientNavbar";
 import Footer from "@/components/Footer";
 import { trpc } from "@/utils/trpc";
+import SEO, { generateShopBreadcrumbs } from "@/components/SEO";
 
 
 export default function CartPage() {
@@ -181,6 +182,14 @@ export default function CartPage() {
     };
 
     return (
+        <>
+            <SEO
+                title="Shopping Cart"
+                description="View and manage your shopping cart at Dukafiy. Secure checkout with M-Pesa. Fast delivery across Kenya."
+                keywords={["cart", "shopping cart", "checkout", "M-Pesa", "Kenya"]}
+                breadcrumbs={generateShopBreadcrumbs(undefined, "Shopping Cart", "/cart")}
+                noIndex={true}
+            />
         <div className="min-h-screen bg-background text-foreground">
             <ClientNavbar />
 
@@ -422,5 +431,6 @@ export default function CartPage() {
 
             <Footer />
         </div>
+        </>
     );
 }
