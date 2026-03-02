@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
+import SEO from "@/components/SEO";
 
 // Zod schema with strict validation (same strong password rules as login)
 const registerSchema = z.object({
@@ -82,6 +83,13 @@ export default function RegisterPage() {
   }
 
   return (
+    <>
+      <SEO
+        title="Create Account"
+        description="Create your Dukafiy account to start shopping premium products. Join thousands of satisfied customers in Kenya."
+        keywords={["register", "sign up", "create account", "join", "Dukafiy"]}
+        noIndex={true}
+      />
     <div className="min-h-screen flex flex-1 flex-col lg:flex-row">
       {/* LEFT SIDE: Background + Translucent Card */}
       <div className="relative flex-1 hidden lg:block">
@@ -240,5 +248,6 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

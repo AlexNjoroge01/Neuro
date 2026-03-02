@@ -16,7 +16,27 @@ const nextConfig: NextConfig = {
         hostname: 'res.cloudinary.com',
       },
     ],
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
+
+  // Internationalization for SEO
+  i18n: {
+    locales: ['en'],
+    defaultLocale: 'en',
+  },
+
+  // Trailing slash for consistent URLs
+  trailingSlash: false,
+
+  // Enable React strict mode for better performance
+  reactStrictMode: true,
+
+  // Powered by header for security
+  poweredByHeader: false,
+
+  // Compress for better performance
+  compress: true,
 
 
 

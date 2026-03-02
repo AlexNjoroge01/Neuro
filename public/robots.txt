@@ -1,0 +1,40 @@
+# robots.txt for Dukafiy
+# https://dukafiy.com
+
+User-agent: *
+Allow: /
+
+# Disallow admin routes
+Disallow: /dashboard
+Disallow: /admin-users
+Disallow: /inventory
+Disallow: /accounting
+Disallow: /fleet
+Disallow: /hr
+Disallow: /reports
+Disallow: /sales
+Disallow: /products
+Disallow: /orders
+Disallow: /settings
+
+# Disallow API routes
+Disallow: /api/
+
+# Disallow auth pages from indexing (optional - you may want to allow these)
+Disallow: /auth/
+
+# Sitemap
+Sitemap: https://dukafiy.com/api/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 10
+
+# Google-specific
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Bing-specific
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
