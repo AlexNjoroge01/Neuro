@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://dukafiy.com";
 
@@ -98,8 +96,6 @@ ${allUrls
   } catch (error) {
     console.error("Error generating sitemap:", error);
     res.status(500).json({ error: "Failed to generate sitemap" });
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
